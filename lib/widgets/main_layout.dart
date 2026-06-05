@@ -8,12 +8,12 @@ class MainLayout extends StatelessWidget {
   final VoidCallback onSignOut;
 
   const MainLayout({
-    Key? key,
+    super.key,
     required this.child,
     required this.activeTab,
     required this.onTabChanged,
     required this.onSignOut,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class MainLayout extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.gold.withOpacity(0.2)),
+                        border: Border.all(color: AppColors.gold.withValues(alpha: 0.2)),
                       ),
                       child: const Icon(
                         Icons.menu_book,
@@ -110,7 +110,7 @@ class MainLayout extends StatelessWidget {
                       backgroundImage: const NetworkImage(
                         'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
                       ),
-                      backgroundColor: AppColors.gold.withOpacity(0.1),
+                      backgroundColor: AppColors.gold.withValues(alpha: 0.1),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -207,7 +207,7 @@ class MainLayout extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.gold.withOpacity(0.2)),
+                border: Border.all(color: AppColors.gold.withValues(alpha: 0.2)),
               ),
               child: const Icon(
                 Icons.menu_book,
@@ -247,7 +247,7 @@ class MainLayout extends StatelessWidget {
             final tabName = _getTabName(index);
             onTabChanged(tabName);
           },
-          backgroundColor: AppColors.surface.withOpacity(0.8),
+          backgroundColor: AppColors.surface.withValues(alpha: 0.8),
           selectedItemColor: AppColors.gold,
           unselectedItemColor: AppColors.textSecondary,
           type: BottomNavigationBarType.fixed,
@@ -311,3 +311,4 @@ class MainLayout extends StatelessWidget {
     }
   }
 }
+

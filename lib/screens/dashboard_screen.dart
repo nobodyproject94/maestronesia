@@ -9,11 +9,11 @@ class DashboardScreen extends StatefulWidget {
   final VoidCallback onSignOut;
 
   const DashboardScreen({
-    Key? key,
+    super.key,
     required this.onSelectExpert,
     required this.onTabChanged,
     required this.onSignOut,
-  }) : super(key: key);
+  });
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -46,7 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: const TextField(
@@ -85,7 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         color: active ? AppColors.gold : AppColors.surface,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: active ? AppColors.gold : Colors.white.withOpacity(0.05),
+                          color: active ? AppColors.gold : Colors.white.withValues(alpha: 0.05),
                         ),
                       ),
                       child: Center(
@@ -127,7 +127,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        AppColors.background.withOpacity(0.9),
+                        AppColors.background.withValues(alpha: 0.9),
                       ],
                     ),
                   ),
@@ -219,7 +219,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(28),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                     child: Column(
                       children: [
@@ -315,7 +315,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   margin: const EdgeInsets.only(right: 8),
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.05),
+                                    color: Colors.white.withValues(alpha: 0.05),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
@@ -361,3 +361,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
+

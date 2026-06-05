@@ -8,11 +8,11 @@ class ProfileScreen extends StatefulWidget {
   final VoidCallback onSignOut;
 
   const ProfileScreen({
-    Key? key,
+    super.key,
     required this.role,
     required this.onTabChanged,
     required this.onSignOut,
-  }) : super(key: key);
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -39,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Column(
                 children: [
@@ -101,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                         decoration: BoxDecoration(
-                          color: AppColors.gold.withOpacity(0.1),
+                          color: AppColors.gold.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
@@ -118,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
@@ -178,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: _isOnline ? AppColors.gold.withOpacity(0.3) : Colors.white.withOpacity(0.05),
+                    color: _isOnline ? AppColors.gold.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.05),
                   ),
                 ),
                 child: Row(
@@ -222,7 +222,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           _isOnline = val;
                         });
                       },
-                      activeColor: AppColors.gold,
+                      activeThumbColor: AppColors.gold,
                     ),
                   ],
                 ),
@@ -245,7 +245,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Column(
                 children: [
@@ -313,7 +313,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
@@ -357,3 +357,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+

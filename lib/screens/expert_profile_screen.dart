@@ -11,13 +11,13 @@ class ExpertProfileScreen extends StatefulWidget {
   final VoidCallback onSignOut;
 
   const ExpertProfileScreen({
-    Key? key,
+    super.key,
     required this.expert,
     required this.onBack,
     required this.onBook,
     required this.onTabChanged,
     required this.onSignOut,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpertProfileScreen> createState() => _ExpertProfileScreenState();
@@ -49,7 +49,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                     padding: const EdgeInsets.all(16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                   ),
                 ),
@@ -61,7 +61,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                     padding: const EdgeInsets.all(16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                   ),
                 ),
@@ -87,7 +87,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.gold.withOpacity(0.1),
+                              color: AppColors.gold.withValues(alpha: 0.1),
                               blurRadius: 24,
                               spreadRadius: 2,
                             ),
@@ -168,9 +168,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: AppColors.surface.withOpacity(0.4),
+                color: AppColors.surface.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Row(
                 children: [
@@ -304,7 +304,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Text(
                 s.toUpperCase(),
@@ -340,9 +340,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
             return Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.surface.withOpacity(0.4),
+                color: AppColors.surface.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -401,9 +401,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: AppColors.surface.withOpacity(0.6),
+        color: AppColors.surface.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
@@ -437,9 +437,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.gold.withOpacity(0.05),
+            color: AppColors.gold.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.gold.withOpacity(0.15)),
+            border: Border.all(color: AppColors.gold.withValues(alpha: 0.15)),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,7 +484,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.1),
+                color: AppColors.gold.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Text(
@@ -510,9 +510,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface.withOpacity(0.4),
+                color: AppColors.surface.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Row(
                 children: [
@@ -586,9 +586,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
               return Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.surface.withOpacity(0.4),
+                  color: AppColors.surface.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -645,9 +645,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
             return Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.surface.withOpacity(0.4),
+                color: AppColors.surface.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Row(
                 children: [
@@ -686,3 +686,4 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
     );
   }
 }
+

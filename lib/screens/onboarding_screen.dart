@@ -8,12 +8,12 @@ class OnboardingScreen extends StatefulWidget {
   final VoidCallback onSignIn;
 
   const OnboardingScreen({
-    Key? key,
+    super.key,
     required this.selectedRole,
     required this.onRoleChanged,
     required this.onBegin,
     required this.onSignIn,
-  }) : super(key: key);
+  });
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -180,10 +180,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(vertical: 32),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.gold.withOpacity(0.05) : AppColors.surface,
+          color: isSelected ? AppColors.gold.withValues(alpha: 0.05) : AppColors.surface,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
-            color: isSelected ? AppColors.gold : Colors.white.withOpacity(0.05),
+            color: isSelected ? AppColors.gold : Colors.white.withValues(alpha: 0.05),
             width: 2.0,
           ),
         ),
@@ -228,3 +228,4 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 }
+

@@ -11,13 +11,13 @@ class BookingScreen extends StatefulWidget {
   final VoidCallback onSignOut;
 
   const BookingScreen({
-    Key? key,
+    super.key,
     required this.expert,
     required this.onBack,
     required this.onProceed,
     required this.onTabChanged,
     required this.onSignOut,
-  }) : super(key: key);
+  });
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();
@@ -53,7 +53,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     padding: const EdgeInsets.all(16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                   ),
                 ),
@@ -123,13 +123,13 @@ class _BookingScreenState extends State<BookingScreen> {
                         color: isSelected ? AppColors.secondary : AppColors.surface,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: isSelected ? AppColors.gold : Colors.white.withOpacity(0.05),
+                          color: isSelected ? AppColors.gold : Colors.white.withValues(alpha: 0.05),
                           width: 2,
                         ),
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: AppColors.gold.withOpacity(0.05),
+                                  color: AppColors.gold.withValues(alpha: 0.05),
                                   blurRadius: 16,
                                   spreadRadius: 1,
                                 )
@@ -205,7 +205,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       color: isSelected ? AppColors.secondary : AppColors.surface,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: isSelected ? AppColors.gold : Colors.white.withOpacity(0.05),
+                        color: isSelected ? AppColors.gold : Colors.white.withValues(alpha: 0.05),
                         width: 2,
                       ),
                     ),
@@ -228,9 +228,9 @@ class _BookingScreenState extends State<BookingScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.surface.withOpacity(0.4),
+                color: AppColors.surface.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Column(
                 children: [
@@ -312,3 +312,4 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 }
+

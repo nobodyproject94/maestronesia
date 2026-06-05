@@ -8,12 +8,12 @@ class LoginScreen extends StatefulWidget {
   final VoidCallback onSignUpRedirect;
 
   const LoginScreen({
-    Key? key,
+    super.key,
     required this.role,
     required this.onBack,
     required this.onLoginSuccess,
     required this.onSignUpRedirect,
-  }) : super(key: key);
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.all(12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                   ),
                 ),
@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               prefixIcon: const Icon(Icons.mail_outline, color: AppColors.textSecondary),
                               hintText: 'EMAIL ADDRESS',
                               hintStyle: TextStyle(
-                                color: AppColors.textSecondary.withOpacity(0.3),
+                                color: AppColors.textSecondary.withValues(alpha: 0.3),
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.5,
@@ -151,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               prefixIcon: const Icon(Icons.shield_outlined, color: AppColors.textSecondary),
                               hintText: 'PASSWORD',
                               hintStyle: TextStyle(
-                                color: AppColors.textSecondary.withOpacity(0.3),
+                                color: AppColors.textSecondary.withValues(alpha: 0.3),
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.5,
@@ -210,20 +210,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Divider
                           Row(
                             children: [
-                              Expanded(child: Divider(color: Colors.white.withOpacity(0.05))),
+                              Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.05))),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                                 child: Text(
                                   'OR CONTINUE WITH',
                                   style: TextStyle(
-                                    color: AppColors.textSecondary.withOpacity(0.6),
+                                    color: AppColors.textSecondary.withValues(alpha: 0.6),
                                     fontSize: 8,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 2.0,
                                   ),
                                 ),
                               ),
-                              Expanded(child: Divider(color: Colors.white.withOpacity(0.05))),
+                              Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.05))),
                             ],
                           ),
                           const SizedBox(height: 24),
@@ -235,7 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: _handleLogin,
                               style: OutlinedButton.styleFrom(
                                 backgroundColor: AppColors.surface,
-                                side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                                side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
@@ -300,3 +300,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

@@ -8,12 +8,12 @@ class SignUpScreen extends StatefulWidget {
   final VoidCallback onLoginRedirect;
 
   const SignUpScreen({
-    Key? key,
+    super.key,
     required this.role,
     required this.onBack,
     required this.onSignUpSuccess,
     required this.onLoginRedirect,
-  }) : super(key: key);
+  });
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -70,7 +70,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     padding: const EdgeInsets.all(12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                   ),
                 ),
@@ -126,7 +126,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               prefixIcon: const Icon(Icons.mail_outline, color: AppColors.textSecondary),
                               hintText: 'EMAIL ADDRESS',
                               hintStyle: TextStyle(
-                                color: AppColors.textSecondary.withOpacity(0.3),
+                                color: AppColors.textSecondary.withValues(alpha: 0.3),
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.5,
@@ -157,7 +157,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               prefixIcon: const Icon(Icons.shield_outlined, color: AppColors.textSecondary),
                               hintText: 'PASSWORD',
                               hintStyle: TextStyle(
-                                color: AppColors.textSecondary.withOpacity(0.3),
+                                color: AppColors.textSecondary.withValues(alpha: 0.3),
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.5,
@@ -216,20 +216,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           // Divider
                           Row(
                             children: [
-                              Expanded(child: Divider(color: Colors.white.withOpacity(0.05))),
+                              Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.05))),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                                 child: Text(
                                   'FAST TRACK REGISTRATION',
                                   style: TextStyle(
-                                    color: AppColors.textSecondary.withOpacity(0.6),
+                                    color: AppColors.textSecondary.withValues(alpha: 0.6),
                                     fontSize: 8,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 2.0,
                                   ),
                                 ),
                               ),
-                              Expanded(child: Divider(color: Colors.white.withOpacity(0.05))),
+                              Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.05))),
                             ],
                           ),
                           const SizedBox(height: 24),
@@ -241,7 +241,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               onPressed: _handleSignUp,
                               style: OutlinedButton.styleFrom(
                                 backgroundColor: AppColors.surface,
-                                side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                                side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
@@ -322,3 +322,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 }
+

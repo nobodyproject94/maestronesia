@@ -8,11 +8,11 @@ class ExpertDashboardScreen extends StatefulWidget {
   final VoidCallback onSignOut;
 
   const ExpertDashboardScreen({
-    Key? key,
+    super.key,
     required this.onStartLiveSession,
     required this.onTabChanged,
     required this.onSignOut,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpertDashboardScreen> createState() => _ExpertDashboardScreenState();
@@ -76,10 +76,10 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                             _isOnline = val;
                           });
                         },
-                        activeColor: Colors.black,
-                        activeTrackColor: Colors.black.withOpacity(0.2),
+                        activeThumbColor: Colors.black,
+                        activeTrackColor: Colors.black.withValues(alpha: 0.2),
                         inactiveThumbColor: Colors.white,
-                        inactiveTrackColor: Colors.black.withOpacity(0.1),
+                        inactiveTrackColor: Colors.black.withValues(alpha: 0.1),
                       ),
                     ],
                   ),
@@ -87,7 +87,7 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                   Text(
                     _isOnline ? 'Ready to accept session requests' : 'Go online to receive live requests',
                     style: TextStyle(
-                      color: Colors.black.withOpacity(0.7),
+                      color: Colors.black.withValues(alpha: 0.7),
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -119,7 +119,7 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(32),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,7 +177,7 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                         ElevatedButton(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.05),
+                            backgroundColor: Colors.white.withValues(alpha: 0.05),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
@@ -258,10 +258,10 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: AppColors.surface.withOpacity(0.4),
+                            color: AppColors.surface.withValues(alpha: 0.4),
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(
-                              color: isLive ? AppColors.gold.withOpacity(0.3) : Colors.white.withOpacity(0.05),
+                              color: isLive ? AppColors.gold.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.05),
                             ),
                           ),
                           child: Row(
@@ -270,7 +270,7 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                                 width: 44,
                                 height: 44,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.05),
+                                  color: Colors.white.withValues(alpha: 0.05),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: const Icon(Icons.person, color: AppColors.textSecondary),
@@ -342,9 +342,9 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24),
       decoration: BoxDecoration(
-        color: AppColors.surface.withOpacity(0.5),
+        color: AppColors.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
@@ -372,3 +372,4 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
     );
   }
 }
+

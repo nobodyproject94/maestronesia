@@ -5,7 +5,7 @@ import '../theme.dart';
 class SplashScreen extends StatefulWidget {
   final VoidCallback onFinish;
 
-  const SplashScreen({Key? key, required this.onFinish}) : super(key: key);
+  const SplashScreen({super.key, required this.onFinish});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -75,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.gold.withOpacity(0.04),
+                color: AppColors.gold.withValues(alpha: 0.04),
               ),
               child: const SizedBox.shrink(),
             ),
@@ -99,10 +99,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(32),
-                            border: Border.all(color: AppColors.gold.withOpacity(0.15)),
+                            border: Border.all(color: AppColors.gold.withValues(alpha: 0.15)),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.gold.withOpacity(0.05),
+                                color: AppColors.gold.withValues(alpha: 0.05),
                                 blurRadius: 40,
                                 spreadRadius: 5,
                               )
@@ -129,7 +129,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         Text(
                           'EMPOWERING EXPERTISE',
                           style: TextStyle(
-                            color: AppColors.textSecondary.withOpacity(0.6),
+                            color: AppColors.textSecondary.withValues(alpha: 0.6),
                             fontSize: 9,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 5.0,
@@ -149,7 +149,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               width: 200,
               height: 3,
               decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.1),
+                color: AppColors.gold.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ClipRRect(
@@ -167,3 +167,4 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
   }
 }
+

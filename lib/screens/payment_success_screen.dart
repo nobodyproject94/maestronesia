@@ -10,13 +10,13 @@ class PaymentSuccessScreen extends StatelessWidget {
   final VoidCallback onViewSessions;
 
   const PaymentSuccessScreen({
-    Key? key,
+    super.key,
     required this.expert,
     required this.selectedDay,
     required this.selectedTime,
     required this.onReturn,
     required this.onViewSessions,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.gold.withOpacity(0.2),
+                      color: AppColors.gold.withValues(alpha: 0.2),
                       blurRadius: 40,
                       spreadRadius: 5,
                     )
@@ -85,7 +85,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 ),
                 child: Column(
                   children: [
@@ -213,3 +213,4 @@ class PaymentSuccessScreen extends StatelessWidget {
     );
   }
 }
+

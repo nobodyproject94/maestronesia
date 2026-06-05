@@ -22,7 +22,7 @@ void main() {
 }
 
 class MaestronesiaApp extends StatelessWidget {
-  const MaestronesiaApp({Key? key}) : super(key: key);
+  const MaestronesiaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class MaestronesiaApp extends StatelessWidget {
 }
 
 class MainAppController extends StatefulWidget {
-  const MainAppController({Key? key}) : super(key: key);
+  const MainAppController({super.key});
 
   @override
   State<MainAppController> createState() => _MainAppControllerState();

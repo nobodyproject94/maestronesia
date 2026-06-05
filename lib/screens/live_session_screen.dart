@@ -7,10 +7,10 @@ class LiveSessionScreen extends StatefulWidget {
   final VoidCallback onHangUp;
 
   const LiveSessionScreen({
-    Key? key,
+    super.key,
     required this.expert,
     required this.onHangUp,
-  }) : super(key: key);
+  });
 
   @override
   State<LiveSessionScreen> createState() => _LiveSessionScreenState();
@@ -88,9 +88,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Row(
                 children: [
@@ -140,7 +140,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                 border: Border.all(color: AppColors.gold, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     blurRadius: 20,
                   )
                 ],
@@ -158,7 +158,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -204,12 +204,12 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                 constraints: const BoxConstraints(maxWidth: 320),
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.surface.withOpacity(0.9),
+                  color: AppColors.surface.withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: Colors.white10),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withValues(alpha: 0.2),
                       blurRadius: 30,
                     )
                   ],
@@ -255,7 +255,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),
                 ),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -284,7 +284,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                   // Hangup button
                   _buildToolbarButton(
                     Icons.logout,
-                    Colors.red.withOpacity(0.1),
+                    Colors.red.withValues(alpha: 0.1),
                     Colors.red,
                     onTap: widget.onHangUp,
                   ),
@@ -312,7 +312,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Icon(
           icon,
@@ -332,7 +332,7 @@ class ARPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.gold.withOpacity(0.2)
+      ..color = AppColors.gold.withValues(alpha: 0.2)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -358,3 +358,4 @@ class ARPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant ARPainter oldDelegate) => true;
 }
+

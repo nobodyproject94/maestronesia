@@ -7,10 +7,10 @@ class HistoryScreen extends StatefulWidget {
   final VoidCallback onSignOut;
 
   const HistoryScreen({
-    Key? key,
+    super.key,
     required this.onTabChanged,
     required this.onSignOut,
-  }) : super(key: key);
+  });
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -78,7 +78,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     padding: const EdgeInsets.all(12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                   ),
                 ),
@@ -109,7 +109,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         color: active ? AppColors.gold : AppColors.surface,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: active ? AppColors.gold : Colors.white.withOpacity(0.05),
+                          color: active ? AppColors.gold : Colors.white.withValues(alpha: 0.05),
                         ),
                       ),
                       child: Center(
@@ -144,7 +144,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(28),
-                    border: Border.all(color: Colors.white.withOpacity(0.05)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                   ),
                   child: Column(
                     children: [
@@ -155,7 +155,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             width: 48,
                             height: 48,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.05),
+                              color: Colors.white.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: const Icon(Icons.book_outlined, color: AppColors.gold),
@@ -188,8 +188,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
                               color: isCompleted
-                                  ? AppColors.gold.withOpacity(0.1)
-                                  : Colors.redAccent.withOpacity(0.1),
+                                  ? AppColors.gold.withValues(alpha: 0.1)
+                                  : Colors.redAccent.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -271,3 +271,4 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 }
+

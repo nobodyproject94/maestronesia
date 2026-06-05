@@ -11,13 +11,13 @@ class PaymentScreen extends StatelessWidget {
   final VoidCallback onSignOut;
 
   const PaymentScreen({
-    Key? key,
+    super.key,
     required this.expert,
     required this.onBack,
     required this.onConfirm,
     required this.onTabChanged,
     required this.onSignOut,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class PaymentScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                   ),
                 ),
@@ -64,10 +64,10 @@ class PaymentScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 20,
                     spreadRadius: 2,
                   )
@@ -162,7 +162,7 @@ class PaymentScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.gold.withOpacity(0.05),
+                      color: AppColors.gold.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: AppColors.gold, width: 2),
                     ),
@@ -226,9 +226,9 @@ class PaymentScreen extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.surface.withOpacity(0.5),
+                        color: AppColors.surface.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: Colors.white.withOpacity(0.05)),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                       ),
                       child: Row(
                         children: [
@@ -276,9 +276,9 @@ class PaymentScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.05),
+                color: AppColors.gold.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.gold.withOpacity(0.15)),
+                border: Border.all(color: AppColors.gold.withValues(alpha: 0.15)),
               ),
               child: Row(
                 children: const [
@@ -325,3 +325,4 @@ class PaymentScreen extends StatelessWidget {
     );
   }
 }
+

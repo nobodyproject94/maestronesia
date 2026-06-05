@@ -6,10 +6,10 @@ class ExpertRegistrationScreen extends StatefulWidget {
   final VoidCallback onRegistrationSuccess;
 
   const ExpertRegistrationScreen({
-    Key? key,
+    super.key,
     required this.onBack,
     required this.onRegistrationSuccess,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpertRegistrationScreen> createState() => _ExpertRegistrationScreenState();
@@ -126,7 +126,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                             });
                           },
                           style: TextButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.05),
+                            backgroundColor: Colors.white.withValues(alpha: 0.05),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -212,7 +212,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
       width: 32,
       height: 4,
       decoration: BoxDecoration(
-        color: active ? AppColors.gold : Colors.white.withOpacity(0.1),
+        color: active ? AppColors.gold : Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(2),
       ),
     );
@@ -279,7 +279,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
           style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
           decoration: InputDecoration(
             hintText: _category == 'academic' ? 'e.g. Informatics, Thermodynamics' : 'e.g. Graphic Design, Mechanics',
-            hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.3)),
+            hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.3)),
             filled: true,
             fillColor: AppColors.surface,
             border: OutlineInputBorder(
@@ -307,7 +307,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
           style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
           decoration: InputDecoration(
             hintText: 'e.g. 5',
-            hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.3)),
+            hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.3)),
             filled: true,
             fillColor: AppColors.surface,
             border: OutlineInputBorder(
@@ -335,7 +335,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
           style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
           decoration: InputDecoration(
             hintText: 'A brief description for your profile...',
-            hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.3)),
+            hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.3)),
             filled: true,
             fillColor: AppColors.surface,
             border: OutlineInputBorder(
@@ -363,7 +363,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
           color: active ? AppColors.secondary : AppColors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: active ? AppColors.gold : Colors.white.withOpacity(0.05),
+            color: active ? AppColors.gold : Colors.white.withValues(alpha: 0.05),
             width: 2,
           ),
         ),
@@ -438,9 +438,9 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.gold.withOpacity(0.05),
+            color: AppColors.gold.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.gold.withOpacity(0.15)),
+            border: Border.all(color: AppColors.gold.withValues(alpha: 0.15)),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -478,7 +478,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: uploaded ? AppColors.gold.withOpacity(0.3) : Colors.white.withOpacity(0.05),
+            color: uploaded ? AppColors.gold.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.05),
             width: 1,
           ),
         ),
@@ -487,7 +487,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.05),
+                color: AppColors.gold.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -532,3 +532,4 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
     );
   }
 }
+

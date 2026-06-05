@@ -17,11 +17,9 @@ ThemeData buildAppTheme() {
     scaffoldBackgroundColor: AppColors.background,
     primaryColor: AppColors.gold,
     colorScheme: const ColorScheme.dark(
-      background: AppColors.background,
       surface: AppColors.surface,
       primary: AppColors.gold,
       secondary: AppColors.secondary,
-      onBackground: AppColors.textPrimary,
       onSurface: AppColors.textPrimary,
     ),
     textTheme: const TextTheme(
