@@ -66,110 +66,112 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Blurred background decoration
-          Positioned(
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.gold.withOpacity(0.04),
+    return MaestronesiaBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Blurred background decoration
+            Positioned(
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.gold.withOpacity(0.04),
+                ),
+                child: const SizedBox.shrink(),
               ),
-              child: const SizedBox.shrink(),
             ),
-          ),
-          Center(
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                return Opacity(
-                  opacity: _fadeAnimation.value,
-                  child: Transform.scale(
-                    scale: _scaleAnimation.value,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Logo Container
-                        Container(
-                          width: 180,
-                          height: 180,
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(32),
-                            border: Border.all(
-                              color: AppColors.gold.withOpacity(0.15),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.gold.withOpacity(0.05),
-                                blurRadius: 40,
-                                spreadRadius: 5,
+            Center(
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: _fadeAnimation.value,
+                    child: Transform.scale(
+                      scale: _scaleAnimation.value,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Logo Container
+                          Container(
+                            width: 180,
+                            height: 180,
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(32),
+                              border: Border.all(
+                                color: AppColors.gold.withOpacity(0.15),
                               ),
-                            ],
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.gold.withOpacity(0.05),
+                                  blurRadius: 40,
+                                  spreadRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.menu_book,
+                              size: 80,
+                              color: AppColors.gold,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.menu_book,
-                            size: 80,
-                            color: AppColors.gold,
+                          const SizedBox(height: 32),
+                          // Title & Subtitle
+                          const Text(
+                            'MAESTRONESIA',
+                            style: TextStyle(
+                              color: AppColors.gold,
+                              fontSize: 36,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.5,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 32),
-                        // Title & Subtitle
-                        Text(
-                          'MAESTRONESIA',
-                          style: TextStyle(
-                            color: AppColors.gold,
-                            fontSize: 36,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -0.5,
+                          const SizedBox(height: 8),
+                          Text(
+                            'EMPOWERING EXPERTISE',
+                            style: TextStyle(
+                              color: AppColors.textSecondary.withOpacity(0.6),
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 5.0,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'EMPOWERING EXPERTISE',
-                          style: TextStyle(
-                            color: AppColors.textSecondary.withOpacity(0.6),
-                            fontSize: 9,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 5.0,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ),
-          // Progress Indicator at Bottom
-          Positioned(
-            bottom: 80,
-            child: Container(
-              width: 200,
-              height: 3,
-              decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
+                  );
+                },
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: LinearProgressIndicator(
-                  value: _progressValue,
-                  backgroundColor: Colors.transparent,
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                    AppColors.gold,
+            ),
+            // Progress Indicator at Bottom
+            Positioned(
+              bottom: 80,
+              child: Container(
+                width: 200,
+                height: 3,
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: _progressValue,
+                    backgroundColor: Colors.transparent,
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      AppColors.gold,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

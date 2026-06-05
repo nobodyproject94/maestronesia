@@ -56,7 +56,8 @@ class MainAppController extends StatefulWidget {
 }
 
 class _MainAppControllerState extends State<MainAppController> {
-  String _screen = 'splash'; // splash, onboarding, login, signup, expert_registration, dashboard, ...
+  String _screen =
+      'splash'; // splash, onboarding, login, signup, expert_registration, dashboard, ...
   String _role = 'client'; // client, expert
   int _selectedExpertId = 1;
   int _selectedDay = 13;
@@ -74,7 +75,7 @@ class _MainAppControllerState extends State<MainAppController> {
     final prefs = await SharedPreferences.getInstance();
 
     // Load theme setting
-    final isDark = prefs.getBool('theme_is_dark') ?? true;
+    final isDark = prefs.getBool('theme_is_dark') ?? false;
     isDarkModeNotifier.value = isDark;
 
     // Persist theme settings dynamically on toggling

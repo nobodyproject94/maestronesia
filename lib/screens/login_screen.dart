@@ -55,18 +55,30 @@ class _LoginScreenState extends State<LoginScreen> {
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
+                backgroundColor: Colors.redAccent,
                 content: Text(
                   'This account is registered as a ${user['role']}.',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
-                backgroundColor: AppColors.error,
               ),
             );
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Invalid email or password.'),
-              backgroundColor: AppColors.error,
+              backgroundColor: Colors.redAccent,
+              content: Text(
+                'Invalid email or password.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
             ),
           );
         }
@@ -83,10 +95,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: MaestronesiaBackground(
-        child: SafeArea(
+    return MaestronesiaBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
