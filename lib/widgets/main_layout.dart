@@ -8,12 +8,12 @@ class MainLayout extends StatelessWidget {
   final VoidCallback onSignOut;
 
   const MainLayout({
-    Key? key,
+    super.key,
     required this.child,
     required this.activeTab,
     required this.onTabChanged,
     required this.onSignOut,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

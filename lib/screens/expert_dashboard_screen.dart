@@ -8,11 +8,11 @@ class ExpertDashboardScreen extends StatefulWidget {
   final VoidCallback onSignOut;
 
   const ExpertDashboardScreen({
-    Key? key,
+    super.key,
     required this.onStartLiveSession,
     required this.onTabChanged,
     required this.onSignOut,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpertDashboardScreen> createState() => _ExpertDashboardScreenState();
@@ -99,7 +99,7 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                                 _isOnline = val;
                               });
                             },
-                            activeColor: isDark ? Colors.black : AppColors.gold,
+                            activeThumbColor: isDark ? Colors.black : AppColors.gold,
                             activeTrackColor: isDark
                                 ? Colors.black.withOpacity(0.2)
                                 : Colors.white24,

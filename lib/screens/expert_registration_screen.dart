@@ -6,10 +6,10 @@ class ExpertRegistrationScreen extends StatefulWidget {
   final VoidCallback onRegistrationSuccess;
 
   const ExpertRegistrationScreen({
-    Key? key,
+    super.key,
     required this.onBack,
     required this.onRegistrationSuccess,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpertRegistrationScreen> createState() =>
@@ -135,9 +135,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                               ),
                             ),
                             child:
-                                TextStyle(color: AppColors.textSecondary) !=
-                                    null
-                                ? Text(
+                                Text(
                                     'BACK',
                                     style: TextStyle(
                                       color: AppColors.textSecondary,
@@ -145,8 +143,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 1.5,
                                     ),
-                                  )
-                                : const Text('BACK'),
+                                  ),
                           ),
                         ),
                       ),

@@ -41,12 +41,17 @@ class _BookingScreenState extends State<BookingScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: AppColors.gold,
-              onPrimary: Colors.black,
-              surface: AppColors.gold,
-              onSurface: Colors.white,
+              primary: Color(0xFFC5A880),   // Warna emas untuk header & tanggal terpilih
+              onPrimary: Colors.black,      // Warna teks di dalam bulatan emas
+              surface: Color(0xFF131D24),   // Warna background utama kotak kalender biar adem
+              onSurface: Colors.white,      // Warna angka tanggal biasa
             ),
-            dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF131D24)),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFFC5A880), // BIAR TOMBOL OK & CANCEL KELIATAN JELAS!
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
           ),
           child: child!,
         );
@@ -67,12 +72,17 @@ class _BookingScreenState extends State<BookingScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: AppColors.gold,
-              onPrimary: Colors.black,
-              surface: AppColors.gold,
-              onSurface: Colors.white,
+              primary: Color(0xFFC5A880),     // Warna emas untuk jarum jam & aksen aktif
+              onPrimary: Colors.black,        // Warna teks di dalam lingkaran aktif
+              surface: Color(0xFF131D24),     // Warna background kotak dialog jam biar gelap adem
+              onSurface: Colors.white,        // Warna angka jam & teks biasa
             ),
-            dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF131D24)),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFFC5A880), // WARNA TOMBOL OK & CANCEL BIAR KELIATAN JELAS!
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
           ),
           child: child!,
         );

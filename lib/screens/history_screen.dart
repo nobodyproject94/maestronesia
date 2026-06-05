@@ -144,8 +144,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               onPrimary: Colors.black,
               surface: Color(0xFF131D24),
               onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: const Color(0xFF131D24),
+            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF131D24)),
           ),
           child: child!,
         );
@@ -166,8 +165,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               onPrimary: Colors.black,
               surface: Color(0xFF131D24),
               onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: const Color(0xFF131D24),
+            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF131D24)),
           ),
           child: child!,
         );
