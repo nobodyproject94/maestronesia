@@ -16,7 +16,8 @@ class LiveSessionScreen extends StatefulWidget {
   State<LiveSessionScreen> createState() => _LiveSessionScreenState();
 }
 
-class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTickerProviderStateMixin {
+class _LiveSessionScreenState extends State<LiveSessionScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _arController;
 
   @override
@@ -48,7 +49,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
               opacity: 0.3,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(
                     Icons.videocam_outlined,
                     color: AppColors.textSecondary,
@@ -88,22 +89,22 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.4),
+                color: Colors.black.withOpacity(0.4),
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: Row(
                 children: [
                   Container(
                     width: 8,
                     height: 8,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Colors.red,
                       shape: BoxShape.circle,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     '45:12',
                     style: TextStyle(
                       color: Colors.white,
@@ -113,8 +114,8 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                   ),
                   const SizedBox(width: 8),
                   Container(width: 1, height: 12, color: Colors.white10),
-                  const SizedBox(width: 8),
-                  const Text(
+                  SizedBox(width: 8),
+                  Text(
                     'CALL IN PROGRESS',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -140,9 +141,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                 border: Border.all(color: AppColors.gold, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
+                    color: Colors.black.withOpacity(0.3),
                     blurRadius: 20,
-                  )
+                  ),
                 ],
                 image: DecorationImage(
                   image: NetworkImage(widget.expert.avatar),
@@ -156,9 +157,12 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                     left: 12,
                     right: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.6),
+                        color: Colors.black.withOpacity(0.6),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -167,7 +171,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                           Container(
                             width: 6,
                             height: 6,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: AppColors.gold,
                               shape: BoxShape.circle,
                             ),
@@ -176,7 +180,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                           Expanded(
                             child: Text(
                               widget.expert.name.split(' ')[0],
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
@@ -204,19 +208,19 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                 constraints: const BoxConstraints(maxWidth: 320),
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.surface.withValues(alpha: 0.9),
+                  color: AppColors.surface.withOpacity(0.9),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: Colors.white10),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
+                      color: Colors.black.withOpacity(0.2),
                       blurRadius: 30,
-                    )
+                    ),
                   ],
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Text(
                       'Instruction',
                       style: TextStyle(
@@ -248,20 +252,33 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.only(top: 24, bottom: 48, left: 24, right: 24),
+              padding: const EdgeInsets.only(
+                top: 24,
+                bottom: 48,
+                left: 24,
+                right: 24,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),
                 ),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildToolbarButton(Icons.mic, Colors.white10, AppColors.textSecondary),
-                  _buildToolbarButton(Icons.flashlight_on, Colors.white10, Colors.amber),
+                  _buildToolbarButton(
+                    Icons.mic,
+                    Colors.white10,
+                    AppColors.textSecondary,
+                  ),
+                  _buildToolbarButton(
+                    Icons.flashlight_on,
+                    Colors.white10,
+                    Colors.amber,
+                  ),
                   // Centered Highlight Mouse Pointer Tool
                   InkWell(
                     onTap: () {},
@@ -273,18 +290,18 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
                         color: AppColors.gold,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Icon(
-                        Icons.mouse,
-                        color: Colors.black,
-                        size: 28,
-                      ),
+                      child: Icon(Icons.mouse, color: Colors.black, size: 28),
                     ),
                   ),
-                  _buildToolbarButton(Icons.text_fields, Colors.white10, AppColors.textSecondary),
+                  _buildToolbarButton(
+                    Icons.text_fields,
+                    Colors.white10,
+                    AppColors.textSecondary,
+                  ),
                   // Hangup button
                   _buildToolbarButton(
                     Icons.logout,
-                    Colors.red.withValues(alpha: 0.1),
+                    Colors.red.withOpacity(0.1),
                     Colors.red,
                     onTap: widget.onHangUp,
                   ),
@@ -312,13 +329,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> with SingleTicker
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
-        child: Icon(
-          icon,
-          color: iconColor,
-          size: 20,
-        ),
+        child: Icon(icon, color: iconColor, size: 20),
       ),
     );
   }
@@ -332,7 +345,7 @@ class ARPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.gold.withValues(alpha: 0.2)
+      ..color = AppColors.gold.withOpacity(0.2)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -358,4 +371,3 @@ class ARPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant ARPainter oldDelegate) => true;
 }
-

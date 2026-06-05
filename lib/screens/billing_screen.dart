@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../widgets/main_layout.dart';
+import '../widgets/custom_button.dart';
 
 class BillingScreen extends StatelessWidget {
   final ValueChanged<String> onTabChanged;
@@ -19,11 +20,11 @@ class BillingScreen extends StatelessWidget {
       onTabChanged: onTabChanged,
       onSignOut: onSignOut,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Billing & Wallet',
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -35,22 +36,22 @@ class BillingScreen extends StatelessWidget {
 
             // Wallet card
             Container(
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.all(32),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.15),
+                    color: Colors.black.withOpacity(0.15),
                     blurRadius: 24,
-                  )
+                  ),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'AVAILABLE BALANCE',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -63,7 +64,7 @@ class BillingScreen extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
-                    children: const [
+                    children: [
                       Text(
                         'Rp',
                         style: TextStyle(
@@ -85,8 +86,12 @@ class BillingScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Row(
-                    children: const [
-                      Icon(Icons.shield_outlined, color: AppColors.gold, size: 16),
+                    children: [
+                      Icon(
+                        Icons.shield_outlined,
+                        color: AppColors.gold,
+                        size: 16,
+                      ),
                       SizedBox(width: 8),
                       Text(
                         'Securely Encrypted',
@@ -105,59 +110,50 @@ class BillingScreen extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: SizedBox(
+                        child: MaestronesiaButton(
+                          onPressed: () {},
                           height: 52,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.gold,
-                              foregroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.credit_card, size: 18),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Top Up',
-                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                          borderRadius: 16,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.credit_card, size: 18),
+                              SizedBox(width: 8),
+                              Text(
+                                'Top Up',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: SizedBox(
+                        child: MaestronesiaButton(
+                          onPressed: () {},
                           height: 52,
-                          child: OutlinedButton(
-                            onPressed: () {},
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: AppColors.gold, width: 2),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                          borderRadius: 16,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.logout,
+                                size: 18,
+                                color: AppColors.gold,
                               ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.logout, size: 18, color: AppColors.gold),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Withdraw',
-                                  style: TextStyle(
-                                    color: AppColors.gold,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Withdraw',
+                                style: TextStyle(
+                                  color: AppColors.gold,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -172,7 +168,7 @@ class BillingScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Payment Methods',
                   style: TextStyle(
                     color: Colors.white,
@@ -182,9 +178,12 @@ class BillingScreen extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {},
-                  child: const Text(
+                  child: Text(
                     'Edit',
-                    style: TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: AppColors.gold,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -197,7 +196,7 @@ class BillingScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: Row(
                 children: [
@@ -211,7 +210,7 @@ class BillingScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
+                    child: Text(
                       'VISA',
                       style: TextStyle(
                         color: Colors.white,
@@ -220,11 +219,11 @@ class BillingScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Mastercard •••• 4242',
                           style: TextStyle(
@@ -245,12 +244,15 @@ class BillingScreen extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: AppColors.gold.withValues(alpha: 0.1),
+                      color: AppColors.gold.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Text(
+                    child: Text(
                       'PRIMARY',
                       style: TextStyle(
                         color: AppColors.gold,
@@ -263,7 +265,7 @@ class BillingScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Add new payment method dashed button
             Container(
@@ -282,7 +284,7 @@ class BillingScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(28),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(Icons.credit_card, color: AppColors.textSecondary),
                     SizedBox(width: 10),
                     Text(
@@ -303,4 +305,3 @@ class BillingScreen extends StatelessWidget {
     );
   }
 }
-

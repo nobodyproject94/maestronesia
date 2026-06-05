@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
+import '../databases/database_helper.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/interesting_logos.dart';
 
 class LoginScreen extends StatefulWidget {
   final String role;
   final VoidCallback onBack;
-  final VoidCallback onLoginSuccess;
+  final Function(String email, String name) onLoginSuccess;
   final VoidCallback onSignUpRedirect;
 
   const LoginScreen({
@@ -25,20 +29,48 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  void _handleLogin() {
+  void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
-      // Simulate API call
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-          widget.onLoginSuccess();
+
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      final user = await DatabaseHelper.instance.loginUser(email, password);
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (user != null) {
+          if (user['role'] == widget.role) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('session_email', user['email']);
+            await prefs.setString('session_name', user['name'] ?? 'User');
+            await prefs.setString('session_role', widget.role);
+            widget.onLoginSuccess(user['email'], user['name'] ?? 'User');
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'This account is registered as a ${user['role']}.',
+                ),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid email or password.'),
+              backgroundColor: AppColors.error,
+            ),
+          );
         }
-      });
+      }
     }
   }
 
@@ -52,146 +84,165 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Back Button
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: IconButton(
-                  onPressed: widget.onBack,
-                  icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textSecondary),
-                  style: IconButton.styleFrom(
-                    backgroundColor: AppColors.surface,
-                    padding: const EdgeInsets.all(12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
+      backgroundColor: Colors.transparent,
+      body: MaestronesiaBackground(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Back Button
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: IconButton(
+                    onPressed: widget.onBack,
+                    icon: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: AppColors.textSecondary,
+                    ),
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.surface,
+                      padding: const EdgeInsets.all(12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            'Welcome Back',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Log in as a ${widget.role} to continue.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 48),
-
-                          // Email Input
-                          TextFormField(
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
-                              }
-                              return null;
-                            },
-                            style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.bold),
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.mail_outline, color: AppColors.textSecondary),
-                              hintText: 'EMAIL ADDRESS',
-                              hintStyle: TextStyle(
-                                color: AppColors.textSecondary.withValues(alpha: 0.3),
-                                fontSize: 11,
+                Expanded(
+                  child: Center(
+                    child: SingleChildScrollView(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'Welcome Back',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 32,
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: 1.5,
+                                letterSpacing: -0.5,
                               ),
-                              filled: true,
-                              fillColor: AppColors.surface,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide.none,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
                             ),
-                          ),
-                          const SizedBox(height: 16),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Log in as a ${widget.role} to continue.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 48),
 
-                          // Password Input
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              return null;
-                            },
-                            style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.bold),
-                            decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.shield_outlined, color: AppColors.textSecondary),
-                              hintText: 'PASSWORD',
-                              hintStyle: TextStyle(
-                                color: AppColors.textSecondary.withValues(alpha: 0.3),
-                                fontSize: 11,
+                            // Email Input
+                            TextFormField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your email';
+                                }
+                                return null;
+                              },
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                letterSpacing: 1.5,
                               ),
-                              filled: true,
-                              fillColor: AppColors.surface,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide.none,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-
-                          // Sign In Button
-                          SizedBox(
-                            height: 60,
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _handleLogin,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.gold,
-                                foregroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(
+                                  Icons.mail_outline,
+                                  color: AppColors.textSecondary,
                                 ),
-                                elevation: 0,
+                                hintText: 'EMAIL ADDRESS',
+                                hintStyle: TextStyle(
+                                  color: AppColors.textSecondary.withOpacity(
+                                    0.3,
+                                  ),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.5,
+                                ),
+                                filled: true,
+                                fillColor: AppColors.surface,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                  horizontal: 24,
+                                ),
                               ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Password Input
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your password';
+                                }
+                                return null;
+                              },
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(
+                                  Icons.shield_outlined,
+                                  color: AppColors.textSecondary,
+                                ),
+                                hintText: 'PASSWORD',
+                                hintStyle: TextStyle(
+                                  color: AppColors.textSecondary.withOpacity(
+                                    0.3,
+                                  ),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.5,
+                                ),
+                                filled: true,
+                                fillColor: AppColors.surface,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                  horizontal: 24,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Sign In Button
+                            MaestronesiaButton(
+                              onPressed: _isLoading ? null : _handleLogin,
                               child: _isLoading
                                   ? const SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(
-                                        color: Colors.black,
+                                        color: AppColors.gold,
                                         strokeWidth: 2,
                                       ),
                                     )
                                   : Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: const [
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
                                         Text(
                                           'Sign In',
                                           style: TextStyle(
@@ -204,100 +255,95 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ],
                                     ),
                             ),
-                          ),
-                          const SizedBox(height: 32),
+                            const SizedBox(height: 32),
 
-                          // Divider
-                          Row(
-                            children: [
-                              Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.05))),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Text(
-                                  'OR CONTINUE WITH',
-                                  style: TextStyle(
-                                    color: AppColors.textSecondary.withValues(alpha: 0.6),
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 2.0,
+                            // Divider
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(
+                                    color: Colors.white.withOpacity(0.05),
                                   ),
                                 ),
-                              ),
-                              Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.05))),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-
-                          // Google Sign In Mock
-                          SizedBox(
-                            height: 60,
-                            child: OutlinedButton(
-                              onPressed: _handleLogin,
-                              style: OutlinedButton.styleFrom(
-                                backgroundColor: AppColors.surface,
-                                side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.network(
-                                    'https://www.google.com/favicon.ico',
-                                    width: 16,
-                                    height: 16,
-                                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.g_mobiledata, color: AppColors.textPrimary),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0,
                                   ),
-                                  const SizedBox(width: 12),
-                                  const Text(
-                                    'SIGN IN WITH GOOGLE',
+                                  child: Text(
+                                    'OR CONTINUE WITH',
                                     style: TextStyle(
-                                      color: AppColors.textPrimary,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1.5,
+                                      color: AppColors.textSecondary
+                                          .withOpacity(0.6),
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 2.0,
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    color: Colors.white.withOpacity(0.05),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 24),
+
+                            // Google & LinkedIn Sign In Mock
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: _handleLogin,
+                                  child: const InterestingGoogleLogo(size: 28),
+                                ),
+                                const SizedBox(width: 24),
+                                GestureDetector(
+                                  onTap: _handleLogin,
+                                  child: const InterestingLinkedInLogo(
+                                    size: 28,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              // Register redirect
-              Padding(
-                padding: const EdgeInsets.only(bottom: 24.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Don't have an account? ",
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-                    ),
-                    GestureDetector(
-                      onTap: widget.onSignUpRedirect,
-                      child: const Text(
-                        'Sign up',
+                // Register redirect
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 24.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Don't have an account? ",
                         style: TextStyle(
-                          color: AppColors.gold,
-                          fontWeight: FontWeight.bold,
+                          color: AppColors.textSecondary,
                           fontSize: 14,
                         ),
                       ),
-                    ),
-                  ],
+                      GestureDetector(
+                        onTap: widget.onSignUpRedirect,
+                        child: Text(
+                          'Sign up',
+                          style: TextStyle(
+                            color: AppColors.gold,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
-

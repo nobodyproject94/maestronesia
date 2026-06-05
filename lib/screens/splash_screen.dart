@@ -11,7 +11,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
@@ -26,13 +27,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       duration: const Duration(milliseconds: 1200),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _controller.forward();
 
@@ -75,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.gold.withValues(alpha: 0.04),
+                color: AppColors.gold.withOpacity(0.04),
               ),
               child: const SizedBox.shrink(),
             ),
@@ -99,13 +102,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(32),
-                            border: Border.all(color: AppColors.gold.withValues(alpha: 0.15)),
+                            border: Border.all(
+                              color: AppColors.gold.withOpacity(0.15),
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.gold.withValues(alpha: 0.05),
+                                color: AppColors.gold.withOpacity(0.05),
                                 blurRadius: 40,
                                 spreadRadius: 5,
-                              )
+                              ),
                             ],
                           ),
                           child: Icon(
@@ -129,7 +134,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         Text(
                           'EMPOWERING EXPERTISE',
                           style: TextStyle(
-                            color: AppColors.textSecondary.withValues(alpha: 0.6),
+                            color: AppColors.textSecondary.withOpacity(0.6),
                             fontSize: 9,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 5.0,
@@ -149,7 +154,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               width: 200,
               height: 3,
               decoration: BoxDecoration(
-                color: AppColors.gold.withValues(alpha: 0.1),
+                color: AppColors.gold.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ClipRRect(
@@ -157,7 +162,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 child: LinearProgressIndicator(
                   value: _progressValue,
                   backgroundColor: Colors.transparent,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.gold),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.gold,
+                  ),
                 ),
               ),
             ),
@@ -167,4 +174,3 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
   }
 }
-

@@ -4,12 +4,16 @@ import '../widgets/main_layout.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String role;
+  final String email;
+  final String name;
   final ValueChanged<String> onTabChanged;
   final VoidCallback onSignOut;
 
   const ProfileScreen({
     super.key,
     required this.role,
+    required this.email,
+    required this.name,
     required this.onTabChanged,
     required this.onSignOut,
   });
@@ -39,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: Column(
                 children: [
@@ -64,11 +68,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         right: 0,
                         child: Container(
                           padding: const EdgeInsets.all(8),
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppColors.gold,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.settings,
                             color: Colors.black,
                             size: 16,
@@ -78,8 +82,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'Fajar Ramadhan',
+                  Text(
+                    widget.name,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 26,
@@ -88,8 +92,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.role == 'expert' ? 'Mechanical Engineering Expert' : 'Mechanical Engineering Client',
-                    style: const TextStyle(
+                    widget.email,
+                    style: TextStyle(
+                      color: AppColors.gold,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.role == 'expert'
+                        ? 'Mechanical Engineering Expert'
+                        : 'Mechanical Engineering Client',
+                    style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 14,
                     ),
@@ -99,12 +114,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: AppColors.gold.withValues(alpha: 0.1),
+                          color: AppColors.gold.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Text(
+                        child: Text(
                           'LEVEL 4',
                           style: TextStyle(
                             color: AppColors.gold,
@@ -116,12 +134,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.05),
+                          color: Colors.white.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Text(
+                        child: Text(
                           'CLIENT TIER',
                           style: TextStyle(
                             color: Colors.white,
@@ -140,12 +161,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: OutlinedButton(
                       onPressed: () {},
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppColors.gold),
+                        side: BorderSide(color: AppColors.gold),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'View Public Profile',
                         style: TextStyle(
                           color: AppColors.gold,
@@ -162,7 +183,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             // Availability Toggle for Expert
             if (widget.role == 'expert') ...[
-              const Text(
+              Text(
                 'EXPERT STATUS',
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -178,7 +199,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: _isOnline ? AppColors.gold.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.05),
+                    color: _isOnline
+                        ? AppColors.gold.withOpacity(0.3)
+                        : Colors.white.withOpacity(0.05),
                   ),
                 ),
                 child: Row(
@@ -187,7 +210,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: 12,
                       height: 12,
                       decoration: BoxDecoration(
-                        color: _isOnline ? AppColors.gold : AppColors.textSecondary,
+                        color: _isOnline
+                            ? AppColors.gold
+                            : AppColors.textSecondary,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -197,8 +222,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _isOnline ? 'Accepting Requests' : 'Currently Offline',
-                            style: const TextStyle(
+                            _isOnline
+                                ? 'Accepting Requests'
+                                : 'Currently Offline',
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -206,8 +233,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            _isOnline ? 'Available for live sessions' : 'Go online to receive requests',
-                            style: const TextStyle(
+                            _isOnline
+                                ? 'Available for live sessions'
+                                : 'Go online to receive requests',
+                            style: TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 12,
                             ),
@@ -231,7 +260,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
 
             // Account section settings
-            const Text(
+            Text(
               'ACCOUNT',
               style: TextStyle(
                 color: AppColors.textSecondary,
@@ -245,7 +274,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: Column(
                 children: [
@@ -254,7 +283,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: 'Settings',
                     subtitle: 'Personal info, login, security',
                   ),
-                  const Divider(color: Colors.white10, height: 1),
+                  Divider(color: Colors.white10, height: 1),
                   _buildAccountItem(
                     icon: Icons.credit_card,
                     title: 'Payments',
@@ -279,7 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(Icons.logout, size: 20),
                     SizedBox(width: 8),
                     Text(
@@ -313,14 +342,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(
-                icon,
-                color: AppColors.gold,
-                size: 20,
-              ),
+              child: Icon(icon, color: AppColors.gold, size: 20),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -329,7 +354,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -338,7 +363,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
                     ),
@@ -346,15 +371,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            const Icon(
-              Icons.chevron_right,
-              color: AppColors.textSecondary,
-              size: 20,
-            ),
+            Icon(Icons.chevron_right, color: AppColors.textSecondary, size: 20),
           ],
         ),
       ),
     );
   }
 }
-

@@ -8,157 +8,208 @@ class MainLayout extends StatelessWidget {
   final VoidCallback onSignOut;
 
   const MainLayout({
-    super.key,
+    Key? key,
     required this.child,
     required this.activeTab,
     required this.onTabChanged,
     required this.onSignOut,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth > 768;
 
-    if (isDesktop) {
-      return _buildDesktopLayout(context);
-    } else {
-      return _buildMobileLayout(context);
-    }
+    // FIX UTAMA: Membungkus seluruh layout agar sensitif terhadap perubahan dark/light mode
+    return ValueListenableBuilder<bool>(
+      valueListenable: isDarkModeNotifier,
+      builder: (context, isDark, _) {
+        if (isDesktop) {
+          return _buildDesktopLayout(context, isDark);
+        } else {
+          return _buildMobileLayout(context, isDark);
+        }
+      },
+    );
   }
 
-  Widget _buildDesktopLayout(BuildContext context) {
+  Widget _buildDesktopLayout(BuildContext context, bool isDark) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Row(
-        children: [
-          // Sidebar Desktop
-          Container(
-            width: 260,
-            color: AppColors.surface,
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header/Logo
-                Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.gold.withValues(alpha: 0.2)),
-                      ),
-                      child: const Icon(
-                        Icons.menu_book,
-                        color: AppColors.gold,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      'Maestronesia',
-                      style: TextStyle(
-                        color: AppColors.gold,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+      backgroundColor: isDark ? AppColors.background : Colors.transparent,
+      body: Container(
+        // Kondisi Light Mode: Memunculkan gradasi Biru Tua ke Biru Muda Elektrik
+        decoration: isDark
+            ? null
+            : const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF0B1528), // Deep Navy Blue atas
+                    Color(0xFF1E3A8A), // Soft Electric Blue bawah
                   ],
                 ),
-                const SizedBox(height: 40),
-
-                // Navigation Tabs
-                Expanded(
-                  child: ListView(
+              ),
+        child: Row(
+          children: [
+            // Sidebar Desktop
+            Container(
+              width: 260,
+              // Kondisi Light mode: Sidebar menjadi transparan total
+              color: isDark ? AppColors.surface : Colors.transparent,
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header/Logo
+                  Row(
                     children: [
-                      _buildSidebarItem(
-                        id: 'dashboard',
-                        label: 'Explore',
-                        icon: Icons.explore_outlined,
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? AppColors.surface
+                              : Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: AppColors.gold.withOpacity(0.2),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.menu_book,
+                          color: AppColors.gold,
+                          size: 20,
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      _buildSidebarItem(
-                        id: 'history',
-                        label: 'History',
-                        icon: Icons.history,
-                      ),
-                      const SizedBox(height: 8),
-                      _buildSidebarItem(
-                        id: 'billing',
-                        label: 'Wallet',
-                        icon: Icons.account_balance_wallet_outlined,
-                      ),
-                      const SizedBox(height: 8),
-                      _buildSidebarItem(
-                        id: 'profile',
-                        label: 'Profile',
-                        icon: Icons.person_outline,
+                      const SizedBox(width: 12),
+                      Text(
+                        'Maestro',
+                        style: TextStyle(
+                          color: AppColors.gold,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 40),
 
-                // Sidebar Footer (Profile Info & Logout)
-                const Divider(color: AppColors.cardBorder, height: 24),
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundImage: const NetworkImage(
-                        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
-                      ),
-                      backgroundColor: AppColors.gold.withValues(alpha: 0.1),
+                  // Navigation Tabs
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        _buildSidebarItem(
+                          'dashboard',
+                          'Explore',
+                          Icons.explore_outlined,
+                          isDark,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildSidebarItem(
+                          'history',
+                          'History',
+                          Icons.history,
+                          isDark,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildSidebarItem(
+                          'billing',
+                          'Wallet',
+                          Icons.account_balance_wallet_outlined,
+                          isDark,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildSidebarItem(
+                          'profile',
+                          'Profile',
+                          Icons.person_outline,
+                          isDark,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Fajar Ramadhan',
-                            style: TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            'Client · Engineering',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
+                  ),
+
+                  // Sidebar Footer (Profile Info & Logout)
+                  Divider(
+                    color: isDark ? AppColors.cardBorder : Colors.white10,
+                    height: 24,
+                  ),
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: const NetworkImage(
+                          'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
+                        ),
+                        backgroundColor: AppColors.gold.withOpacity(0.1),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                IconButton(
-                  onPressed: onSignOut,
-                  icon: const Icon(Icons.logout, color: Colors.redAccent),
-                  tooltip: 'Sign Out',
-                ),
-              ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Fajar Ramadhan',
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              'Client · Engineering',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          isDarkModeNotifier.value = !isDarkModeNotifier.value;
+                        },
+                        icon: Icon(
+                          isDark
+                              ? Icons.light_mode_outlined
+                              : Icons.dark_mode_outlined,
+                          color: AppColors.textSecondary,
+                        ),
+                        tooltip: isDark ? 'Mode Terang' : 'Mode Gelap',
+                      ),
+                      IconButton(
+                        onPressed: onSignOut,
+                        icon: const Icon(Icons.logout, color: Colors.redAccent),
+                        tooltip: 'Sign Out',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          // Main content area
-          Expanded(child: child),
-        ],
+            // Main content area
+            Expanded(child: child),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSidebarItem({
-    required String id,
-    required String label,
-    required IconData icon,
-  }) {
+  Widget _buildSidebarItem(
+    String id,
+    String label,
+    IconData icon,
+    bool isDark,
+  ) {
     final isSelected = activeTab == id;
     return InkWell(
       onTap: () => onTabChanged(id),
@@ -167,36 +218,55 @@ class MainLayout extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.gold : Colors.transparent,
+          // KONDISI SELEKSI: Jika Light Mode, background kapsul diganti transparan total
+          color: isSelected
+              ? (isDark ? AppColors.gold : Colors.transparent)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.black : AppColors.textSecondary,
+              color: isSelected
+                  ? (isDark ? Colors.black : AppColors.gold)
+                  : AppColors.textSecondary,
               size: 22,
             ),
             const SizedBox(width: 16),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.black : AppColors.textSecondary,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: isSelected
+                      ? (isDark ? Colors.black : AppColors.gold)
+                      : AppColors.textSecondary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
+            // KONDISI SELEKSI LIGHT MODE: Menampilkan bulatan circle emas kecil di sebelah kanan menu aktif
+            if (isSelected && !isDark)
+              Container(
+                width: 6,
+                height: 6,
+                decoration: const BoxDecoration(
+                  color: AppColors.gold,
+                  shape: BoxShape.circle,
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildMobileLayout(BuildContext context) {
+  Widget _buildMobileLayout(BuildContext context, bool isDark) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.background : Colors.transparent,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: isDark ? AppColors.background : Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         title: Row(
@@ -205,19 +275,17 @@ class MainLayout extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: isDark
+                    ? AppColors.surface
+                    : Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.gold.withValues(alpha: 0.2)),
+                border: Border.all(color: AppColors.gold.withOpacity(0.2)),
               ),
-              child: const Icon(
-                Icons.menu_book,
-                color: AppColors.gold,
-                size: 16,
-              ),
+              child: Icon(Icons.menu_book, color: AppColors.gold, size: 16),
             ),
             const SizedBox(width: 8),
-            const Text(
-              'Maestronesia',
+            Text(
+              'Maestro',
               style: TextStyle(
                 color: AppColors.gold,
                 fontSize: 18,
@@ -228,32 +296,49 @@ class MainLayout extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none_outlined, color: AppColors.textSecondary),
+            onPressed: () {
+              isDarkModeNotifier.value = !isDarkModeNotifier.value;
+            },
+            icon: Icon(
+              isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(width: 8),
         ],
       ),
-      body: child,
+      body: Container(
+        decoration: isDark
+            ? null
+            : const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF0B1528), Color(0xFF1E3A8A)],
+                ),
+              ),
+        child: child,
+      ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.surface : Colors.white.withOpacity(0.02),
           border: Border(
-            top: BorderSide(color: AppColors.cardBorder, width: 1),
+            top: BorderSide(
+              color: isDark ? AppColors.cardBorder : Colors.white10,
+              width: 1,
+            ),
           ),
         ),
         child: BottomNavigationBar(
           currentIndex: _getTabIndex(activeTab),
-          onTap: (index) {
-            final tabName = _getTabName(index);
-            onTabChanged(tabName);
-          },
-          backgroundColor: AppColors.surface.withValues(alpha: 0.8),
+          onTap: (index) => onTabChanged(_getTabName(index)),
+          backgroundColor: isDark ? AppColors.surface : Colors.transparent,
           selectedItemColor: AppColors.gold,
           unselectedItemColor: AppColors.textSecondary,
           type: BottomNavigationBarType.fixed,
           showSelectedLabels: false,
           showUnselectedLabels: false,
-          elevation: 10,
+          elevation: 0,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.explore_outlined),
@@ -282,33 +367,16 @@ class MainLayout extends StatelessWidget {
   }
 
   int _getTabIndex(String tab) {
-    switch (tab) {
-      case 'dashboard':
-        return 0;
-      case 'history':
-        return 1;
-      case 'billing':
-        return 2;
-      case 'profile':
-        return 3;
-      default:
-        return 0;
-    }
+    if (tab == 'history') return 1;
+    if (tab == 'billing') return 2;
+    if (tab == 'profile') return 3;
+    return 0;
   }
 
   String _getTabName(int index) {
-    switch (index) {
-      case 0:
-        return 'dashboard';
-      case 1:
-        return 'history';
-      case 2:
-        return 'billing';
-      case 3:
-        return 'profile';
-      default:
-        return 'dashboard';
-    }
+    if (index == 1) return 'history';
+    if (index == 2) return 'billing';
+    if (index == 3) return 'profile';
+    return 'dashboard';
   }
 }
-
