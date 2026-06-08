@@ -26,6 +26,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'dashboard',
+          showNavbar: false,
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(

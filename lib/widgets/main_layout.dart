@@ -8,11 +8,13 @@ import '../theme.dart';
 class MainLayout extends StatelessWidget {
   final Widget child;
   final String activeTab;
+  final bool showNavbar;
 
   const MainLayout({
     super.key,
     required this.child,
     required this.activeTab,
+    this.showNavbar = true,
   });
 
   void _changeTab(BuildContext context, String tabName) async {
@@ -337,75 +339,79 @@ class MainLayout extends StatelessWidget {
         backgroundColor: Colors.transparent,
         extendBody: false,
         extendBodyBehindAppBar: false,
-        appBar: AppBar(
-          backgroundColor: isDark ? const Color(0xFF172128) : Colors.transparent,
-          elevation: 0,
-          shadowColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          iconTheme: const IconThemeData(
-            color: Colors.white,
-          ),
-          title: Text(
-            _getTabTitle(activeTab),
-            style: const TextStyle(
-              color: AppColors.gold,
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ),
-        drawer: _buildCustomDrawer(context, isDark),
-        body: BottomBar(
-          body: child,
-          layout: BottomBarLayout(
-            width: MediaQuery.of(context).size.width - 32,
-            borderRadius: BorderRadius.circular(24),
-            offset: 16,
-            respectSafeArea: true,
-          ),
-          theme: BottomBarThemeData(
-            barDecoration: BoxDecoration(
-              color: isDark 
-                  ? const Color(0xFF172128).withOpacity(0.9) 
-                  : const Color(0xFF0B1528).withOpacity(0.85),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: isDark 
-                    ? AppColors.cardBorder 
-                    : Colors.white.withOpacity(0.12),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
-                  blurRadius: 15,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 4),
+        appBar: showNavbar
+            ? AppBar(
+                backgroundColor: isDark ? const Color(0xFF172128) : Colors.transparent,
+                elevation: 0,
+                shadowColor: Colors.transparent,
+                scrolledUnderElevation: 0,
+                iconTheme: const IconThemeData(
+                  color: Colors.white,
                 ),
-              ],
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildFloatingNavItem(context, 'dashboard', Icons.explore_outlined, Icons.explore, 'Explore', isDark),
-                    _buildFloatingNavItem(context, 'chat', Icons.chat_bubble_outline, Icons.chat_bubble, 'Chat', isDark),
-                    _buildFloatingNavItem(context, 'history', Icons.history_outlined, Icons.history, 'Sessions', isDark),
-                    _buildFloatingNavItem(context, 'billing', Icons.account_balance_wallet_outlined, Icons.account_balance_wallet, 'Wallet', isDark),
-                    _buildFloatingNavItem(context, 'profile', Icons.person_outline, Icons.person, 'Profile', isDark),
-                  ],
+                title: Text(
+                  _getTabTitle(activeTab),
+                  style: const TextStyle(
+                    color: AppColors.gold,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.0,
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ),
+              )
+            : null,
+        drawer: showNavbar ? _buildCustomDrawer(context, isDark) : null,
+        body: showNavbar
+            ? BottomBar(
+                body: child,
+                layout: BottomBarLayout(
+                  width: MediaQuery.of(context).size.width - 32,
+                  borderRadius: BorderRadius.circular(24),
+                  offset: 16,
+                  respectSafeArea: true,
+                ),
+                theme: BottomBarThemeData(
+                  barDecoration: BoxDecoration(
+                    color: isDark 
+                        ? const Color(0xFF172128).withOpacity(0.9) 
+                        : const Color(0xFF0B1528).withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: isDark 
+                          ? AppColors.cardBorder 
+                          : Colors.white.withOpacity(0.12),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25),
+                        blurRadius: 15,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildFloatingNavItem(context, 'dashboard', Icons.explore_outlined, Icons.explore, 'Explore', isDark),
+                          _buildFloatingNavItem(context, 'chat', Icons.chat_bubble_outline, Icons.chat_bubble, 'Chat', isDark),
+                          _buildFloatingNavItem(context, 'history', Icons.history_outlined, Icons.history, 'Sessions', isDark),
+                          _buildFloatingNavItem(context, 'billing', Icons.account_balance_wallet_outlined, Icons.account_balance_wallet, 'Wallet', isDark),
+                          _buildFloatingNavItem(context, 'profile', Icons.person_outline, Icons.person, 'Profile', isDark),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : child,
       ),
     );
   }

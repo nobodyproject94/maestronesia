@@ -96,6 +96,7 @@ class _BookingScreenState extends State<BookingScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'dashboard',
+          showNavbar: false,
           child: Scaffold(
             backgroundColor: isDark ? Colors.transparent : Colors.transparent,
             body: SingleChildScrollView(

@@ -11,14 +11,20 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  // Menyimpan role yang dipilih pengguna (default: 'client')
   String selectedRole = 'client';
+
   @override
   Widget build(BuildContext context) {
+    // Memantau perubahan tema (Gelap/Terang) secara real-time tanpa rebuild seluruh screen
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
         return Scaffold(
-          backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
+          // Mengubah warna latar belakang secara kondisional berdasarkan mode tema
+          backgroundColor: isDark
+              ? const Color(0xFF131D24)
+              : Colors.transparent,
           body: MaestronesiaBackground(
             child: SafeArea(
               child: Padding(
@@ -29,11 +35,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Spacer(),
-                    // Title Area
+                    const Spacer(), // Memberikan ruang kosong fleksibel (mendorong konten ke tengah/bawah)
+                    // ================= TITLE AREA =================
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Garis dekoratif kecil berwarna emas
                         Container(
                           width: 48,
                           height: 4,
@@ -49,8 +56,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: AppColors.textPrimary,
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
-                            height: 1.1,
-                            letterSpacing: -1.0,
+                            height:
+                                1.1, // Mengatur jarak antar baris teks (line-height)
+                            letterSpacing: -1.0, // Merapatkan jarak antar huruf
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -65,6 +73,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                     ),
                     const Spacer(),
+
+                    // ================= ROLE SELECTION AREA =================
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -74,12 +84,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: AppColors.gold,
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 2.0,
+                            letterSpacing:
+                                2.0, // Meregangkan jarak huruf untuk gaya UPPERCASE
                           ),
                         ),
                         const SizedBox(height: 20),
                         Row(
                           children: [
+                            // Expanded memastikan kedua kartu role membagi ruang horizontal secara adil (50:50)
                             Expanded(
                               child: _buildRoleCard(
                                 roleName: 'client',
@@ -102,10 +114,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                     ),
                     const Spacer(),
-                    // Action Buttons
+
+                    // ================= ACTION BUTTONS AREA =================
                     Column(
                       children: [
-                        if (selectedRole != 'client' && selectedRole != 'expert')
+                        // Validasi: Jika status selectedRole tidak valid (bukan client/expert), tampilkan tombol dinonaktifkan
+                        if (selectedRole != 'client' &&
+                            selectedRole != 'expert')
                           Container(
                             height: 60,
                             decoration: BoxDecoration(
@@ -128,13 +143,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                           )
                         else
+                          // Tombol aktif jika role valid
                           MaestronesiaButton(
                             onPressed: () {
-                              HapticFeedback.lightImpact();
+                              HapticFeedback.lightImpact(); // Memberikan efek getar ringan saat ditekan
                               Navigator.pushNamed(
                                 context,
                                 '/signup',
-                                arguments: selectedRole,
+                                arguments:
+                                    selectedRole, // Mengirim data role yang dipilih ke halaman signup
                               );
                             },
                             isSelected: !isDark,
@@ -148,6 +165,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                           ),
                         const SizedBox(height: 24),
+
+                        // Teks & Tombol Sign In bawah
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -160,33 +179,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                              HapticFeedback.lightImpact();
-                              Navigator.pushNamed(
-                                context,
-                                '/login',
-                                arguments: selectedRole,
-                              );
-                            },
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
+                                HapticFeedback.lightImpact();
+                                Navigator.pushNamed(
+                                  context,
+                                  '/login',
+                                  arguments: selectedRole,
+                                );
+                              },
+                              child: Container(
+                                // Membuat efek border bawah manual sebagai pengganti underline teks biasa
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: AppColors.gold,
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                ),
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: const Text(
+                                  'SIGN IN',
+                                  style: TextStyle(
                                     color: AppColors.gold,
-                                    width: 1.0,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    letterSpacing: 1.0,
                                   ),
                                 ),
                               ),
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: const Text(
-                                'SIGN IN',
-                                style: TextStyle(
-                                  color: AppColors.gold,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                  letterSpacing: 1.0,
-                                ),
-                              ),
-                            ),
                             ),
                           ],
                         ),
@@ -203,45 +223,60 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+  // ================= KUSTOM WIDGET: KARTU PILIHAN ROLE =================
   Widget _buildRoleCard({
     required String roleName,
     required String label,
     required IconData icon,
     required bool isDark,
   }) {
+    // Mengecek apakah kartu ini adalah role yang sedang aktif/dipilih
     final isSelected = selectedRole == roleName;
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
+        // Memperbarui status role yang dipilih dan memicu rebuild UI pada bagian ini
         setState(() {
           selectedRole = roleName;
         });
       },
+      // AnimatedContainer membuat transisi warna/border halus saat kartu dipilih (durasi 250ms)
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(vertical: 32),
         decoration: BoxDecoration(
+          // Warna background berubah smooth tergantung status 'isSelected' dan mode tema
           color: isDark
-              ? (isSelected ? AppColors.gold.withOpacity(0.05) : AppColors.surface)
+              ? (isSelected
+                    ? AppColors.gold.withOpacity(0.05)
+                    : AppColors.surface)
               : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
             color: isDark
                 ? (isSelected ? AppColors.gold : Colors.white.withOpacity(0.05))
                 : Colors.white.withOpacity(0.05),
-            width: isDark ? 2.0 : 1.0,
+            width: isDark
+                ? 2.0
+                : 1.0, // Border lebih tebal jika dipilih pada mode gelap
           ),
         ),
         child: Stack(
           alignment: Alignment.center,
           children: [
+            // Konten Utama: Ikon dan Teks Label Role
             Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize
+                  .min, // Sesuai ukuran konten, tidak memakan ruang vertikal penuh
               children: [
                 Icon(
                   icon,
                   size: 32,
-                  color: isSelected ? AppColors.gold : AppColors.textSecondary,
+                  color: isSelected
+                      ? AppColors.gold
+                      : AppColors
+                            .textSecondary, // Warna ikon berubah jika dipilih
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -254,6 +289,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ],
             ),
+
+            // Komponen Radio Button Kustom (Lingkaran kecil di pojok kanan atas kartu)
             Positioned(
               top: 0,
               right: 12,
@@ -264,8 +301,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   shape: BoxShape.circle,
                   border: isSelected
                       ? Border.all(color: AppColors.gold, width: 2)
-                      : Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
+                      : Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 1.5,
+                        ),
                 ),
+                // Jika terpilih, tampilkan titik bulat emas di dalam lingkaran
                 child: isSelected
                     ? Container(
                         margin: const EdgeInsets.all(3),
@@ -274,7 +315,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           shape: BoxShape.circle,
                         ),
                       )
-                    : null,
+                    : null, // Kosong jika tidak terpilih
               ),
             ),
           ],

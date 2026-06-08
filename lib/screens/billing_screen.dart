@@ -294,7 +294,9 @@ class BillingScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 110), // Extra space to clear the floating bottom bar
+            const SizedBox(
+              height: 110,
+            ), // Extra space to clear the floating bottom bar
           ],
         ),
       ),

@@ -278,7 +278,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ),
             content: Text(
-              'Are you sure you want to cancel and delete the session with ${item['expert_name']}?',
+              'Are you sure you want to cancel the session with ${item['expert_name']}?',
               style: TextStyle(color: AppColors.textPrimary, height: 1.4),
             ),
             actions: [
@@ -291,7 +291,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  await DatabaseHelper.instance.deleteBooking(item['id']);
+                  await DatabaseHelper.instance.updateBooking(item['id'], {
+                    'status': 'Cancelled',
+                  });
                   if (context.mounted) {
                     Navigator.pop(context);
                   }
