@@ -9,10 +9,7 @@ import 'payment_screen.dart';
 class BookingScreen extends StatefulWidget {
   final Expert expert;
 
-  const BookingScreen({
-    super.key,
-    required this.expert,
-  });
+  const BookingScreen({super.key, required this.expert});
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();
@@ -35,14 +32,20 @@ class _BookingScreenState extends State<BookingScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: Color(0xFFC5A880),   // Warna emas untuk header & tanggal terpilih
-              onPrimary: Colors.black,      // Warna teks di dalam bulatan emas
-              surface: Color(0xFF131D24),   // Warna background utama kotak kalender biar adem
-              onSurface: Colors.white,      // Warna angka tanggal biasa
+              primary: Color(
+                0xFFC5A880,
+              ), // Warna emas untuk header & tanggal terpilih
+              onPrimary: Colors.black, // Warna teks di dalam bulatan emas
+              surface: Color(
+                0xFF131D24,
+              ), // Warna background utama kotak kalender biar adem
+              onSurface: Colors.white, // Warna angka tanggal biasa
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFFC5A880), // BIAR TOMBOL OK & CANCEL KELIATAN JELAS!
+                foregroundColor: const Color(
+                  0xFFC5A880,
+                ), // BIAR TOMBOL OK & CANCEL KELIATAN JELAS!
                 textStyle: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -66,14 +69,20 @@ class _BookingScreenState extends State<BookingScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: Color(0xFFC5A880),     // Warna emas untuk jarum jam & aksen aktif
-              onPrimary: Colors.black,        // Warna teks di dalam lingkaran aktif
-              surface: Color(0xFF131D24),     // Warna background kotak dialog jam biar gelap adem
-              onSurface: Colors.white,        // Warna angka jam & teks biasa
+              primary: Color(
+                0xFFC5A880,
+              ), // Warna emas untuk jarum jam & aksen aktif
+              onPrimary: Colors.black, // Warna teks di dalam lingkaran aktif
+              surface: Color(
+                0xFF131D24,
+              ), // Warna background kotak dialog jam biar gelap adem
+              onSurface: Colors.white, // Warna angka jam & teks biasa
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFFC5A880), // WARNA TOMBOL OK & CANCEL BIAR KELIATAN JELAS!
+                foregroundColor: const Color(
+                  0xFFC5A880,
+                ), // WARNA TOMBOL OK & CANCEL BIAR KELIATAN JELAS!
                 textStyle: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -117,11 +126,15 @@ class _BookingScreenState extends State<BookingScreen> {
                           color: AppColors.textSecondary,
                         ),
                         style: IconButton.styleFrom(
-                          backgroundColor: isDark ? AppColors.surface : Colors.white.withOpacity(0.05),
+                          backgroundColor: isDark
+                              ? AppColors.surface
+                              : Colors.white.withOpacity(0.05),
                           padding: const EdgeInsets.all(16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                            side: BorderSide(
+                              color: Colors.white.withOpacity(0.05),
+                            ),
                           ),
                         ),
                       ),
@@ -175,7 +188,9 @@ class _BookingScreenState extends State<BookingScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.surface : Colors.white.withOpacity(0.05),
+                        color: isDark
+                            ? AppColors.surface
+                            : Colors.white.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
                           color: AppColors.gold.withOpacity(0.3),
@@ -184,7 +199,11 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_month, color: AppColors.gold, size: 28),
+                          const Icon(
+                            Icons.calendar_month,
+                            color: AppColors.gold,
+                            size: 28,
+                          ),
                           const SizedBox(width: 16),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,7 +229,10 @@ class _BookingScreenState extends State<BookingScreen> {
                             ],
                           ),
                           const Spacer(),
-                          Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+                          Icon(
+                            Icons.arrow_drop_down,
+                            color: AppColors.textSecondary,
+                          ),
                         ],
                       ),
                     ),
@@ -226,7 +248,9 @@ class _BookingScreenState extends State<BookingScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.surface : Colors.white.withOpacity(0.05),
+                        color: isDark
+                            ? AppColors.surface
+                            : Colors.white.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
                           color: AppColors.gold.withOpacity(0.3),
@@ -235,7 +259,11 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.access_time, color: AppColors.gold, size: 28),
+                          const Icon(
+                            Icons.access_time,
+                            color: AppColors.gold,
+                            size: 28,
+                          ),
                           const SizedBox(width: 16),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +289,10 @@ class _BookingScreenState extends State<BookingScreen> {
                             ],
                           ),
                           const Spacer(),
-                          Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+                          Icon(
+                            Icons.arrow_drop_down,
+                            color: AppColors.textSecondary,
+                          ),
                         ],
                       ),
                     ),
@@ -272,7 +303,9 @@ class _BookingScreenState extends State<BookingScreen> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.surface.withOpacity(0.4) : Colors.white.withOpacity(0.05),
+                      color: isDark
+                          ? AppColors.surface.withOpacity(0.4)
+                          : Colors.white.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(28),
                       border: Border.all(color: Colors.white.withOpacity(0.05)),
                     ),
@@ -366,7 +399,10 @@ class _BookingScreenState extends State<BookingScreen> {
                     },
                     child: const Text(
                       'Proceed to Checkout',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -374,7 +410,7 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
           ),
         );
-      }
+      },
     );
   }
 }
