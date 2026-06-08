@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
 import '../databases/database_helper.dart';
@@ -6,24 +7,15 @@ import '../widgets/custom_button.dart';
 import '../widgets/interesting_logos.dart';
 
 class LoginScreen extends StatefulWidget {
-  final String role;
-  final VoidCallback onBack;
-  final Function(String email, String name) onLoginSuccess;
-  final VoidCallback onSignUpRedirect;
-
-  const LoginScreen({
-    super.key,
-    required this.role,
-    required this.onBack,
-    required this.onLoginSuccess,
-    required this.onSignUpRedirect,
-  });
+  final String? role;
+  const LoginScreen({super.key, this.role});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  String get _resolvedRole => widget.role ?? (ModalRoute.of(context)!.settings.arguments as String? ?? 'client');
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -46,12 +38,17 @@ class _LoginScreenState extends State<LoginScreen> {
         });
 
         if (user != null) {
-          if (user['role'] == widget.role) {
+          if (user['role'] == _resolvedRole) {
             final prefs = await SharedPreferences.getInstance();
             await prefs.setString('session_email', user['email']);
             await prefs.setString('session_name', user['name'] ?? 'User');
-            await prefs.setString('session_role', widget.role);
-            widget.onLoginSuccess(user['email'], user['name'] ?? 'User');
+            await prefs.setString('session_role', _resolvedRole);
+            
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              _resolvedRole == 'expert' ? '/expert_dashboard' : '/dashboard',
+              (route) => false,
+            );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -104,11 +101,13 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Back Button
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: IconButton(
-                    onPressed: widget.onBack,
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.pop(context);
+                    },
                     icon: Icon(
                       Icons.arrow_back_ios_new,
                       color: AppColors.textSecondary,
@@ -144,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Log in as a ${widget.role} to continue.',
+                              'Log in as a $_resolvedRole to continue.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: AppColors.textSecondary,
@@ -241,7 +240,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             // Sign In Button
                             MaestronesiaButton(
-                              onPressed: _isLoading ? null : _handleLogin,
+                              onPressed: _isLoading ? null : () {
+                                HapticFeedback.lightImpact();
+                                _handleLogin();
+                              },
                               child: _isLoading
                                   ? const SizedBox(
                                       width: 20,
@@ -338,7 +340,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: widget.onSignUpRedirect,
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/signup',
+                            arguments: _resolvedRole,
+                          );
+                        },
                         child: Text(
                           'Sign up',
                           style: TextStyle(

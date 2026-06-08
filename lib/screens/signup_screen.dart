@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
 import '../widgets/custom_button.dart';
@@ -6,17 +7,11 @@ import '../widgets/interesting_logos.dart';
 import '../databases/database_helper.dart';
 
 class SignUpScreen extends StatefulWidget {
-  final String role;
-  final VoidCallback onBack;
-  final Function(String email, String name) onSignUpSuccess;
-  final VoidCallback onLoginRedirect;
+  final String? role;
 
   const SignUpScreen({
     super.key,
-    required this.role,
-    required this.onBack,
-    required this.onSignUpSuccess,
-    required this.onLoginRedirect,
+    this.role,
   });
 
   @override
@@ -24,6 +19,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  String get _resolvedRole => widget.role ?? (ModalRoute.of(context)!.settings.arguments as String? ?? 'client');
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -44,7 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         'name': name,
         'email': email,
         'password': password,
-        'role': widget.role,
+        'role': _resolvedRole,
       });
 
       if (mounted) {
@@ -56,12 +52,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('session_email', email);
           await prefs.setString('session_name', name);
-          await prefs.setString('session_role', widget.role);
-          widget.onSignUpSuccess(email, name);
+          await prefs.setString('session_role', _resolvedRole);
+          
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            _resolvedRole == 'expert' ? '/expert_registration' : '/dashboard',
+            (route) => false,
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Email already registered. Try logging in.'),
+              content: Text(
+                'Email already registered. Try logging in.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
               backgroundColor: AppColors.error,
             ),
           );
@@ -93,7 +101,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: IconButton(
-                    onPressed: widget.onBack,
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.pop(context);
+                    },
                     icon: Icon(
                       Icons.arrow_back_ios_new,
                       color: AppColors.textSecondary,
@@ -139,7 +150,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 children: [
                                   const TextSpan(text: 'Sign up as a '),
                                   TextSpan(
-                                    text: widget.role,
+                                    text: _resolvedRole,
                                     style: TextStyle(
                                       color: AppColors.gold,
                                       fontWeight: FontWeight.bold,
@@ -290,7 +301,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             // Create Account Button
                             MaestronesiaButton(
-                              onPressed: _isLoading ? null : _handleSignUp,
+                              onPressed: _isLoading ? null : () {
+                                HapticFeedback.lightImpact();
+                                _handleSignUp();
+                              },
                               child: _isLoading
                                   ? const SizedBox(
                                       width: 20,
@@ -355,12 +369,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 GestureDetector(
-                                  onTap: _handleSignUp,
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    _handleSignUp();
+                                  },
                                   child: const InterestingGoogleLogo(size: 28),
                                 ),
                                 const SizedBox(width: 24),
                                 GestureDetector(
-                                  onTap: _handleSignUp,
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    _handleSignUp();
+                                  },
                                   child: const InterestingLinkedInLogo(
                                     size: 28,
                                   ),
@@ -403,7 +423,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: widget.onLoginRedirect,
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/login',
+                            arguments: _resolvedRole,
+                          );
+                        },
                         child: Text(
                           'Sign in',
                           style: TextStyle(

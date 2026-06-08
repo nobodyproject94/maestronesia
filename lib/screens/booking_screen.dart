@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
 import '../widgets/custom_button.dart';
+import 'payment_screen.dart';
 
 class BookingScreen extends StatefulWidget {
   final Expert expert;
-  final VoidCallback onBack;
-  final Function(int day, String time) onProceed;
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
 
   const BookingScreen({
     super.key,
     required this.expert,
-    required this.onBack,
-    required this.onProceed,
-    required this.onTabChanged,
-    required this.onSignOut,
   });
 
   @override
@@ -102,8 +96,6 @@ class _BookingScreenState extends State<BookingScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'dashboard',
-          onTabChanged: widget.onTabChanged,
-          onSignOut: widget.onSignOut,
           child: Scaffold(
             backgroundColor: isDark ? Colors.transparent : Colors.transparent,
             body: SingleChildScrollView(
@@ -115,7 +107,10 @@ class _BookingScreenState extends State<BookingScreen> {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: widget.onBack,
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          Navigator.pop(context);
+                        },
                         icon: Icon(
                           Icons.chevron_left,
                           color: AppColors.textSecondary,
@@ -172,7 +167,10 @@ class _BookingScreenState extends State<BookingScreen> {
 
                   // Date Selection Card
                   GestureDetector(
-                    onTap: () => _selectDate(context),
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _selectDate(context);
+                    },
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -220,7 +218,10 @@ class _BookingScreenState extends State<BookingScreen> {
 
                   // Time Selection Card
                   GestureDetector(
-                    onTap: () => _selectTime(context),
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _selectTime(context);
+                    },
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -349,10 +350,19 @@ class _BookingScreenState extends State<BookingScreen> {
                   const SizedBox(height: 32),
 
                   MaestronesiaButton(
-                    onPressed: () => widget.onProceed(
-                      _selectedDate.day,
-                      _selectedTime.format(context),
-                    ),
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PaymentScreen(
+                            expert: widget.expert,
+                            day: _selectedDate.day,
+                            time: _selectedTime.format(context),
+                          ),
+                        ),
+                      );
+                    },
                     child: const Text(
                       'Proceed to Checkout',
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),

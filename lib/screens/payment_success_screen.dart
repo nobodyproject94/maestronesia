@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/custom_button.dart';
@@ -7,16 +8,12 @@ class PaymentSuccessScreen extends StatelessWidget {
   final Expert expert;
   final int selectedDay;
   final String selectedTime;
-  final VoidCallback onReturn;
-  final VoidCallback onViewSessions;
 
   const PaymentSuccessScreen({
     super.key,
     required this.expert,
     required this.selectedDay,
     required this.selectedTime,
-    required this.onReturn,
-    required this.onViewSessions,
   });
 
   @override
@@ -180,7 +177,14 @@ class PaymentSuccessScreen extends StatelessWidget {
 
                 // Primary return CTA
                 MaestronesiaButton(
-                  onPressed: onReturn,
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/dashboard',
+                      (route) => false,
+                    );
+                  },
                   child: Text(
                     'RETURN TO DASHBOARD',
                     style: TextStyle(
@@ -194,7 +198,14 @@ class PaymentSuccessScreen extends StatelessWidget {
 
                 // Secondary list link
                 GestureDetector(
-                  onTap: onViewSessions,
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/history',
+                      (route) => false,
+                    );
+                  },
                   child: Text(
                     'VIEW MY SESSIONS',
                     style: TextStyle(

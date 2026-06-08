@@ -2,21 +2,14 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
+import 'booking_screen.dart';
 
 class ExpertProfileScreen extends StatefulWidget {
   final Expert expert;
-  final VoidCallback onBack;
-  final VoidCallback onBook;
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
 
   const ExpertProfileScreen({
     super.key,
     required this.expert,
-    required this.onBack,
-    required this.onBook,
-    required this.onTabChanged,
-    required this.onSignOut,
   });
 
   @override
@@ -33,8 +26,6 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'dashboard',
-          onTabChanged: widget.onTabChanged,
-          onSignOut: widget.onSignOut,
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
@@ -47,7 +38,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        onPressed: widget.onBack,
+                        onPressed: () => Navigator.pop(context),
                         icon: Icon(Icons.chevron_left, color: AppColors.textSecondary),
                         style: IconButton.styleFrom(
                           backgroundColor: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
@@ -215,7 +206,16 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                     width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
-                      onPressed: widget.onBook,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookingScreen(
+                              expert: widget.expert,
+                            ),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isDark ? AppColors.gold : Colors.white.withOpacity(0.12),
                         foregroundColor: isDark ? Colors.black : AppColors.gold,

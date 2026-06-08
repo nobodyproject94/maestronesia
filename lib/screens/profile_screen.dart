@@ -1,22 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
 import '../widgets/main_layout.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final String role;
-  final String email;
-  final String name;
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
-
-  const ProfileScreen({
-    super.key,
-    required this.role,
-    required this.email,
-    required this.name,
-    required this.onTabChanged,
-    required this.onSignOut,
-  });
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -24,14 +12,40 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _isOnline = true;
+  String? _role;
+  String? _email;
+  String? _name;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  void _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _role = prefs.getString('session_role') ?? 'client';
+      _email = prefs.getString('session_email') ?? 'client@gmail.com';
+      _name = prefs.getString('session_name') ?? 'Fajar Ramadhan';
+    });
+  }
+
+  void _handleSignOut() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    isDarkModeNotifier.value = false;
+    if (mounted) {
+      Navigator.pushNamedAndRemoveUntil(context, '/onboarding', (route) => false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return MainLayout(
       activeTab: 'profile',
-      onTabChanged: widget.onTabChanged,
-      onSignOut: widget.onSignOut,
       child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,8 +97,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    widget.name,
-                    style: TextStyle(
+                    _name ?? '',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
@@ -92,8 +106,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.email,
-                    style: TextStyle(
+                    _email ?? '',
+                    style: const TextStyle(
                       color: AppColors.gold,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -101,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.role == 'expert'
+                    _role == 'expert'
                         ? 'Mechanical Engineering Expert'
                         : 'Mechanical Engineering Client',
                     style: TextStyle(
@@ -182,7 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 24),
 
             // Availability Toggle for Expert
-            if (widget.role == 'expert') ...[
+            if (_role == 'expert') ...[
               Text(
                 'EXPERT STATUS',
                 style: TextStyle(
@@ -299,7 +313,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: double.infinity,
               height: 60,
               child: TextButton(
-                onPressed: widget.onSignOut,
+                onPressed: _handleSignOut,
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.redAccent,
                   shape: RoundedRectangleBorder(
@@ -322,6 +336,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 110), // Extra space to clear the floating bottom bar
           ],
         ),
       ),

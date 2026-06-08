@@ -2,18 +2,10 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
+import 'expert_profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
-  final ValueChanged<int> onSelectExpert;
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
-
-  const DashboardScreen({
-    super.key,
-    required this.onSelectExpert,
-    required this.onTabChanged,
-    required this.onSignOut,
-  });
+  const DashboardScreen({super.key});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -37,11 +29,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'dashboard',
-          onTabChanged: widget.onTabChanged,
-          onSignOut: widget.onSignOut,
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,7 +138,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   // Featured Hero Card
                   GestureDetector(
-                    onTap: () => widget.onSelectExpert(1), // Hero is Prof Hermanto (ID: 1)
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ExpertProfileScreen(
+                            expert: mockExperts.firstWhere((e) => e.id == 1),
+                          ),
+                        ),
+                      );
+                    },
                     child: Container(
                       height: 220,
                       decoration: BoxDecoration(
@@ -255,7 +255,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     itemBuilder: (context, index) {
                       final expert = mockExperts[index];
                       return GestureDetector(
-                        onTap: () => widget.onSelectExpert(expert.id),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ExpertProfileScreen(
+                                expert: expert,
+                              ),
+                            ),
+                          );
+                        },
                         child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
@@ -402,7 +411,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 110), // Extra space to clear the floating bottom bar
                 ],
               ),
             ),

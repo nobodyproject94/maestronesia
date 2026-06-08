@@ -1,19 +1,47 @@
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import '../theme.dart';
 
 class MainLayout extends StatelessWidget {
   final Widget child;
   final String activeTab;
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
 
   const MainLayout({
     super.key,
     required this.child,
     required this.activeTab,
-    required this.onTabChanged,
-    required this.onSignOut,
   });
+
+  void _changeTab(BuildContext context, String tabName) async {
+    HapticFeedback.lightImpact();
+    if (activeTab != tabName) {
+      if (tabName == 'dashboard') {
+        final prefs = await SharedPreferences.getInstance();
+        final role = prefs.getString('session_role') ?? 'client';
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(
+            context,
+            role == 'expert' ? '/expert_dashboard' : '/dashboard',
+          );
+        }
+      } else {
+        Navigator.pushReplacementNamed(context, '/$tabName');
+      }
+    }
+  }
+
+  void _handleSignOut(BuildContext context) async {
+    HapticFeedback.lightImpact();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    isDarkModeNotifier.value = false;
+    if (context.mounted) {
+      Navigator.pushNamedAndRemoveUntil(context, '/onboarding', (route) => false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +128,7 @@ class MainLayout extends StatelessWidget {
                     child: ListView(
                       children: [
                         _buildSidebarItem(
+                          context,
                           'dashboard',
                           'Explore',
                           Icons.explore_outlined,
@@ -107,6 +136,15 @@ class MainLayout extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         _buildSidebarItem(
+                          context,
+                          'chat',
+                          'Chat',
+                          Icons.chat_bubble_outline,
+                          isDark,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildSidebarItem(
+                          context,
                           'history',
                           'History',
                           Icons.history,
@@ -114,6 +152,7 @@ class MainLayout extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         _buildSidebarItem(
+                          context,
                           'billing',
                           'Wallet',
                           Icons.account_balance_wallet_outlined,
@@ -121,6 +160,7 @@ class MainLayout extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         _buildSidebarItem(
+                          context,
                           'profile',
                           'Profile',
                           Icons.person_outline,
@@ -187,7 +227,7 @@ class MainLayout extends StatelessWidget {
                         tooltip: isDark ? 'Mode Terang' : 'Mode Gelap',
                       ),
                       IconButton(
-                        onPressed: onSignOut,
+                        onPressed: () => _handleSignOut(context),
                         icon: const Icon(Icons.logout, color: Colors.redAccent),
                         tooltip: 'Sign Out',
                       ),
@@ -205,6 +245,7 @@ class MainLayout extends StatelessWidget {
   }
 
   Widget _buildSidebarItem(
+    BuildContext context,
     String id,
     String label,
     IconData icon,
@@ -212,7 +253,7 @@ class MainLayout extends StatelessWidget {
   ) {
     final isSelected = activeTab == id;
     return InkWell(
-      onTap: () => onTabChanged(id),
+      onTap: () => _changeTab(context, id),
       borderRadius: BorderRadius.circular(20),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -262,121 +303,518 @@ class MainLayout extends StatelessWidget {
     );
   }
 
+  String _getTabTitle(String tab) {
+    switch (tab) {
+      case 'chat':
+        return 'Inbox Messages';
+      case 'history':
+        return 'Session History';
+      case 'billing':
+        return 'Billing & Wallet';
+      case 'profile':
+        return 'Profile Settings';
+      case 'dashboard':
+      default:
+        return 'MAESTRONESIA';
+    }
+  }
+
   Widget _buildMobileLayout(BuildContext context, bool isDark) {
-    return Scaffold(
-      backgroundColor: isDark ? AppColors.background : Colors.transparent,
-      appBar: AppBar(
-        backgroundColor: isDark ? AppColors.background : Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? AppColors.surface
-                    : Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.gold.withOpacity(0.2)),
-              ),
-              child: Icon(Icons.menu_book, color: AppColors.gold, size: 16),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Maestro',
-              style: TextStyle(
-                color: AppColors.gold,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+    return Container(
+      decoration: isDark
+          ? const BoxDecoration(color: Color(0xFF0B141C))
+          : const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF0B1528), // Deep Navy Blue atas
+                  Color(0xFF1E3A8A), // Soft Electric Blue bawah
+                ],
               ),
             ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              isDarkModeNotifier.value = !isDarkModeNotifier.value;
-            },
-            icon: Icon(
-              isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
-              color: AppColors.textSecondary,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBody: false,
+        extendBodyBehindAppBar: false,
+        appBar: AppBar(
+          backgroundColor: isDark ? const Color(0xFF172128) : Colors.transparent,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          iconTheme: const IconThemeData(
+            color: Colors.white,
+          ),
+          title: Text(
+            _getTabTitle(activeTab),
+            style: const TextStyle(
+              color: AppColors.gold,
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.0,
             ),
           ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: Container(
-        decoration: isDark
-            ? null
-            : const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xFF0B1528), Color(0xFF1E3A8A)],
+        ),
+        drawer: _buildCustomDrawer(context, isDark),
+        body: BottomBar(
+          body: child,
+          layout: BottomBarLayout(
+            width: MediaQuery.of(context).size.width - 32,
+            borderRadius: BorderRadius.circular(24),
+            offset: 16,
+            respectSafeArea: true,
+          ),
+          theme: BottomBarThemeData(
+            barDecoration: BoxDecoration(
+              color: isDark 
+                  ? const Color(0xFF172128).withOpacity(0.9) 
+                  : const Color(0xFF0B1528).withOpacity(0.85),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: isDark 
+                    ? AppColors.cardBorder 
+                    : Colors.white.withOpacity(0.12),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildFloatingNavItem(context, 'dashboard', Icons.explore_outlined, Icons.explore, 'Explore', isDark),
+                    _buildFloatingNavItem(context, 'chat', Icons.chat_bubble_outline, Icons.chat_bubble, 'Chat', isDark),
+                    _buildFloatingNavItem(context, 'history', Icons.history_outlined, Icons.history, 'Sessions', isDark),
+                    _buildFloatingNavItem(context, 'billing', Icons.account_balance_wallet_outlined, Icons.account_balance_wallet, 'Wallet', isDark),
+                    _buildFloatingNavItem(context, 'profile', Icons.person_outline, Icons.person, 'Profile', isDark),
+                  ],
                 ),
               ),
-        child: child,
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.surface : Colors.white.withOpacity(0.02),
-          border: Border(
-            top: BorderSide(
-              color: isDark ? AppColors.cardBorder : Colors.white10,
-              width: 1,
             ),
           ),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _getTabIndex(activeTab),
-          onTap: (index) => onTabChanged(_getTabName(index)),
-          backgroundColor: isDark ? AppColors.surface : Colors.transparent,
-          selectedItemColor: AppColors.gold,
-          unselectedItemColor: AppColors.textSecondary,
-          type: BottomNavigationBarType.fixed,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          elevation: 0,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.explore_outlined),
-              activeIcon: Icon(Icons.explore),
-              label: 'Explore',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.history),
-              activeIcon: Icon(Icons.history_toggle_off),
-              label: 'History',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_balance_wallet_outlined),
-              activeIcon: Icon(Icons.account_balance_wallet),
-              label: 'Wallet',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
         ),
       ),
     );
   }
 
-  int _getTabIndex(String tab) {
-    if (tab == 'history') return 1;
-    if (tab == 'billing') return 2;
-    if (tab == 'profile') return 3;
-    return 0;
+
+
+  Widget _buildFloatingNavItem(
+    BuildContext context,
+    String id,
+    IconData icon,
+    IconData activeIcon,
+    String label,
+    bool isDark,
+  ) {
+    final isSelected = activeTab == id;
+    final color = isSelected 
+        ? AppColors.gold 
+        : (isDark ? AppColors.textSecondary : Colors.white70);
+
+    return Expanded(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _changeTab(context, id),
+          borderRadius: BorderRadius.circular(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                isSelected ? activeIcon : icon,
+                color: color,
+                size: 22,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
-  String _getTabName(int index) {
-    if (index == 1) return 'history';
-    if (index == 2) return 'billing';
-    if (index == 3) return 'profile';
-    return 'dashboard';
+  Widget _buildCustomDrawer(BuildContext context, bool isDark) {
+    return Drawer(
+      backgroundColor: Colors.transparent,
+      child: FutureBuilder<SharedPreferences>(
+        future: SharedPreferences.getInstance(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator(color: AppColors.gold));
+          }
+          final prefs = snapshot.data!;
+          final role = prefs.getString('session_role') ?? 'client';
+
+          return Container(
+            decoration: isDark
+                ? const BoxDecoration(color: Color(0xFF0B141C))
+                : const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF0B141C),
+                        Color(0xFF1E4578),
+                        Color(0xFF6C9DDC),
+                      ],
+                    ),
+                  ),
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                // Custom Drawer Header matching Image 3
+                Container(
+                  padding: const EdgeInsets.only(top: 60, bottom: 24, left: 24, right: 24),
+                  decoration: BoxDecoration(
+                    gradient: isDark
+                        ? const LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color(0xFF0F2033),
+                              Color(0xFF0B141C),
+                            ],
+                          )
+                        : null,
+                    color: isDark ? null : Colors.white.withOpacity(0.05),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: const BoxDecoration(
+                          color: AppColors.gold,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.person,
+                          color: Colors.black,
+                          size: 32,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        "MAESTRONESIA",
+                        style: TextStyle(
+                          color: AppColors.gold,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        "Be your maestro",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Drawer Items matching Image 3
+                _buildDrawerItem(
+                  context: context,
+                  id: 'dashboard',
+                  title: role == 'expert' ? 'Dashboard' : 'Explore',
+                  subtitle: role == 'expert' ? 'Expert overview' : 'Home overview',
+                  icon: Icons.explore_outlined,
+                  activeIcon: Icons.explore,
+                  isSelected: activeTab == 'dashboard',
+                  isDark: isDark,
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  id: 'chat',
+                  title: 'Chat',
+                  subtitle: 'Messages & inbox',
+                  icon: Icons.chat_bubble_outline,
+                  activeIcon: Icons.chat_bubble,
+                  isSelected: activeTab == 'chat',
+                  isDark: isDark,
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  id: 'history',
+                  title: 'Sessions',
+                  subtitle: 'Booking details',
+                  icon: Icons.history_outlined,
+                  activeIcon: Icons.history,
+                  isSelected: activeTab == 'history',
+                  isDark: isDark,
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  id: 'billing',
+                  title: 'Wallet',
+                  subtitle: 'Transactions & saldo',
+                  icon: Icons.account_balance_wallet_outlined,
+                  activeIcon: Icons.account_balance_wallet,
+                  isSelected: activeTab == 'billing',
+                  isDark: isDark,
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  id: 'profile',
+                  title: 'Profile',
+                  subtitle: 'Account settings',
+                  icon: Icons.person_outline,
+                  activeIcon: Icons.person,
+                  isSelected: activeTab == 'profile',
+                  isDark: isDark,
+                ),
+                _buildDrawerItem(
+                  context: context,
+                  id: 'switch_role',
+                  title: 'Switch Role',
+                  subtitle: 'Current: ${role.toUpperCase()}',
+                  icon: Icons.swap_horiz,
+                  activeIcon: Icons.swap_horiz,
+                  isSelected: false,
+                  isDark: isDark,
+                ),
+
+                // Dark Mode Switch
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF172128),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            isDark ? Icons.nights_stay : Icons.light_mode_outlined,
+                            color: AppColors.gold,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                "Dark Mode",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                "Toggle theme",
+                                style: TextStyle(
+                                  color: Color(0xFFBBCAC1),
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Switch(
+                          value: isDark,
+                          onChanged: (val) {
+                            isDarkModeNotifier.value = val;
+                          },
+                          activeThumbColor: AppColors.gold,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  child: Divider(color: Colors.white10),
+                ),
+
+                // Logout Item
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _handleSignOut(context);
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF172128),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.logout,
+                              color: Colors.redAccent,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  "Logout",
+                                  style: TextStyle(
+                                    color: Colors.redAccent,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  "Sign out of account",
+                                  style: TextStyle(
+                                    color: Color(0xFFBBCAC1),
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required BuildContext context,
+    required String id,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required IconData activeIcon,
+    required bool isSelected,
+    required bool isDark,
+  }) {
+    final activeBgColor = AppColors.gold;
+    final inactiveBgColor = const Color(0xFF172128);
+    final iconColor = isSelected ? Colors.black : AppColors.gold;
+    final textColor = isSelected ? AppColors.gold : Colors.white;
+    final subtitleColor = isSelected ? AppColors.gold.withOpacity(0.7) : const Color(0xFFBBCAC1);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+      child: InkWell(
+        onTap: () async {
+          HapticFeedback.lightImpact();
+          Navigator.pop(context);
+          if (id == 'switch_role') {
+            final prefs = await SharedPreferences.getInstance();
+            final currentRole = prefs.getString('session_role') ?? 'client';
+            final newRole = currentRole == 'client' ? 'expert' : 'client';
+            await prefs.setString('session_role', newRole);
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                newRole == 'expert' ? '/expert_dashboard' : '/dashboard',
+                (route) => false,
+              );
+            }
+          } else {
+            _changeTab(context, id);
+          }
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: isSelected ? activeBgColor : inactiveBgColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  isSelected ? activeIcon : icon,
+                  color: iconColor,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: subtitleColor,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
+import 'payment_success_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../databases/database_helper.dart';
 
 class PaymentScreen extends StatelessWidget {
   final Expert expert;
-  final VoidCallback onBack;
-  final VoidCallback onConfirm;
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
+  final int day;
+  final String time;
 
   const PaymentScreen({
     super.key,
     required this.expert,
-    required this.onBack,
-    required this.onConfirm,
-    required this.onTabChanged,
-    required this.onSignOut,
+    required this.day,
+    required this.time,
   });
 
   @override
@@ -26,8 +26,6 @@ class PaymentScreen extends StatelessWidget {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'dashboard',
-          onTabChanged: onTabChanged,
-          onSignOut: onSignOut,
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
@@ -39,7 +37,7 @@ class PaymentScreen extends StatelessWidget {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: onBack,
+                        onPressed: () => Navigator.pop(context),
                         icon: Icon(
                           Icons.chevron_left,
                           color: AppColors.textSecondary,
@@ -320,7 +318,37 @@ class PaymentScreen extends StatelessWidget {
                     width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
-                      onPressed: onConfirm,
+                      onPressed: () async {
+                        HapticFeedback.lightImpact();
+                        
+                        final prefs = await SharedPreferences.getInstance();
+                        final email = prefs.getString('session_email') ?? 'client@gmail.com';
+                        
+                        await DatabaseHelper.instance.createBooking({
+                          'user_email': email,
+                          'expert_id': expert.id,
+                          'expert_name': expert.name,
+                          'topic': expert.expertise,
+                          'date': 'June $day, 2026',
+                          'time': time,
+                          'status': 'Upcoming',
+                          'price': expert.price,
+                          'notes': '',
+                        });
+                        
+                        if (context.mounted) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PaymentSuccessScreen(
+                                expert: expert,
+                                selectedDay: day,
+                                selectedTime: time,
+                              ),
+                            ),
+                          );
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isDark ? AppColors.gold : Colors.white.withOpacity(0.12),
                         foregroundColor: isDark ? Colors.black : AppColors.gold,

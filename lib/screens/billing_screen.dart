@@ -4,35 +4,30 @@ import '../widgets/main_layout.dart';
 import '../widgets/custom_button.dart';
 
 class BillingScreen extends StatelessWidget {
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
-
-  const BillingScreen({
-    super.key,
-    required this.onTabChanged,
-    required this.onSignOut,
-  });
+  const BillingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width > 768;
     return MainLayout(
       activeTab: 'billing',
-      onTabChanged: onTabChanged,
-      onSignOut: onSignOut,
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(24.0),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Billing & Wallet',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+            if (isDesktop) ...[
+              Text(
+                'Billing & Wallet',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
+            ],
 
             // Wallet card
             Container(
@@ -299,6 +294,7 @@ class BillingScreen extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 110), // Extra space to clear the floating bottom bar
           ],
         ),
       ),

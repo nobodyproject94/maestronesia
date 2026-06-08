@@ -1,20 +1,14 @@
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
 import '../widgets/main_layout.dart';
 import '../databases/database_helper.dart';
+import 'live_session_screen.dart';
+import '../models/expert.dart';
 
 class HistoryScreen extends StatefulWidget {
-  final String email;
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
-
-  const HistoryScreen({
-    super.key,
-    required this.email,
-    required this.onTabChanged,
-    required this.onSignOut,
-  });
+  const HistoryScreen({super.key});
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -28,18 +22,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
     'Cancelled',
   ];
   int _activeFilterIndex = 0;
+  String? _currentUserEmail;
   late Future<List<Map<String, dynamic>>> _futureBookings;
 
   @override
   void initState() {
     super.initState();
-    _refreshBookings();
+    _futureBookings = Future.value([]);
+    _loadUserEmail();
+  }
+
+  void _loadUserEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('session_email') ?? 'client@gmail.com';
+    setState(() {
+      _currentUserEmail = email;
+      _futureBookings = DatabaseHelper.instance.getBookings(email);
+    });
   }
 
   void _refreshBookings() {
-    setState(() {
-      _futureBookings = DatabaseHelper.instance.getBookings(widget.email);
-    });
+    if (_currentUserEmail != null) {
+      setState(() {
+        _futureBookings = DatabaseHelper.instance.getBookings(_currentUserEmail!);
+      });
+    }
   }
 
   void _showAddNoteDialog(Map<String, dynamic> item) {
@@ -316,13 +323,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
+        final isDesktop = MediaQuery.of(context).size.width > 768;
         return MainLayout(
           activeTab: 'history',
-          onTabChanged: widget.onTabChanged,
-          onSignOut: widget.onSignOut,
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,14 +338,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Session History',
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
+                      if (isDesktop) ...[
+                        Text(
+                          'Session History',
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
+                      ],
                       IconButton(
                         onPressed: _refreshBookings,
                         icon: Icon(Icons.refresh, color: AppColors.textSecondary),
@@ -585,6 +594,96 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   ],
                                 ),
 
+                                if (status == 'Upcoming') ...[
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            final expertId = item['expert_id'] is int
+                                                ? item['expert_id']
+                                                : int.tryParse(item['expert_id'].toString()) ?? 1;
+                                            final expert = mockExperts.firstWhere(
+                                              (e) => e.id == expertId,
+                                              orElse: () => mockExperts.first,
+                                            );
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => LiveSessionScreen(
+                                                  expert: expert,
+                                                  onHangUp: () => Navigator.pop(context),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(0xFF25D366), // WhatsApp Green
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            elevation: 0,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: const [
+                                              Icon(Icons.videocam, size: 18),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                'Start Video Call',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: OutlinedButton(
+                                          onPressed: () {
+                                            final expertId = item['expert_id'] is int
+                                                ? item['expert_id']
+                                                : int.tryParse(item['expert_id'].toString()) ?? 1;
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/chat',
+                                              arguments: expertId,
+                                            );
+                                          },
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor: AppColors.gold,
+                                            side: const BorderSide(color: AppColors.gold, width: 1.5),
+                                            padding: const EdgeInsets.symmetric(vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: const [
+                                              Icon(Icons.chat_bubble_outline, size: 18),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                'Direct Chat',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+
                                 // Display notes if present
                                 if (item['notes'] != null &&
                                     item['notes'].toString().isNotEmpty) ...[
@@ -654,104 +753,109 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         ],
                                       ],
                                     ),
-                                    Row(
-                                      children: [
-                                        // Reschedule action (Upcoming only)
-                                        if (status == 'Upcoming') ...[
-                                          InkWell(
-                                            onTap: () => _showRescheduleDialog(item),
-                                            borderRadius: BorderRadius.circular(8),
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 4,
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  const Icon(
-                                                    Icons.edit_calendar,
-                                                    color: AppColors.gold,
-                                                    size: 14,
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Row(
+                                          children: [
+                                            // Reschedule action (Upcoming only)
+                                            if (status == 'Upcoming') ...[
+                                              InkWell(
+                                                onTap: () => _showRescheduleDialog(item),
+                                                borderRadius: BorderRadius.circular(8),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
                                                   ),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    'Reschedule',
-                                                    style: TextStyle(
-                                                      color: AppColors.gold,
-                                                      fontSize: 12,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          InkWell(
-                                            onTap: () => _showDeleteDialog(item),
-                                            borderRadius: BorderRadius.circular(8),
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 4,
-                                              ),
-                                              child: Row(
-                                                children: const [
-                                                  Icon(
-                                                    Icons.delete_outline,
-                                                    color: Colors.redAccent,
-                                                    size: 14,
-                                                  ),
-                                                  SizedBox(width: 4),
-                                                  Text(
-                                                    'Cancel',
-                                                    style: TextStyle(
-                                                      color: Colors.redAccent,
-                                                      fontSize: 12,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                        ],
-                                        // Add/Edit Note action (Any status)
-                                        InkWell(
-                                          onTap: () => _showAddNoteDialog(item),
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.note_add_outlined,
-                                                  color: AppColors.textSecondary,
-                                                  size: 14,
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  item['notes'] == null ||
-                                                          item['notes']
-                                                              .toString()
-                                                              .isEmpty
-                                                      ? 'Add Note'
-                                                      : 'Edit Note',
-                                                  style: TextStyle(
-                                                    color: AppColors.textSecondary,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
+                                                  child: Row(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.edit_calendar,
+                                                        color: AppColors.gold,
+                                                        size: 14,
+                                                      ),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        'Reschedule',
+                                                        style: TextStyle(
+                                                          color: AppColors.gold,
+                                                          fontSize: 12,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                              ],
+                                              ),
+                                              const SizedBox(width: 8),
+                                              InkWell(
+                                                onTap: () => _showDeleteDialog(item),
+                                                borderRadius: BorderRadius.circular(8),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
+                                                  ),
+                                                  child: Row(
+                                                    children: const [
+                                                      Icon(
+                                                        Icons.delete_outline,
+                                                        color: Colors.redAccent,
+                                                        size: 14,
+                                                      ),
+                                                      SizedBox(width: 4),
+                                                      Text(
+                                                        'Cancel',
+                                                        style: TextStyle(
+                                                          color: Colors.redAccent,
+                                                          fontSize: 12,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                            ],
+                                            // Add/Edit Note action (Any status)
+                                            InkWell(
+                                              onTap: () => _showAddNoteDialog(item),
+                                              borderRadius: BorderRadius.circular(8),
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                  vertical: 4,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.note_add_outlined,
+                                                      color: AppColors.textSecondary,
+                                                      size: 14,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      item['notes'] == null ||
+                                                              item['notes']
+                                                                  .toString()
+                                                                  .isEmpty
+                                                          ? 'Add Note'
+                                                          : 'Edit Note',
+                                                      style: TextStyle(
+                                                        color: AppColors.textSecondary,
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -762,6 +866,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       );
                     },
                   ),
+                  const SizedBox(height: 110), // Extra space to clear the floating bottom bar
                 ],
               ),
             ),

@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
 
 class SplashScreen extends StatefulWidget {
-  final VoidCallback onFinish;
-
-  const SplashScreen({super.key, required this.onFinish});
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -52,9 +51,26 @@ class _SplashScreenState extends State<SplashScreen>
       });
       if (currentTick >= totalTicks) {
         timer.cancel();
-        widget.onFinish();
+        _handleFinish();
       }
     });
+  }
+
+  void _handleFinish() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('session_email');
+    final role = prefs.getString('session_role');
+
+    if (mounted) {
+      if (email != null && role != null) {
+        Navigator.pushReplacementNamed(
+          context,
+          role == 'expert' ? '/expert_dashboard' : '/dashboard',
+        );
+      } else {
+        Navigator.pushReplacementNamed(context, '/onboarding');
+      }
+    }
   }
 
   @override

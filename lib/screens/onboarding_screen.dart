@@ -1,26 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../widgets/custom_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  final String selectedRole;
-  final ValueChanged<String> onRoleChanged;
-  final VoidCallback onBegin;
-  final VoidCallback onSignIn;
-
-  const OnboardingScreen({
-    super.key,
-    required this.selectedRole,
-    required this.onRoleChanged,
-    required this.onBegin,
-    required this.onSignIn,
-  });
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  String selectedRole = 'client';
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
@@ -74,7 +65,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                     ),
                     const Spacer(),
-                    // Role Selection
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -115,7 +105,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     // Action Buttons
                     Column(
                       children: [
-                        if (widget.selectedRole != 'client' && widget.selectedRole != 'expert')
+                        if (selectedRole != 'client' && selectedRole != 'expert')
                           Container(
                             height: 60,
                             decoration: BoxDecoration(
@@ -139,7 +129,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           )
                         else
                           MaestronesiaButton(
-                            onPressed: widget.onBegin,
+                            onPressed: () {
+                              HapticFeedback.lightImpact();
+                              Navigator.pushNamed(
+                                context,
+                                '/signup',
+                                arguments: selectedRole,
+                              );
+                            },
                             isSelected: !isDark,
                             child: const Text(
                               'BEGIN JOURNEY',
@@ -162,27 +159,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                             GestureDetector(
-                              onTap: widget.onSignIn,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: AppColors.gold,
-                                      width: 1.0,
-                                    ),
-                                  ),
-                                ),
-                                padding: const EdgeInsets.only(bottom: 2),
-                                child: const Text(
-                                  'SIGN IN',
-                                  style: TextStyle(
+                              onTap: () {
+                              HapticFeedback.lightImpact();
+                              Navigator.pushNamed(
+                                context,
+                                '/login',
+                                arguments: selectedRole,
+                              );
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
                                     color: AppColors.gold,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                    letterSpacing: 1.0,
+                                    width: 1.0,
                                   ),
                                 ),
                               ),
+                              padding: const EdgeInsets.only(bottom: 2),
+                              child: const Text(
+                                'SIGN IN',
+                                style: TextStyle(
+                                  color: AppColors.gold,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                            ),
                             ),
                           ],
                         ),
@@ -205,9 +209,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     required IconData icon,
     required bool isDark,
   }) {
-    final isSelected = widget.selectedRole == roleName;
+    final isSelected = selectedRole == roleName;
     return GestureDetector(
-      onTap: () => widget.onRoleChanged(roleName),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        setState(() {
+          selectedRole = roleName;
+        });
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(vertical: 32),
