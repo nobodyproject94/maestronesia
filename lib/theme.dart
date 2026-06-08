@@ -85,5 +85,23 @@ ThemeData buildAppTheme() {
       ),
     ),
     useMaterial3: true,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white.withOpacity(0.12),
+        foregroundColor: AppColors.gold,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        side: const BorderSide(color: AppColors.gold, width: 1.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        elevation: 0,
+        textStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Inter',
+        ),
+      ),
+    ),
   );
 }

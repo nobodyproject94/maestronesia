@@ -6,10 +6,10 @@ class ExpertRegistrationScreen extends StatefulWidget {
   final VoidCallback onRegistrationSuccess;
 
   const ExpertRegistrationScreen({
-    Key? key,
+    super.key,
     required this.onBack,
     required this.onRegistrationSuccess,
-  }) : super(key: key);
+  });
 
   @override
   State<ExpertRegistrationScreen> createState() =>
@@ -135,9 +135,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                               ),
                             ),
                             child:
-                                TextStyle(color: AppColors.textSecondary) !=
-                                    null
-                                ? Text(
+                                Text(
                                     'BACK',
                                     style: TextStyle(
                                       color: AppColors.textSecondary,
@@ -145,8 +143,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 1.5,
                                     ),
-                                  )
-                                : const Text('BACK'),
+                                  ),
                           ),
                         ),
                       ),
@@ -169,8 +166,9 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.gold,
-                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.white.withOpacity(0.12),
+                            foregroundColor: AppColors.gold,
+                            side: const BorderSide(color: AppColors.gold, width: 1.5),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -181,7 +179,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
-                                    color: Colors.black,
+                                    color: AppColors.gold,
                                     strokeWidth: 2,
                                   ),
                                 )

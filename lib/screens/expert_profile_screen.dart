@@ -217,9 +217,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                     child: ElevatedButton(
                       onPressed: widget.onBook,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? AppColors.gold : Colors.white.withOpacity(0.12),
-                        foregroundColor: isDark ? Colors.black : AppColors.gold,
-                        side: isDark ? null : const BorderSide(color: AppColors.gold, width: 2),
+                        backgroundColor: Colors.white.withOpacity(0.12),
+                        foregroundColor: AppColors.gold,
+                        side: const BorderSide(color: AppColors.gold, width: 1.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),

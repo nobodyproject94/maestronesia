@@ -109,15 +109,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   _refreshBookings();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gold,
+                  backgroundColor: Colors.white.withOpacity(0.12),
+                  foregroundColor: AppColors.gold,
+                  side: const BorderSide(color: AppColors.gold, width: 1.5),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  elevation: 0,
                 ),
                 child: const Text(
                   'Save Note',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: AppColors.gold,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -144,8 +147,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               onPrimary: Colors.black,
               surface: Color(0xFF131D24),
               onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: const Color(0xFF131D24),
+            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF131D24)),
           ),
           child: child!,
         );
@@ -166,8 +168,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               onPrimary: Colors.black,
               surface: Color(0xFF131D24),
               onSurface: Colors.white,
-            ),
-            dialogBackgroundColor: const Color(0xFF131D24),
+            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF131D24)),
           ),
           child: child!,
         );
@@ -229,15 +230,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   _refreshBookings();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gold,
+                  backgroundColor: Colors.white.withOpacity(0.12),
+                  foregroundColor: AppColors.gold,
+                  side: const BorderSide(color: AppColors.gold, width: 1.5),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  elevation: 0,
                 ),
                 child: const Text(
                   'Confirm',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: AppColors.gold,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -273,7 +277,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ),
             content: Text(
-              'Are you sure you want to cancel and delete the session with ${item['expert_name']}?',
+              'Are you sure you want to cancel the session with ${item['expert_name']}?',
               style: TextStyle(color: AppColors.textPrimary, height: 1.4),
             ),
             actions: [
@@ -286,22 +290,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  await DatabaseHelper.instance.deleteBooking(item['id']);
+                  await DatabaseHelper.instance.updateBooking(item['id'], {
+                    'status': 'Cancelled',
+                  });
                   if (context.mounted) {
                     Navigator.pop(context);
                   }
                   _refreshBookings();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
+                  backgroundColor: Colors.white.withOpacity(0.05),
+                  foregroundColor: Colors.redAccent,
+                  side: const BorderSide(color: Colors.redAccent, width: 1.5),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  elevation: 0,
                 ),
                 child: const Text(
                   'Cancel Session',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.redAccent,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -325,7 +334,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 100.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -615,10 +624,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 const SizedBox(height: 16),
                                 const Divider(color: Colors.white10, height: 1),
                                 const SizedBox(height: 16),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                Wrap(
+                                  alignment: WrapAlignment.spaceBetween,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 12,
+                                  runSpacing: 8,
                                   children: [
                                     Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
                                           item['price'] ?? 'Rp 0',
@@ -656,8 +669,45 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         ],
                                       ],
                                     ),
-                                    Row(
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 4,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
                                       children: [
+                                        // Chat & Video action (Upcoming only)
+                                        if (status == 'Upcoming') ...[
+                                          InkWell(
+                                            onTap: () {
+                                              widget.onTabChanged('live_chat_expert_${item['expert_id'] ?? 1}');
+                                            },
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.chat_bubble_outline,
+                                                    color: AppColors.gold,
+                                                    size: 14,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'Chat & Video',
+                                                    style: TextStyle(
+                                                      color: AppColors.gold,
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                         // Reschedule action (Upcoming only)
                                         if (status == 'Upcoming') ...[
                                           InkWell(
@@ -669,6 +719,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                 vertical: 4,
                                               ),
                                               child: Row(
+                                                mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   const Icon(
                                                     Icons.edit_calendar,
@@ -688,7 +739,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(width: 8),
                                           InkWell(
                                             onTap: () => _showDeleteDialog(item),
                                             borderRadius: BorderRadius.circular(8),
@@ -698,6 +748,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                 vertical: 4,
                                               ),
                                               child: Row(
+                                                mainAxisSize: MainAxisSize.min,
                                                 children: const [
                                                   Icon(
                                                     Icons.delete_outline,
@@ -717,7 +768,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(width: 8),
                                         ],
                                         // Add/Edit Note action (Any status)
                                         InkWell(
@@ -729,6 +779,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                               vertical: 4,
                                             ),
                                             child: Row(
+                                              mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Icon(
                                                   Icons.note_add_outlined,

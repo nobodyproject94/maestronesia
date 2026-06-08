@@ -39,11 +39,11 @@ class _BookingScreenState extends State<BookingScreen> {
       lastDate: DateTime(2026, 12, 31),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
+          data: ThemeData.dark().copyWith(
             colorScheme: const ColorScheme.dark(
               primary: AppColors.gold,
               onPrimary: Colors.black,
-              surface: AppColors.gold,
+              surface: Color(0xFF131D24),
               onSurface: Colors.white,
             ),
             dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF131D24)),
@@ -65,11 +65,11 @@ class _BookingScreenState extends State<BookingScreen> {
       initialTime: _selectedTime,
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
+          data: ThemeData.dark().copyWith(
             colorScheme: const ColorScheme.dark(
               primary: AppColors.gold,
               onPrimary: Colors.black,
-              surface: AppColors.gold,
+              surface: Color(0xFF131D24),
               onSurface: Colors.white,
             ),
             dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF131D24)),

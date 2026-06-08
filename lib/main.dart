@@ -11,6 +11,8 @@ import 'screens/expert_profile_screen.dart';
 import 'screens/expert_registration_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/live_session_screen.dart';
+import 'screens/live_chat_list_screen.dart';
+import 'screens/live_chat_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/payment_screen.dart';
@@ -19,6 +21,8 @@ import 'screens/profile_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/splash_screen.dart';
 import 'theme.dart';
+
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MaestronesiaApp());
@@ -34,8 +38,20 @@ class MaestronesiaApp extends StatelessWidget {
       builder: (context, isDark, child) {
         if (isDark) {
           AppColors.setToDark();
+          SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.light,
+          ));
         } else {
           AppColors.setToLight();
+          SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.light,
+          ));
         }
         return MaterialApp(
           title: 'MAESTRONESIA',
@@ -113,6 +129,15 @@ class _MainAppControllerState extends State<MainAppController> {
   }
 
   void _navigateTo(String screenName) {
+    if (screenName.startsWith('live_chat_expert_')) {
+      final idStr = screenName.replaceAll('live_chat_expert_', '');
+      final id = int.tryParse(idStr) ?? 1;
+      setState(() {
+        _selectedExpertId = id;
+        _screen = 'live_chat';
+      });
+      return;
+    }
     setState(() {
       _screen = screenName;
     });
@@ -249,7 +274,21 @@ class _MainAppControllerState extends State<MainAppController> {
         return LiveSessionScreen(
           expert: currentExpert,
           onHangUp: () =>
-              _navigateTo(_role == 'expert' ? 'expert_dashboard' : 'dashboard'),
+              _navigateTo(_role == 'expert' ? 'expert_dashboard' : 'live_chat'),
+        );
+      case 'live_chat_list':
+        return LiveChatListScreen(
+          email: _currentUserEmail,
+          onTabChanged: _navigateTo,
+          onSignOut: _handleSignOut,
+        );
+      case 'live_chat':
+        return LiveChatScreen(
+          expert: currentExpert,
+          onBack: () => _navigateTo('live_chat_list'),
+          onStartVideoCall: () => _navigateTo('live_session'),
+          onTabChanged: _navigateTo,
+          onSignOut: _handleSignOut,
         );
       case 'profile':
         return ProfileScreen(
