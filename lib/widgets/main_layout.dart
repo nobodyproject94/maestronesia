@@ -7,6 +7,7 @@ class MainLayout extends StatelessWidget {
   final String activeTab;
   final ValueChanged<String> onTabChanged;
   final VoidCallback onSignOut;
+  final bool showBottomBar;
 
   const MainLayout({
     super.key,
@@ -14,6 +15,7 @@ class MainLayout extends StatelessWidget {
     required this.activeTab,
     required this.onTabChanged,
     required this.onSignOut,
+    this.showBottomBar = true,
   });
 
   @override
@@ -331,44 +333,46 @@ class MainLayout extends StatelessWidget {
             const SizedBox(width: 8),
           ],
         ),
-        body: BottomBar(
-          theme: BottomBarThemeData(
-            barDecoration: BoxDecoration(
-              color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(
-                color: isDark ? AppColors.cardBorder : Colors.white.withOpacity(0.08),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 16,
-                  offset: const Offset(0, 8),
+        body: showBottomBar
+            ? BottomBar(
+                theme: BottomBarThemeData(
+                  barDecoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(32),
+                    border: Border.all(
+                      color: isDark ? AppColors.cardBorder : Colors.white.withOpacity(0.08),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-          layout: BottomBarLayout(
-            width: MediaQuery.of(context).size.width - 48,
-            borderRadius: BorderRadius.circular(32),
-            alignment: Alignment.bottomCenter,
-            respectSafeArea: true,
-          ),
-          body: child,
-          child: SizedBox(
-            height: 64,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildFloatingNavItem(0, Icons.explore_outlined, Icons.explore, isDark),
-                _buildFloatingNavItem(1, Icons.history, Icons.history_toggle_off, isDark),
-                _buildFloatingNavItem(2, Icons.account_balance_wallet_outlined, Icons.account_balance_wallet, isDark),
-                _buildFloatingNavItem(3, Icons.person_outline, Icons.person, isDark),
-              ],
-            ),
-          ),
-        ),
+                layout: BottomBarLayout(
+                  width: MediaQuery.of(context).size.width - 48,
+                  borderRadius: BorderRadius.circular(32),
+                  alignment: Alignment.bottomCenter,
+                  respectSafeArea: true,
+                ),
+                body: child,
+                child: SizedBox(
+                  height: 64,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildFloatingNavItem(0, Icons.explore_outlined, Icons.explore, isDark),
+                      _buildFloatingNavItem(1, Icons.history, Icons.history_toggle_off, isDark),
+                      _buildFloatingNavItem(2, Icons.account_balance_wallet_outlined, Icons.account_balance_wallet, isDark),
+                      _buildFloatingNavItem(3, Icons.person_outline, Icons.person, isDark),
+                    ],
+                  ),
+                ),
+              )
+            : child,
       ),
     );
   }

@@ -115,6 +115,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'live_chat_list',
+          showBottomBar: false,
           onTabChanged: widget.onTabChanged,
           onSignOut: widget.onSignOut,
           child: Scaffold(
