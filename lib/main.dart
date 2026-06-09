@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'utils/preference_handler.dart';
 import 'databases/database_helper.dart';
 import 'models/expert.dart';
 import 'screens/billing_screen.dart';
@@ -112,28 +112,25 @@ class _MainAppControllerState extends State<MainAppController> {
   // FUNGSI ASINKRONUS UNTUK MEMUAT DATA SESSION DARI SHAREDPREFERENCES.
   // =========================================================================
   Future<void> _loadSessionAndTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-
     // =========================================================================
     // MEMBACA STATUS TEMA GELAP (DEFAULT FALSE JIKA BELUM ADA).
     // =========================================================================
-    final isDark = prefs.getBool('theme_is_dark') ?? false;
+    final isDark = await PreferenceHandler.getThemeIsDark();
     isDarkModeNotifier.value = isDark;
 
     // =========================================================================
-    // MENAMBAHKAN LISTENER UNTUK MENDETEKSI PERUBAHAN TEMA SECARA DINAMIS LALU MENYIMPANNYA KE SHAREDPREFERENCES.
+    // MENAMBAHKAN LISTENER UNTUK MENDETEKSI PERUBAHAN TEMA SECARA DINAMIS LALU MENYIMPANNYA KE PREFERENCEHANDLER.
     // =========================================================================
     isDarkModeNotifier.addListener(() async {
-      final p = await SharedPreferences.getInstance();
-      await p.setBool('theme_is_dark', isDarkModeNotifier.value);
+      await PreferenceHandler.setThemeIsDark(isDarkModeNotifier.value);
     });
 
     // =========================================================================
     // MEMBACA DATA LOGIN USER (SESSION).
     // =========================================================================
-    final email = prefs.getString('session_email');
-    final name = prefs.getString('session_name');
-    final role = prefs.getString('session_role');
+    final email = await PreferenceHandler.getSessionEmail();
+    final name = await PreferenceHandler.getSessionName();
+    final role = await PreferenceHandler.getSessionRole();
 
     // =========================================================================
     // JIKA DATA SESSION ADA, LANGSUNG ARAHKAN USER KE DASHBOARD YANG SESUAI (MELEWATI SPLASH/ONBOARDING).
@@ -152,10 +149,7 @@ class _MainAppControllerState extends State<MainAppController> {
   // FUNGSI ASINKRONUS UNTUK MENANGANI LOGOUT PENGGUNA (MENGHAPUS SESSION DARI SHAREDPREFERENCES).
   // =========================================================================
   Future<void> _handleSignOut() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('session_email');
-    await prefs.remove('session_name');
-    await prefs.remove('session_role');
+    await PreferenceHandler.clearSession();
     setState(() {
       _currentUserEmail = 'client@gmail.com';
       _currentUserName = 'Fajar Ramadhan';

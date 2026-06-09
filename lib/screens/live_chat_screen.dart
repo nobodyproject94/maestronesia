@@ -10,9 +10,12 @@ import '../widgets/main_layout.dart';
 // =========================================================================
 class LiveChatScreen extends StatefulWidget {
   final Expert expert; // DATA OBJEK PAKAR YANG SEDANG DIAJAK BERKOMUNIKASI.
-  final VoidCallback onBack; // CALLBACK SAAT PENGGUNA MENEKAN TOMBOL KEMBALI KE DAFTAR CHAT.
-  final VoidCallback onStartVideoCall; // CALLBACK SAAT PENGGUNA MENEKAN TOMBOL PANGGIL VIDEO.
-  final ValueChanged<String> onTabChanged; // CALLBACK UNTUK BERPINDAH NAVIGASI KE TAB LAIN.
+  final VoidCallback
+  onBack; // CALLBACK SAAT PENGGUNA MENEKAN TOMBOL KEMBALI KE DAFTAR CHAT.
+  final VoidCallback
+  onStartVideoCall; // CALLBACK SAAT PENGGUNA MENEKAN TOMBOL PANGGIL VIDEO.
+  final ValueChanged<String>
+  onTabChanged; // CALLBACK UNTUK BERPINDAH NAVIGASI KE TAB LAIN.
   final VoidCallback onSignOut; // CALLBACK KETIKA PENGGUNA KELUAR APLIKASI.
 
   const LiveChatScreen({
@@ -54,7 +57,8 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     // =========================================================================
     _messages.add({
       'sender': 'expert',
-      'text': 'Hello! Thanks for booking a consultation session with me. How can I help you today?',
+      'text':
+          'Hello! Thanks for booking a consultation session with me. How can I help you today?',
       'time': '18:00',
     });
   }
@@ -81,25 +85,30 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       _isTyping = true;
     });
 
-    _messageController.clear(); // MENGOSONGKAN TEXTFIELD SETELAH TOMBOL KIRIM DITEKAN.
+    _messageController
+        .clear(); // MENGOSONGKAN TEXTFIELD SETELAH TOMBOL KIRIM DITEKAN.
     _scrollToBottom(); // MENGARAHKAN SCROLL OTOMATIS KE PESAN TERBARU.
 
     // =========================================================================
     // MENJALANKAN TIMER UNTUK MENSIMULASIKAN BALASAN OTOMATIS DARI PAKAR SETELAH DELAY 1.5 DETIK.
     // =========================================================================
     Timer(const Duration(milliseconds: 1500), () {
-      if (!mounted) return; // MENCEGAH PEMBARUAN STATE JIKA WIDGET SUDAH DI-DISPOSE.
+      if (!mounted)
+        return; // MENCEGAH PEMBARUAN STATE JIKA WIDGET SUDAH DI-DISPOSE.
 
       String replyText = '';
       // =========================================================================
       // MEMBERIKAN TEKS BALASAN SPESIFIK BERDASARKAN NAMA PAKAR UNTUK MEMBERIKAN RASA DINAMIS.
       // =========================================================================
       if (widget.expert.name.contains('Sarah')) {
-        replyText = 'Understood. For your AI and Informatics project, I suggest we review the neural network layers and model optimization techniques. Have you loaded the training dataset?';
+        replyText =
+            'Understood. For your AI and Informatics project, I suggest we review the neural network layers and model optimization techniques. Have you loaded the training dataset?';
       } else if (widget.expert.name.contains('Hermanto')) {
-        replyText = 'Got it. For our engineering session, let\'s analyze the thermodynamic equations and heat transfer ratios. Shall we review the schematics first?';
+        replyText =
+            'Got it. For our engineering session, let\'s analyze the thermodynamic equations and heat transfer ratios. Shall we review the schematics first?';
       } else {
-        replyText = 'Great. I can guide you through these principles step-by-step. Feel free to tap the video icon in the top right to start our real-time video session!';
+        replyText =
+            'Great. I can guide you through these principles step-by-step. Feel free to tap the video icon in the top right to start our real-time video session!';
       }
 
       setState(() {
@@ -162,16 +171,21 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'live_chat_list',
-          showBottomBar: false, // MENYEMBUNYIKAN BOTTOM NAVIGATION BAR AGAR RUANG CHAT LEBIH LUAS.
+          showBottomBar:
+              false, // MENYEMBUNYIKAN BOTTOM NAVIGATION BAR AGAR RUANG CHAT LEBIH LUAS.
           onTabChanged: widget.onTabChanged,
           onSignOut: widget.onSignOut,
           child: Scaffold(
-            backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
+            backgroundColor: isDark
+                ? const Color(0xFF131D24)
+                : Colors.transparent,
             // =========================================================================
             // HEADER ATAS YANG BERISI PROFIL PAKAR DAN TOMBOL PANGGILAN VIDEO.
             // =========================================================================
             appBar: AppBar(
-              backgroundColor: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+              backgroundColor: isDark
+                  ? const Color(0xFF172128)
+                  : Colors.white.withOpacity(0.05),
               elevation: 0,
               scrolledUnderElevation: 0,
               leading: IconButton(
@@ -196,10 +210,14 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: widget.expert.status == 'Available' ? AppColors.gold : AppColors.textSecondary,
+                            color: widget.expert.status == 'Available'
+                                ? AppColors.gold
+                                : AppColors.textSecondary,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isDark ? const Color(0xFF172128) : const Color(0xFF0F2038),
+                              color: isDark
+                                  ? const Color(0xFF172128)
+                                  : const Color(0xFF0F2038),
                               width: 1.5,
                             ),
                           ),
@@ -241,7 +259,11 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                 // TOMBOL UNTUK MEMULAI SESI PANGGILAN VIDEO (KONSULTASI TATAP MUKA VIRTUAL).
                 // =========================================================================
                 IconButton(
-                  icon: const Icon(Icons.videocam_rounded, color: AppColors.gold, size: 28),
+                  icon: const Icon(
+                    Icons.videocam_rounded,
+                    color: AppColors.gold,
+                    size: 28,
+                  ),
                   onPressed: widget.onStartVideoCall,
                   tooltip: 'Start Video Consultation',
                 ),
@@ -269,28 +291,45 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                       // MENYEJAJARKAN PESAN KE KANAN JIKA PENGIRIM ADALAH CLIENT, KE KIRI JIKA EXPERT.
                       // =========================================================================
                       return Align(
-                        alignment: isClient ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: isClient
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 16),
                           constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.75, // BATAS LEBAR GELEMBUNG PESAN.
+                            maxWidth:
+                                MediaQuery.of(context).size.width *
+                                0.75, // BATAS LEBAR GELEMBUNG PESAN.
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
                             // =========================================================================
                             // WARNA GELEMBUNG DISESUAIKAN DENGAN PENGIRIM DAN TEMA.
                             // =========================================================================
                             color: isClient
-                                ? (isDark ? AppColors.gold.withOpacity(0.1) : Colors.white.withOpacity(0.15))
-                                : (isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05)),
+                                ? (isDark
+                                      ? AppColors.gold.withOpacity(0.1)
+                                      : Colors.white.withOpacity(0.15))
+                                : (isDark
+                                      ? const Color(0xFF172128)
+                                      : Colors.white.withOpacity(0.05)),
                             borderRadius: BorderRadius.only(
                               topLeft: const Radius.circular(20),
                               topRight: const Radius.circular(20),
-                              bottomLeft: isClient ? const Radius.circular(20) : Radius.zero,
-                              bottomRight: isClient ? Radius.zero : const Radius.circular(20),
+                              bottomLeft: isClient
+                                  ? const Radius.circular(20)
+                                  : Radius.zero,
+                              bottomRight: isClient
+                                  ? Radius.zero
+                                  : const Radius.circular(20),
                             ),
                             border: Border.all(
-                              color: isClient ? AppColors.gold.withOpacity(0.3) : Colors.white.withOpacity(0.05),
+                              color: isClient
+                                  ? AppColors.gold.withOpacity(0.3)
+                                  : Colors.white.withOpacity(0.05),
                             ),
                           ),
                           child: Column(
@@ -318,7 +357,8 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                                   Text(
                                     msg['time'],
                                     style: TextStyle(
-                                      color: AppColors.textSecondary.withOpacity(0.5),
+                                      color: AppColors.textSecondary
+                                          .withOpacity(0.5),
                                       fontSize: 10,
                                     ),
                                   ),
@@ -360,11 +400,11 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                     top: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF172128).withOpacity(0.4) : Colors.transparent,
+                    color: isDark
+                        ? const Color(0xFF172128).withOpacity(0.4)
+                        : Colors.transparent,
                     border: Border(
-                      top: BorderSide(
-                        color: Colors.white.withOpacity(0.05),
-                      ),
+                      top: BorderSide(color: Colors.white.withOpacity(0.05)),
                     ),
                   ),
                   child: Row(
@@ -375,20 +415,31 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                            color: isDark
+                                ? const Color(0xFF172128)
+                                : Colors.white.withOpacity(0.05),
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: Colors.white.withOpacity(0.05)),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.05),
+                            ),
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: TextField(
                             controller: _messageController,
-                            style: const TextStyle(color: Colors.white, fontSize: 14),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
                             decoration: const InputDecoration(
                               hintText: 'Type a message...',
-                              hintStyle: TextStyle(color: Colors.white30, fontSize: 14),
+                              hintStyle: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 14,
+                              ),
                               border: InputBorder.none,
                             ),
-                            onSubmitted: (_) => _sendMessage(), // MENGIRIM PESAN SAAT TOMBOL ENTER DITEKAN DI KEYBOARD.
+                            onSubmitted: (_) =>
+                                _sendMessage(), // MENGIRIM PESAN SAAT TOMBOL ENTER DITEKAN DI KEYBOARD.
                           ),
                         ),
                       ),
@@ -400,13 +451,13 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                         onTap: _sendMessage,
                         child: Container(
                           padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: AppColors.gold,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE6BC6A).withOpacity(0.15),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.send,
-                            color: Colors.black,
+                            color: Color(0xFFE6BC6A),
                             size: 20,
                           ),
                         ),

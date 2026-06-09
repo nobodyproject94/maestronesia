@@ -26,6 +26,8 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
   final _skillController = TextEditingController();
   final _experienceController = TextEditingController();
   final _bioController = TextEditingController();
+  final _linkedinController = TextEditingController();
+  final _journalController = TextEditingController();
   bool _isLoading = false; // STATUS PEMUATAN UNTUK MENSIMULASIKAN PROSES SUBMIT FORMULIR.
 
   // =========================================================================
@@ -36,6 +38,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
     'Portfolio': false,
     'Degree': false,
     'Journal': false,
+    'Certificates': false,
   };
 
   // =========================================================================
@@ -60,6 +63,8 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
     _skillController.dispose();
     _experienceController.dispose();
     _bioController.dispose();
+    _linkedinController.dispose();
+    _journalController.dispose();
     super.dispose();
   }
 
@@ -350,6 +355,71 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
             contentPadding: const EdgeInsets.all(18),
           ),
         ),
+        const SizedBox(height: 24),
+
+        // =========================================================================
+        // INPUT FORMULIR LINKEDIN PROFILE (OPSIONAL)
+        // =========================================================================
+        Text(
+          'LinkedIn Profile (Optional)',
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _linkedinController,
+          keyboardType: TextInputType.url,
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
+          decoration: InputDecoration(
+            hintText: 'e.g. https://linkedin.com/in/username',
+            hintStyle: TextStyle(
+              color: AppColors.textSecondary.withOpacity(0.3),
+            ),
+            filled: true,
+            fillColor: AppColors.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.all(18),
+          ),
+        ),
+
+        // =========================================================================
+        // INPUT FORMULIR AKADEMIK JOURNAL (HANYA UNTUK ROLE ACADEMIC & OPSIONAL)
+        // =========================================================================
+        if (_category == 'academic') ...[
+          const SizedBox(height: 24),
+          Text(
+            'Academic Journal (Optional)',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _journalController,
+            style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
+            decoration: InputDecoration(
+              hintText: 'e.g. Analysis of Thermal Efficiency',
+              hintStyle: TextStyle(
+                color: AppColors.textSecondary.withOpacity(0.3),
+              ),
+              filled: true,
+              fillColor: AppColors.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.all(18),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -421,6 +491,27 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
           'Portfolio Project',
           Icons.grid_view_outlined,
         ),
+        if (isAcademic) ...[
+          const SizedBox(height: 12),
+          _buildDocRow(
+            'Journal',
+            'Academic Journal (Optional)',
+            Icons.menu_book_outlined,
+          ),
+          const SizedBox(height: 12),
+          _buildDocRow(
+            'Degree',
+            'Higher Degree (Optional)',
+            Icons.school_outlined,
+          ),
+        ] else ...[
+          const SizedBox(height: 12),
+          _buildDocRow(
+            'Certificates',
+            'Professional Certificates (Optional)',
+            Icons.verified_outlined,
+          ),
+        ],
       ],
     );
   }

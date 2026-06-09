@@ -11,8 +11,10 @@ class PaymentSuccessScreen extends StatelessWidget {
   final Expert expert; // OBJEK DATA PAKAR YANG BERHASIL DIPESAN.
   final int selectedDay; // HARI/TANGGAL PELAKSANAAN KONSULTASI TERPILIH.
   final String selectedTime; // WAKTU/JAM PELAKSANAAN KONSULTASI TERPILIH.
-  final VoidCallback onReturn; // CALLBACK UNTUK KEMBALI KE HALAMAN DASHBOARD UTAMA.
-  final VoidCallback onViewSessions; // CALLBACK UNTUK MENGARAHKAN PENGGUNA KE HALAMAN RIWAYAT SESI.
+  final VoidCallback
+  onReturn; // CALLBACK UNTUK KEMBALI KE HALAMAN DASHBOARD UTAMA.
+  final VoidCallback
+  onViewSessions; // CALLBACK UNTUK MENGARAHKAN PENGGUNA KE HALAMAN RIWAYAT SESI.
 
   const PaymentSuccessScreen({
     super.key,
@@ -26,7 +28,8 @@ class PaymentSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND DI BAWAHNYA TERLIHAT.
+      backgroundColor: Colors
+          .transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND DI BAWAHNYA TERLIHAT.
       body: MaestronesiaBackground(
         child: SafeArea(
           child: Padding(
@@ -38,7 +41,7 @@ class PaymentSuccessScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Spacer(),
-                
+
                 // =========================================================================
                 // 1. IKON CENTANG SUKSES BERPENDAR (SUCCESS ICON WITH GLOW EFFECT)
                 // =========================================================================
@@ -46,20 +49,30 @@ class PaymentSuccessScreen extends StatelessWidget {
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    color: AppColors.gold,
+                    // 1. Warna dasar lingkaran dibuat emas transparan bening (10% opacity)
+                    color: const Color(0xFFE6BC6A).withOpacity(0.1),
                     shape: BoxShape.circle,
+                    // 2. Tambahkan border emas menyala sebagai pembatas objek
+                    border: Border.all(
+                      color: const Color(0xFFE6BC6A).withOpacity(0.6),
+                      width: 2,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.gold.withOpacity(0.2),
+                        // 3. Naikkan opacity shadow dan blurRadius agar pendaran cahayanya luas
+                        color: const Color(0xFFE6BC6A).withOpacity(0.4),
                         blurRadius: 40,
-                        spreadRadius: 5,
+                        spreadRadius: 2,
                       ),
                     ],
                   ),
                   child: const Icon(
-                    Icons.check_circle,
-                    color: Colors.black,
-                    size: 64,
+                    Icons
+                        .check, // Ubah ke Icons.check biasa agar tidak menyisakan bulatan hitam
+                    color: Color(
+                      0xFFE6BC6A,
+                    ), // Centang emas solid agar kontras menembus kaca
+                    size: 56,
                   ),
                 ),
                 const SizedBox(height: 40),

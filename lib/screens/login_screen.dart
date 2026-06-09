@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/preference_handler.dart';
 import '../theme.dart';
 import '../databases/database_helper.dart';
 import '../widgets/custom_button.dart';
@@ -76,12 +76,13 @@ class _LoginScreenState extends State<LoginScreen> {
           // =========================================================================
           if (user['role'] == widget.role) {
             // =========================================================================
-            // MENYIMPAN DATA SESI LOGIN SECARA LOKAL MENGGUNAKAN SHAREDPREFERENCES.
+            // MENYIMPAN DATA SESI LOGIN SECARA LOKAL MENGGUNAKAN PREFERENCEHANDLER.
             // =========================================================================
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('session_email', user['email']);
-            await prefs.setString('session_name', user['name'] ?? 'User');
-            await prefs.setString('session_role', widget.role);
+            await PreferenceHandler.saveSession(
+              email: user['email'],
+              name: user['name'] ?? 'User',
+              role: widget.role,
+            );
             
             // =========================================================================
             // MEMICU CALLBACK SUKSES LOGIN UNTUK MEMPERBARUI STATE APLIKASI UTAMA.

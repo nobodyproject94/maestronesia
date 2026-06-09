@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
+import '../utils/preference_handler.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -26,13 +26,19 @@ class DatabaseHelper {
   // =========================================================================
   DatabaseHelper._init();
 
+  // Menentukan apakah menggunakan simulasi database web/desktop (agar tidak crash di platform non-sqflite)
+  bool get _useWebSim => kIsWeb ||
+                         defaultTargetPlatform == TargetPlatform.windows ||
+                         defaultTargetPlatform == TargetPlatform.linux ||
+                         defaultTargetPlatform == TargetPlatform.macOS;
+
   // =========================================================================
   // GETTER ASINKRONUS UNTUK MENGAMBIL INSTANCE DATABASE SQLITE YANG AKTIF.
   // JIKA DATABASE BELUM DIBUAT, IA AKAN MELAKUKAN INISIALISASI TERLEBIH DAHULU.
   // =========================================================================
   Future<Database> get database async {
-    if (kIsWeb) {
-      throw UnsupportedError('sqflite does not support Web');
+    if (_useWebSim) {
+      throw UnsupportedError('sqflite does not support desktop/web platforms');
     }
     if (_database != null) return _database!;
     _database = await _initDB('maestronesia.db');
@@ -151,12 +157,11 @@ class DatabaseHelper {
   // =========================================================================
   Future<void> _initWebDB() async {
     if (_webUsers != null) return;
-    final prefs = await SharedPreferences.getInstance();
     
     // =========================================================================
     // MEMUAT DATA PENGGUNA WEB YANG DISIMPAN SEBAGAI FORMAT STRING JSON.
     // =========================================================================
-    final usersStr = prefs.getString('web_users');
+    final usersStr = await PreferenceHandler.getWebUsers();
     if (usersStr != null) {
       _webUsers = List<Map<String, dynamic>>.from(
         (jsonDecode(usersStr) as List).map((x) => Map<String, dynamic>.from(x as Map))
@@ -168,7 +173,7 @@ class DatabaseHelper {
     // =========================================================================
     // MEMUAT DATA BOOKING WEB.
     // =========================================================================
-    final bookingsStr = prefs.getString('web_bookings');
+    final bookingsStr = await PreferenceHandler.getWebBookings();
     if (bookingsStr != null) {
       _webBookings = List<Map<String, dynamic>>.from(
         (jsonDecode(bookingsStr) as List).map((x) => Map<String, dynamic>.from(x as Map))
@@ -217,26 +222,24 @@ class DatabaseHelper {
   }
 
   // =========================================================================
-  // MENYIMPAN LIST PENGGUNA WEB SIMULASI KE SHAREDPREFERENCES.
+  // MENYIMPAN LIST PENGGUNA WEB SIMULASI KE PREFERENCEHANDLER.
   // =========================================================================
   Future<void> _saveWebUsers() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('web_users', jsonEncode(_webUsers));
+    await PreferenceHandler.setWebUsers(jsonEncode(_webUsers));
   }
 
   // =========================================================================
-  // MENYIMPAN LIST BOOKING WEB SIMULASI KE SHAREDPREFERENCES.
+  // MENYIMPAN LIST BOOKING WEB SIMULASI KE PREFERENCEHANDLER.
   // =========================================================================
   Future<void> _saveWebBookings() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('web_bookings', jsonEncode(_webBookings));
+    await PreferenceHandler.setWebBookings(jsonEncode(_webBookings));
   }
 
   // =========================================================================
   // MENDAFTARKAN PENGGUNA BARU (MENYIMPANNYA KE SQLITE / SHAREDPREFERENCES WEB).
   // =========================================================================
   Future<Map<String, dynamic>?> registerUser(Map<String, dynamic> user) async {
-    if (kIsWeb) {
+    if (_useWebSim) {
       await _initWebDB();
       final email = user['email'];
       final exists = _webUsers!.any((u) => u['email'] == email);
@@ -263,7 +266,7 @@ class DatabaseHelper {
   // MELAKUKAN LOGIN PENGGUNA DENGAN MENCOCOKKAN EMAIL DAN PASSWORD.
   // =========================================================================
   Future<Map<String, dynamic>?> loginUser(String email, String password) async {
-    if (kIsWeb) {
+    if (_useWebSim) {
       await _initWebDB();
       final matches = _webUsers!.where(
         (u) => u['email'] == email && u['password'] == password,
@@ -314,7 +317,7 @@ class DatabaseHelper {
   // MEMBUAT PESANAN BOOKING BARU DAN MENYIMPANNYA KE DATABASE.
   // =========================================================================
   Future<int> createBooking(Map<String, dynamic> booking) async {
-    if (kIsWeb) {
+    if (_useWebSim) {
       await _initWebDB();
       final newBooking = Map<String, dynamic>.from(booking);
       final id = _webBookings!.length + 1;
@@ -332,7 +335,7 @@ class DatabaseHelper {
   // MENGAMBIL DAFTAR SEMUA BOOKING BERDASARKAN EMAIL USER (DIURUTKAN DARI PEMESANAN TERBARU).
   // =========================================================================
   Future<List<Map<String, dynamic>>> getBookings(String userEmail) async {
-    if (kIsWeb) {
+    if (_useWebSim) {
       await _initWebDB();
       final list = _webBookings!.where((b) => b['user_email'] == userEmail).toList();
       // =========================================================================
@@ -355,7 +358,7 @@ class DatabaseHelper {
   // MEMPERBARUI INFORMASI BOOKING TERTENTU BERDASARKAN ID-NYA.
   // =========================================================================
   Future<int> updateBooking(int id, Map<String, dynamic> booking) async {
-    if (kIsWeb) {
+    if (_useWebSim) {
       await _initWebDB();
       final index = _webBookings!.indexWhere((b) => b['id'] == id);
       if (index != -1) {
@@ -381,7 +384,7 @@ class DatabaseHelper {
   // MENGHAPUS DATA BOOKING BERDASARKAN ID-NYA.
   // =========================================================================
   Future<int> deleteBooking(int id) async {
-    if (kIsWeb) {
+    if (_useWebSim) {
       await _initWebDB();
       final index = _webBookings!.indexWhere((b) => b['id'] == id);
       if (index != -1) {

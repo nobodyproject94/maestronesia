@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/preference_handler.dart';
 import '../theme.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/interesting_logos.dart';
@@ -82,12 +82,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         if (result != null) {
           // =========================================================================
-          // MENYIMPAN INFORMASI SESI SECARA LOKAL JIKA PENDAFTARAN BERHASIL.
+          // MENYIMPAN INFORMASI SESI SECARA LOKAL MENGGUNAKAN PREFERENCEHANDLER JIKA REGISTRASI SUKSES.
           // =========================================================================
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('session_email', email);
-          await prefs.setString('session_name', name);
-          await prefs.setString('session_role', widget.role);
+          await PreferenceHandler.saveSession(
+            email: email,
+            name: name,
+            role: widget.role,
+          );
           
           // =========================================================================
           // MEMICU CALLBACK SUKSES REGISTRASI UNTUK MEMPERBARUI STATE APLIKASI UTAMA.
