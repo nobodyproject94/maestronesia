@@ -26,7 +26,9 @@ class DatabaseHelper {
   // =========================================================================
   DatabaseHelper._init();
 
-  // Menentukan apakah menggunakan simulasi database web/desktop (agar tidak crash di platform non-sqflite)
+  // =========================================================================
+  // MENENTUKAN APAKAH MENGGUNAKAN SIMULASI DATABASE WEB/DESKTOP AGAR TIDAK CRASH DI PLATFORM NON-SQFLITE.
+  // =========================================================================
   bool get _useWebSim => kIsWeb ||
                          defaultTargetPlatform == TargetPlatform.windows ||
                          defaultTargetPlatform == TargetPlatform.linux ||
