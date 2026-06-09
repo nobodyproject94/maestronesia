@@ -4,6 +4,11 @@ import '../theme.dart';
 import '../widgets/main_layout.dart';
 import '../databases/database_helper.dart';
 
+// =========================================================================
+// HISTORYSCREEN MENAMPILKAN RIWAYAT PEMESANAN SESI KONSULTASI DARI PENGGUNA.
+// MEMUNGKINKAN PENGGUNA UNTUK MELIHAT SESI MENDATANG (UPCOMING), SESI SELESAI (COMPLETED), SESI DIBATALKAN (CANCELLED),
+// SERTA MENAMBAHKAN CATATAN PERSIAPAN, MENJADWALKAN ULANG (RESCHEDULE), ATAU MEMBATALKAN SESI.
+// =========================================================================
 class HistoryScreen extends StatefulWidget {
   final String email;
   final ValueChanged<String> onTabChanged;
@@ -21,27 +26,36 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  // =========================================================================
+  // OPSI FILTER STATUS PEMESANAN.
+  // =========================================================================
   final List<String> _filters = [
     'All Sessions',
     'Completed',
     'Upcoming',
     'Cancelled',
   ];
-  int _activeFilterIndex = 0;
-  late Future<List<Map<String, dynamic>>> _futureBookings;
+  int _activeFilterIndex = 0; // STATE PENYIMPAN INDEKS FILTER AKTIF TERPILIH.
+  late Future<List<Map<String, dynamic>>> _futureBookings; // FUTURE PENAMPUNG DATA BOOKING DARI SQLITE.
 
   @override
   void initState() {
     super.initState();
-    _refreshBookings();
+    _refreshBookings(); // MEMUAT DATA BOOKING DARI DATABASE SAAT INISIALISASI STATE PERTAMA KALI.
   }
 
+  // =========================================================================
+  // FUNGSI PEMBANTU UNTUK MEMUAT ULANG DAFTAR DATA BOOKING DARI DATABASE.
+  // =========================================================================
   void _refreshBookings() {
     setState(() {
       _futureBookings = DatabaseHelper.instance.getBookings(widget.email);
     });
   }
 
+  // =========================================================================
+  // MENAMPILKAN DIALOG MODAL BLUR UNTUK MENAMBAHKAN ATAU MENGEDIT CATATAN SESI.
+  // =========================================================================
   void _showAddNoteDialog(Map<String, dynamic> item) {
     final noteController = TextEditingController(text: item['notes'] ?? '');
     final isDark = isDarkModeNotifier.value;
@@ -50,7 +64,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       context: context,
       builder: (context) {
         return BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // MEMBERIKAN EFEK BLUR DI BELAKANG DIALOG MODAL.
           child: AlertDialog(
             backgroundColor: isDark
                 ? const Color(0xFF131D24)
@@ -100,13 +114,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  // =========================================================================
+                  // MEMPERBARUI KOLOM 'NOTES' UNTUK ID BOOKING TERKAIT DI DATABASE.
+                  // =========================================================================
                   await DatabaseHelper.instance.updateBooking(item['id'], {
                     'notes': noteController.text,
                   });
                   if (context.mounted) {
-                    Navigator.pop(context);
+                    Navigator.pop(context); // MENUTUP DIALOG SETELAH BERHASIL.
                   }
-                  _refreshBookings();
+                  _refreshBookings(); // MEMPERBARUI UI DENGAN MEMUAT ULANG DATA.
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white.withOpacity(0.12),
@@ -132,6 +149,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
+  // =========================================================================
+  // MENAMPILKAN PEMILIH TANGGAL & WAKTU, LALU MEMICU KONFIRMASI RESCHEDULING SESI KONSULTASI.
+  // =========================================================================
   void _showRescheduleDialog(Map<String, dynamic> item) async {
     final isDark = isDarkModeNotifier.value;
     DateTime? pickedDate = await showDatePicker(
@@ -220,6 +240,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  // =========================================================================
+                  // MEMPERBARUI KOLOM TANGGAL DAN WAKTU SESI BOOKING BARU DI DATABASE.
+                  // =========================================================================
                   await DatabaseHelper.instance.updateBooking(item['id'], {
                     'date': dateStr,
                     'time': timeStr,
@@ -227,7 +250,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   if (context.mounted) {
                     Navigator.pop(context);
                   }
-                  _refreshBookings();
+                  _refreshBookings(); // MEMUAT ULANG DATA BOOKING UNTUK MEREFRESH UI LIST.
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white.withOpacity(0.12),
@@ -253,6 +276,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
+  // =========================================================================
+  // MENAMPILKAN DIALOG KONFIRMASI UNTUK MEMBATALKAN SESI KONSULTASI MENDATANG (STATUS MENJADI CANCELLED).
+  // =========================================================================
   void _showDeleteDialog(Map<String, dynamic> item) {
     final isDark = isDarkModeNotifier.value;
 
@@ -290,6 +316,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  // =========================================================================
+                  // MEMPERBARUI STATUS PEMESANAN MENJADI 'CANCELLED' DI DATABASE.
+                  // =========================================================================
                   await DatabaseHelper.instance.updateBooking(item['id'], {
                     'status': 'Cancelled',
                   });
@@ -334,11 +363,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
-              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 100.0),
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 120.0), // JARAK PADDING BAWAH AGAR AMAN DARI NAVIGATION BAR.
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top row
+                  // =========================================================================
+                  // BARIS JUDUL LAYAR DAN TOMBOL MUAT ULANG (REFRESH)
+                  // =========================================================================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -366,7 +400,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Filters horizontal list
+                  // =========================================================================
+                  // LIST HORIZONTAL TOMBOL FILTER STATUS SESI
+                  // =========================================================================
                   SizedBox(
                     height: 48,
                     child: ListView.separated(
@@ -381,6 +417,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         Border border;
                         Color textColor;
 
+                        // =========================================================================
+                        // KONFIGURASI VISUAL WARNA FILTER CHIP BERDASARKAN STATUS AKTIF & TEMA.
+                        // =========================================================================
                         if (active) {
                           if (isDark) {
                             bgColor = AppColors.gold;
@@ -447,7 +486,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // History Card List using FutureBuilder
+                  // =========================================================================
+                  // MERENDER DAFTAR SESI TRANSAKSI DENGAN FUTUREBUILDER
+                  // =========================================================================
                   FutureBuilder<List<Map<String, dynamic>>>(
                     future: _futureBookings,
                     builder: (context, snapshot) {
@@ -474,6 +515,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       }
 
                       final allBookings = snapshot.data ?? [];
+                      // =========================================================================
+                      // MEMFILTER DATA BOOKING BERDASARKAN STATUS YANG DIPILIH PADA FILTER HORIZONTAL.
+                      // =========================================================================
                       final filtered = allBookings.where((b) {
                         if (_activeFilterIndex == 0) return true;
                         final filterStatus = _filters[_activeFilterIndex];
@@ -495,7 +539,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       }
 
                       return ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(), // SCROLL UTAMA DIATUR OLEH SINGLECHILDSCROLLVIEW DI PARENT.
                         shrinkWrap: true,
                         itemCount: filtered.length,
                         separatorBuilder: (context, index) =>
@@ -506,6 +550,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           final isCompleted = status == 'Completed';
                           final isCancelled = status == 'Cancelled';
 
+                          // =========================================================================
+                          // MENGATUR NILAI RATING SIMULASI JIKA SESI TELAH SELESAI DILAKUKAN.
+                          // =========================================================================
                           double? rating;
                           if (isCompleted) {
                             if (item['expert_name'].toString().contains('Hermanto')) {
@@ -566,6 +613,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         ],
                                       ),
                                     ),
+                                    // =========================================================================
+                                    // LABEL TAG STATUS BOOKING (COMPLETED, CANCELLED, UPCOMING) DENGAN WARNA ADAPTIF.
+                                    // =========================================================================
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 10,
@@ -596,7 +646,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   ],
                                 ),
 
-                                // Display notes if present
+                                // =========================================================================
+                                // MENAMPILKAN CATATAN PERSIAPAN JIKA DATA NOTES TIDAK KOSONG.
+                                // =========================================================================
                                 if (item['notes'] != null &&
                                     item['notes'].toString().isNotEmpty) ...[
                                   const SizedBox(height: 16),
@@ -630,6 +682,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   spacing: 12,
                                   runSpacing: 8,
                                   children: [
+                                    // =========================================================================
+                                    // INFORMASI HARGA DAN RATING SESI.
+                                    // =========================================================================
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -669,12 +724,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         ],
                                       ],
                                     ),
+                                    // =========================================================================
+                                    // MENAMPILKAN TOMBOL-TOMBOL AKSI DINAMIS BERDASARKAN STATUS SESI.
+                                    // =========================================================================
                                     Wrap(
                                       spacing: 8,
                                       runSpacing: 4,
                                       crossAxisAlignment: WrapCrossAlignment.center,
                                       children: [
-                                        // Chat & Video action (Upcoming only)
+                                        // =========================================================================
+                                        // OPSI AKSI 1: CHAT & PANGGILAN VIDEO (HANYA JIKA SESI UPCOMING).
+                                        // =========================================================================
                                         if (status == 'Upcoming') ...[
                                           InkWell(
                                             onTap: () {
@@ -708,7 +768,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             ),
                                           ),
                                         ],
-                                        // Reschedule action (Upcoming only)
+                                        // =========================================================================
+                                        // OPSI AKSI 2: RESCHEDULE/BATAL (HANYA JIKA SESI UPCOMING).
+                                        // =========================================================================
                                         if (status == 'Upcoming') ...[
                                           InkWell(
                                             onTap: () => _showRescheduleDialog(item),
@@ -769,7 +831,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                             ),
                                           ),
                                         ],
-                                        // Add/Edit Note action (Any status)
+                                        // =========================================================================
+                                        // OPSI AKSI 3: TAMBAH / EDIT CATATAN SESI (TERSEDIA UNTUK SEMUA STATUS BOOKING).
+                                        // =========================================================================
                                         InkWell(
                                           onTap: () => _showAddNoteDialog(item),
                                           borderRadius: BorderRadius.circular(8),

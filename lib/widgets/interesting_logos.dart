@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import '../theme.dart';
 
+// =========================================================================
+// INTERESTINGGOOGLELOGO ADALAH WIDGET KUSTOM YANG MENGGAMBARKAN LOGO GOOGLE MENGGUNAKAN GAMBAR VECTOR CUSTOMPAINTER
+// DENGAN TAMBAHAN EFEK GRADIEN LATAR BELAKANG LINGKARAN TRANSPARAN DAN BAYANGAN LEMBUT DI SISINYA.
+// =========================================================================
 class InterestingGoogleLogo extends StatelessWidget {
-  final double size;
+  final double size; // UKURAN LOGO DI DALAM KONTAINER.
   const InterestingGoogleLogo({super.key, this.size = 24});
 
   @override
@@ -40,12 +44,15 @@ class InterestingGoogleLogo extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: CustomPaint(
         size: Size(size, size),
-        painter: _GooglePainter(),
+        painter: _GooglePainter(), // MENGGUNAKAN PAINTER KUSTOM UNTUK MENGGAMBAR KURVA LOGO GOOGLE.
       ),
     );
   }
 }
 
+// =========================================================================
+// _GOOGLEPAINTER BERTUGAS MENGGAMBAR 4 WARNA SEKTOR BUSUR LINGKARAN GOOGLE SERTA GARIS HORIZONTALNYA.
+// =========================================================================
 class _GooglePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -61,23 +68,33 @@ class _GooglePainter extends CustomPainter {
 
     final rect = Rect.fromCircle(center: center, radius: r - paint.strokeWidth / 2);
 
-    // Red sector (top)
+    // =========================================================================
+    // MENGGAMBAR BUSUR SEKTOR MERAH (BAGIAN ATAS).
+    // =========================================================================
     paint.color = const Color(0xFFEA4335);
     canvas.drawArc(rect, -2.5, 1.4, false, paint);
 
-    // Yellow sector (left)
+    // =========================================================================
+    // MENGGAMBAR BUSUR SEKTOR KUNING (BAGIAN KIRI).
+    // =========================================================================
     paint.color = const Color(0xFFFBBC05);
     canvas.drawArc(rect, -4.1, 1.6, false, paint);
 
-    // Green sector (bottom)
+    // =========================================================================
+    // MENGGAMBAR BUSUR SEKTOR HIJAU (BAGIAN BAWAH).
+    // =========================================================================
     paint.color = const Color(0xFF34A853);
     canvas.drawArc(rect, -0.9, 1.8, false, paint);
 
-    // Blue sector (right)
+    // =========================================================================
+    // MENGGAMBAR BUSUR SEKTOR BIRU (BAGIAN KANAN).
+    // =========================================================================
     paint.color = const Color(0xFF4285F4);
     canvas.drawArc(rect, 0.9, 0.9, false, paint);
 
-    // Blue horizontal bar
+    // =========================================================================
+    // MENGGAMBAR GARIS HORIZONTAL BIRU KHAS LOGO GOOGLE.
+    // =========================================================================
     final Paint barPaint = Paint()
       ..color = const Color(0xFF4285F4)
       ..style = PaintingStyle.stroke
@@ -94,6 +111,10 @@ class _GooglePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
+// =========================================================================
+// INTERESTINGLINKEDINLOGO MERENDER KONTAINER BERGRADIEN BIRU DENGAN TEKS IKONIK "IN"
+// YANG MEMILIKI AKSEN BORDER EMAS UNTUK TOMBOL MASUK DENGAN AKUN LINKEDIN.
+// =========================================================================
 class InterestingLinkedInLogo extends StatelessWidget {
   final double size;
   const InterestingLinkedInLogo({super.key, this.size = 24});
@@ -107,7 +128,7 @@ class InterestingLinkedInLogo extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         gradient: const LinearGradient(
           colors: [
-            Color(0xFF0077B5),
+            Color(0xFF0077B5), // WARNA BIRU KHAS LINKEDIN.
             Color(0xFF004B73),
           ],
           begin: Alignment.topLeft,

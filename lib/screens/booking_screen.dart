@@ -4,6 +4,9 @@ import '../models/expert.dart';
 import '../widgets/main_layout.dart';
 import '../widgets/custom_button.dart';
 
+// =========================================================================
+// BOOKINGSCREEN MENANGANI PROSES PEMILIHAN JADWAL KONSULTASI (HARI DAN JAM) DENGAN EXPERT TERTENTU.
+// =========================================================================
 class BookingScreen extends StatefulWidget {
   final Expert expert;
   final VoidCallback onBack;
@@ -25,12 +28,18 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  DateTime _selectedDate = DateTime(2026, 6, 13); // Default June 13, 2026
+  // =========================================================================
+  // STATE LOKAL UNTUK MENAMPUNG TANGGAL DAN WAKTU KONSULTASI TERPILIH.
+  // =========================================================================
+  DateTime _selectedDate = DateTime(2026, 6, 13); // DEFAULT DIATUR PADA 13 JUNI 2026.
   TimeOfDay _selectedTime = const TimeOfDay(
     hour: 9,
     minute: 0,
-  ); // Default 09:00 AM
+  ); // DEFAULT WAKTU DIATUR PADA 09:00 AM.
 
+  // =========================================================================
+  // FUNGSI ASINKRONUS UNTUK MEMUNCULKAN PEMILIH TANGGAL (DATE PICKER) BAWAAN FLUTTER DENGAN TEMA GELAP KUSTOM.
+  // =========================================================================
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -46,7 +55,9 @@ class _BookingScreenState extends State<BookingScreen> {
               surface: Color(0xFF131D24),
               onSurface: Colors.white,
             ),
-            dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF131D24)),
+            dialogTheme: const DialogThemeData(
+              backgroundColor: Color(0xFF131D24),
+            ),
           ),
           child: child!,
         );
@@ -54,11 +65,14 @@ class _BookingScreenState extends State<BookingScreen> {
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
-        _selectedDate = picked;
+        _selectedDate = picked; // MEMPERBARUI TANGGAL YANG DIPILIH.
       });
     }
   }
 
+  // =========================================================================
+  // FUNGSI ASINKRONUS UNTUK MEMUNCULKAN PEMILIH WAKTU (TIME PICKER) BAWAAN FLUTTER.
+  // =========================================================================
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -72,7 +86,9 @@ class _BookingScreenState extends State<BookingScreen> {
               surface: Color(0xFF131D24),
               onSurface: Colors.white,
             ),
-            dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF131D24)),
+            dialogTheme: const DialogThemeData(
+              backgroundColor: Color(0xFF131D24),
+            ),
           ),
           child: child!,
         );
@@ -80,7 +96,7 @@ class _BookingScreenState extends State<BookingScreen> {
     );
     if (picked != null && picked != _selectedTime) {
       setState(() {
-        _selectedTime = picked;
+        _selectedTime = picked; // MEMPERBARUI WAKTU YANG DIPILIH.
       });
     }
   }
@@ -97,11 +113,24 @@ class _BookingScreenState extends State<BookingScreen> {
           child: Scaffold(
             backgroundColor: isDark ? Colors.transparent : Colors.transparent,
             body: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              // =========================================================================
+              // EFEK SCROLL BOUNCE.
+              // =========================================================================
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              padding: const EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 24.0,
+                bottom: 120.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top Row
+                  // =========================================================================
+                  // BARIS HEADER ATAS (TOMBOL KEMBALI & JUDUL SCREEN).
+                  // =========================================================================
                   Row(
                     children: [
                       IconButton(
@@ -111,11 +140,15 @@ class _BookingScreenState extends State<BookingScreen> {
                           color: AppColors.textSecondary,
                         ),
                         style: IconButton.styleFrom(
-                          backgroundColor: isDark ? AppColors.surface : Colors.white.withOpacity(0.05),
+                          backgroundColor: isDark
+                              ? AppColors.surface
+                              : Colors.white.withOpacity(0.05),
                           padding: const EdgeInsets.all(16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                            side: BorderSide(
+                              color: Colors.white.withOpacity(0.05),
+                            ),
                           ),
                         ),
                       ),
@@ -148,7 +181,9 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Select Date title
+                  // =========================================================================
+                  // LABEL PEMILIHAN JADWAL
+                  // =========================================================================
                   const Text(
                     'SELECT DATE & TIME',
                     style: TextStyle(
@@ -160,13 +195,17 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Date Selection Card
+                  // =========================================================================
+                  // KARTU PEMILIH TANGGAL
+                  // =========================================================================
                   GestureDetector(
                     onTap: () => _selectDate(context),
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.surface : Colors.white.withOpacity(0.05),
+                        color: isDark
+                            ? AppColors.surface
+                            : Colors.white.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
                           color: AppColors.gold.withOpacity(0.3),
@@ -175,7 +214,11 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_month, color: AppColors.gold, size: 28),
+                          const Icon(
+                            Icons.calendar_month,
+                            color: AppColors.gold,
+                            size: 28,
+                          ),
                           const SizedBox(width: 16),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,20 +244,27 @@ class _BookingScreenState extends State<BookingScreen> {
                             ],
                           ),
                           const Spacer(),
-                          Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+                          Icon(
+                            Icons.arrow_drop_down,
+                            color: AppColors.textSecondary,
+                          ),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 16),
 
-                  // Time Selection Card
+                  // =========================================================================
+                  // KARTU PEMILIH JAM
+                  // =========================================================================
                   GestureDetector(
                     onTap: () => _selectTime(context),
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.surface : Colors.white.withOpacity(0.05),
+                        color: isDark
+                            ? AppColors.surface
+                            : Colors.white.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
                           color: AppColors.gold.withOpacity(0.3),
@@ -223,7 +273,11 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.access_time, color: AppColors.gold, size: 28),
+                          const Icon(
+                            Icons.access_time,
+                            color: AppColors.gold,
+                            size: 28,
+                          ),
                           const SizedBox(width: 16),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,18 +303,25 @@ class _BookingScreenState extends State<BookingScreen> {
                             ],
                           ),
                           const Spacer(),
-                          Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
+                          Icon(
+                            Icons.arrow_drop_down,
+                            color: AppColors.textSecondary,
+                          ),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 32),
 
-                  // Summary Card
+                  // =========================================================================
+                  // KARTU RINGKASAN DETAIL TRANSAKSI
+                  // =========================================================================
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.surface.withOpacity(0.4) : Colors.white.withOpacity(0.05),
+                      color: isDark
+                          ? AppColors.surface.withOpacity(0.4)
+                          : Colors.white.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(28),
                       border: Border.all(color: Colors.white.withOpacity(0.05)),
                     ),
@@ -338,6 +399,9 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                   const SizedBox(height: 32),
 
+                  // =========================================================================
+                  // TOMBOL LANJUT KE CHECKOUT
+                  // =========================================================================
                   MaestronesiaButton(
                     onPressed: () => widget.onProceed(
                       _selectedDate.day,
@@ -345,7 +409,10 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                     child: const Text(
                       'Proceed to Checkout',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -353,7 +420,7 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
           ),
         );
-      }
+      },
     );
   }
 }

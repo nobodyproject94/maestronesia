@@ -4,12 +4,16 @@ import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
 
+// =========================================================================
+// LIVECHATSCREEN ADALAH STATEFULWIDGET UNTUK MENGELOLA INTERAKSI OBROLAN TEKS REAL-TIME
+// SECARA LANGSUNG DENGAN PAKAR TERTENTU YANG TELAH DIPESAN OLEH PENGGUNA.
+// =========================================================================
 class LiveChatScreen extends StatefulWidget {
-  final Expert expert;
-  final VoidCallback onBack;
-  final VoidCallback onStartVideoCall;
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
+  final Expert expert; // DATA OBJEK PAKAR YANG SEDANG DIAJAK BERKOMUNIKASI.
+  final VoidCallback onBack; // CALLBACK SAAT PENGGUNA MENEKAN TOMBOL KEMBALI KE DAFTAR CHAT.
+  final VoidCallback onStartVideoCall; // CALLBACK SAAT PENGGUNA MENEKAN TOMBOL PANGGIL VIDEO.
+  final ValueChanged<String> onTabChanged; // CALLBACK UNTUK BERPINDAH NAVIGASI KE TAB LAIN.
+  final VoidCallback onSignOut; // CALLBACK KETIKA PENGGUNA KELUAR APLIKASI.
 
   const LiveChatScreen({
     super.key,
@@ -25,15 +29,29 @@ class LiveChatScreen extends StatefulWidget {
 }
 
 class _LiveChatScreenState extends State<LiveChatScreen> {
+  // =========================================================================
+  // CONTROLLER UNTUK MENANGANI INPUT TEKS YANG DIKETIK PENGGUNA DI DALAM TEXTFIELD.
+  // =========================================================================
   final TextEditingController _messageController = TextEditingController();
+  // =========================================================================
+  // CONTROLLER UNTUK MENGONTROL POSISI SCROLL PADA DAFTAR PESAN.
+  // =========================================================================
   final ScrollController _scrollController = ScrollController();
+  // =========================================================================
+  // DAFTAR LOKAL UNTUK MENAMPUNG SELURUH RIWAYAT PESAN SELAMA SESI CHAT AKTIF.
+  // =========================================================================
   final List<Map<String, dynamic>> _messages = [];
+  // =========================================================================
+  // STATE BOOLEAN UNTUK MELACAK STATUS APAKAH PAKAR SEDANG MENSIMULASIKAN MENGETIK.
+  // =========================================================================
   bool _isTyping = false;
 
   @override
   void initState() {
     super.initState();
-    // Load initial messages
+    // =========================================================================
+    // MEMASUKKAN PESAN PEMBUKA DEFAULT DARI PAKAR SAAT PERTAMA KALI LAYAR DIBUKA.
+    // =========================================================================
     _messages.add({
       'sender': 'expert',
       'text': 'Hello! Thanks for booking a consultation session with me. How can I help you today?',
@@ -41,27 +59,41 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     });
   }
 
+  // =========================================================================
+  // FUNGSI UNTUK MENGIRIM PESAN YANG DIINPUT PENGGUNA.
+  // =========================================================================
   void _sendMessage() {
     final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty) return; // MENCEGAH PENGIRIMAN PESAN KOSONG.
 
     setState(() {
+      // =========================================================================
+      // MENAMBAHKAN PESAN PENGGUNA KE DAFTAR LOKAL.
+      // =========================================================================
       _messages.add({
         'sender': 'client',
         'text': text,
         'time': _getCurrentTime(),
       });
+      // =========================================================================
+      // MENYALAKAN STATUS MENGETIK UNTUK PAKAR SEBAGAI SIMULASI RESPONS.
+      // =========================================================================
       _isTyping = true;
     });
 
-    _messageController.clear();
-    _scrollToBottom();
+    _messageController.clear(); // MENGOSONGKAN TEXTFIELD SETELAH TOMBOL KIRIM DITEKAN.
+    _scrollToBottom(); // MENGARAHKAN SCROLL OTOMATIS KE PESAN TERBARU.
 
-    // Trigger expert response after 1.5 seconds
+    // =========================================================================
+    // MENJALANKAN TIMER UNTUK MENSIMULASIKAN BALASAN OTOMATIS DARI PAKAR SETELAH DELAY 1.5 DETIK.
+    // =========================================================================
     Timer(const Duration(milliseconds: 1500), () {
-      if (!mounted) return;
+      if (!mounted) return; // MENCEGAH PEMBARUAN STATE JIKA WIDGET SUDAH DI-DISPOSE.
 
       String replyText = '';
+      // =========================================================================
+      // MEMBERIKAN TEKS BALASAN SPESIFIK BERDASARKAN NAMA PAKAR UNTUK MEMBERIKAN RASA DINAMIS.
+      // =========================================================================
       if (widget.expert.name.contains('Sarah')) {
         replyText = 'Understood. For your AI and Informatics project, I suggest we review the neural network layers and model optimization techniques. Have you loaded the training dataset?';
       } else if (widget.expert.name.contains('Hermanto')) {
@@ -71,17 +103,23 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       }
 
       setState(() {
+        // =========================================================================
+        // MENAMBAHKAN PESAN BALASAN PAKAR KE DALAM DAFTAR LOKAL.
+        // =========================================================================
         _messages.add({
           'sender': 'expert',
           'text': replyText,
           'time': _getCurrentTime(),
         });
-        _isTyping = false;
+        _isTyping = false; // MEMATIKAN STATUS SIMULASI MENGETIK.
       });
-      _scrollToBottom();
+      _scrollToBottom(); // MENGARAHKAN KEMBALI SCROLL KE PESAN PALING BAWAH.
     });
   }
 
+  // =========================================================================
+  // FUNGSI PEMBANTU UNTUK MENDAPATKAN FORMAT WAKTU SAAT INI (HH:MM).
+  // =========================================================================
   String _getCurrentTime() {
     final now = DateTime.now();
     final hour = now.hour.toString().padLeft(2, '0');
@@ -89,6 +127,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     return '$hour:$minute';
   }
 
+  // =========================================================================
+  // FUNGSI UNTUK MENGGESER POSISI LISTVIEW KE TITIK PALING BAWAH SECARA HALUS.
+  // =========================================================================
   void _scrollToBottom() {
     Timer(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
@@ -103,6 +144,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
 
   @override
   void dispose() {
+    // =========================================================================
+    // MEMBERSIHKAN CONTROLLERS DARI MEMORY UNTUK MENGHINDARI MEMORY LEAK.
+    // =========================================================================
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -110,16 +154,22 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // =========================================================================
+    // VALUELISTENABLEBUILDER MEMANTAU PERUBAHAN STATUS TEMA (GELAP/TERANG).
+    // =========================================================================
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'live_chat_list',
-          showBottomBar: false,
+          showBottomBar: false, // MENYEMBUNYIKAN BOTTOM NAVIGATION BAR AGAR RUANG CHAT LEBIH LUAS.
           onTabChanged: widget.onTabChanged,
           onSignOut: widget.onSignOut,
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
+            // =========================================================================
+            // HEADER ATAS YANG BERISI PROFIL PAKAR DAN TOMBOL PANGGILAN VIDEO.
+            // =========================================================================
             appBar: AppBar(
               backgroundColor: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
               elevation: 0,
@@ -130,6 +180,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
               ),
               title: Row(
                 children: [
+                  // =========================================================================
+                  // STACK AVATAR PAKAR DENGAN INDIKATOR STATUS ONLINE DI POJOK KANAN BAWAH.
+                  // =========================================================================
                   Stack(
                     children: [
                       CircleAvatar(
@@ -155,6 +208,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                     ],
                   ),
                   const SizedBox(width: 12),
+                  // =========================================================================
+                  // MENAMPILKAN NAMA PAKAR DAN STATUS KONEKSI OBROLAN.
+                  // =========================================================================
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,6 +237,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                 ],
               ),
               actions: [
+                // =========================================================================
+                // TOMBOL UNTUK MEMULAI SESI PANGGILAN VIDEO (KONSULTASI TATAP MUKA VIRTUAL).
+                // =========================================================================
                 IconButton(
                   icon: const Icon(Icons.videocam_rounded, color: AppColors.gold, size: 28),
                   onPressed: widget.onStartVideoCall,
@@ -191,8 +250,14 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
             ),
             body: Column(
               children: [
+                // =========================================================================
+                // DAFTAR GELEMBUNG CHAT UTAMA YANG DAPAT DI-SCROLL.
+                // =========================================================================
                 Expanded(
                   child: ListView.builder(
+                    physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
                     controller: _scrollController,
                     padding: const EdgeInsets.all(20.0),
                     itemCount: _messages.length,
@@ -200,15 +265,21 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                       final msg = _messages[index];
                       final isClient = msg['sender'] == 'client';
 
+                      // =========================================================================
+                      // MENYEJAJARKAN PESAN KE KANAN JIKA PENGIRIM ADALAH CLIENT, KE KIRI JIKA EXPERT.
+                      // =========================================================================
                       return Align(
                         alignment: isClient ? Alignment.centerRight : Alignment.centerLeft,
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 16),
                           constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.75,
+                            maxWidth: MediaQuery.of(context).size.width * 0.75, // BATAS LEBAR GELEMBUNG PESAN.
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
+                            // =========================================================================
+                            // WARNA GELEMBUNG DISESUAIKAN DENGAN PENGIRIM DAN TEMA.
+                            // =========================================================================
                             color: isClient
                                 ? (isDark ? AppColors.gold.withOpacity(0.1) : Colors.white.withOpacity(0.15))
                                 : (isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05)),
@@ -225,6 +296,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // =========================================================================
+                              // TEKS PESAN YANG DIKIRIMKAN.
+                              // =========================================================================
                               Text(
                                 msg['text'],
                                 style: const TextStyle(
@@ -234,6 +308,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                                 ),
                               ),
                               const SizedBox(height: 4),
+                              // =========================================================================
+                              // LABEL PENUNJUK WAKTU PESAN DIKIRIM.
+                              // =========================================================================
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 mainAxisSize: MainAxisSize.min,
@@ -254,6 +331,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                     },
                   ),
                 ),
+                // =========================================================================
+                // INDIKATOR TEKS BERJALAN JIKA PAKAR SEDANG MENYIMULASIKAN STATUS "MENGETIK...".
+                // =========================================================================
                 if (_isTyping)
                   Padding(
                     padding: const EdgeInsets.only(left: 20, bottom: 8),
@@ -269,6 +349,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                       ),
                     ),
                   ),
+                // =========================================================================
+                // PANEL INPUT TEKS DAN TOMBOL KIRIM DI BAGIAN PALING BAWAH LAYAR CHAT.
+                // =========================================================================
                 Container(
                   padding: const EdgeInsets.only(
                     left: 20,
@@ -286,6 +369,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                   ),
                   child: Row(
                     children: [
+                      // =========================================================================
+                      // KOLOM INPUT TEKS.
+                      // =========================================================================
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
@@ -302,11 +388,14 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                               hintStyle: TextStyle(color: Colors.white30, fontSize: 14),
                               border: InputBorder.none,
                             ),
-                            onSubmitted: (_) => _sendMessage(),
+                            onSubmitted: (_) => _sendMessage(), // MENGIRIM PESAN SAAT TOMBOL ENTER DITEKAN DI KEYBOARD.
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
+                      // =========================================================================
+                      // TOMBOL IKON KIRIM BULAT BERLATAR EMAS.
+                      // =========================================================================
                       GestureDetector(
                         onTap: _sendMessage,
                         child: Container(

@@ -4,16 +4,32 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+// =========================================================================
+// DATABASEHELPER ADALAH KELAS PEMBANTU UNTUK MENGELOLA SEMUA TRANSAKSI DATABASE SQLITE LOKAL.
+// MENGGUNAKAN POLA SINGLETON UNTUK MEMASTIKAN HANYA ADA SATU INSTANCE DATABASE YANG TERBUKA DI APLIKASI.
+// =========================================================================
 class DatabaseHelper {
+  // =========================================================================
+  // INSTANCE STATIS TUNGGAL UNTUK DIAKSES SECARA GLOBAL (DATABASEHELPER.INSTANCE).
+  // =========================================================================
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
 
-  // Web Simulation Fallback lists
+  // =========================================================================
+  // VARIABEL PENAMPUNG FALLBACK UNTUK SIMULASI DATABASE DI FLUTTER WEB (MENGGUNAKAN SHAREDPREFERENCES).
+  // =========================================================================
   static List<Map<String, dynamic>>? _webUsers;
   static List<Map<String, dynamic>>? _webBookings;
 
+  // =========================================================================
+  // KONSTRUKTOR PRIVAT UNTUK MENCEGAH PEMBUATAN INSTANCE BARU SECARA LANGSUNG DARI LUAR KELAS.
+  // =========================================================================
   DatabaseHelper._init();
 
+  // =========================================================================
+  // GETTER ASINKRONUS UNTUK MENGAMBIL INSTANCE DATABASE SQLITE YANG AKTIF.
+  // JIKA DATABASE BELUM DIBUAT, IA AKAN MELAKUKAN INISIALISASI TERLEBIH DAHULU.
+  // =========================================================================
   Future<Database> get database async {
     if (kIsWeb) {
       throw UnsupportedError('sqflite does not support Web');
@@ -23,28 +39,45 @@ class DatabaseHelper {
     return _database!;
   }
 
+  // =========================================================================
+  // MENGINISIALISASI KONEKSI DATABASE SQLITE DENGAN NAMA FILE YANG DITENTUKAN.
+  // =========================================================================
   Future<Database> _initDB(String filePath) async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
+    final dbPath = await getDatabasesPath(); // MENDAPATKAN FOLDER PENYIMPANAN DATABASE LOKAL PADA PERANGKAT.
+    final path = join(dbPath, filePath); // MENGGABUNGKAN FOLDER PATH DENGAN NAMA FILE DATABASE.
     return await openDatabase(
       path,
-      version: 2,
-      onCreate: _createDB,
-      onUpgrade: _upgradeDB,
+      version: 2, // VERSI DATABASE UNTUK MENGELOLA SKEMA MIGRASI JIKA ADA PERUBAHAN.
+      onCreate: _createDB, // FUNGSI CALLBACK YANG DIJALANKAN SAAT DATABASE PERTAMA KALI DIBUAT.
+      onUpgrade: _upgradeDB, // FUNGSI CALLBACK UNTUK MEMPERBARUI SKEMA DATABASE SAAT VERSI DINAIKKAN.
     );
   }
 
+  // =========================================================================
+  // MELAKUKAN MIGRASI/UPDATE STRUKTUR TABEL JIKA TERJADI PENINGKATAN VERSI DATABASE.
+  // =========================================================================
   Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       try {
+        // =========================================================================
+        // MENAMBAHKAN KOLOM BARU 'NOTES' KE TABEL BOOKINGS UNTUK MIGRASI KE VERSI 2.
+        // =========================================================================
         await db.execute('ALTER TABLE bookings ADD COLUMN notes TEXT');
       } catch (e) {
-        // column might already exist
+        // =========================================================================
+        // ABAIKAN JIKA KOLOM TERNYATA SUDAH ADA.
+        // =========================================================================
       }
     }
   }
 
+  // =========================================================================
+  // MEMBUAT TABEL-TABEL BARU SAAT DATABASE PERTAMA KALI DIINISIALISASI.
+  // =========================================================================
   Future<void> _createDB(Database db, int version) async {
+    // =========================================================================
+    // MEMBUAT TABEL 'USERS' UNTUK MENYIMPAN AKUN PENGGUNA (CLIENT / EXPERT).
+    // =========================================================================
     await db.execute('''
       CREATE TABLE users(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,6 +88,9 @@ class DatabaseHelper {
       )
     ''');
 
+    // =========================================================================
+    // MEMBUAT TABEL 'BOOKINGS' UNTUK MENYIMPAN TRANSAKSI PESANAN KONSULTASI.
+    // =========================================================================
     await db.execute('''
       CREATE TABLE bookings(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -70,7 +106,9 @@ class DatabaseHelper {
       )
     ''');
 
-    // Pre-populate some dummy bookings to make the history screen look alive
+    // =========================================================================
+    // MEMASUKKAN BEBERAPA DATA BOOKING AWAL (DUMMY DATA) AGAR LAYAR RIWAYAT KONSULTASI TERLIHAT AKTIF PADA PERCOBAAN PERTAMA.
+    // =========================================================================
     await db.insert('bookings', {
       'user_email': 'fajar@example.com',
       'expert_id': 1,
@@ -108,11 +146,16 @@ class DatabaseHelper {
     });
   }
 
-  // Helper methods to manage web simulation state in SharedPreferences
+  // =========================================================================
+  // FUNGSI SIMULASI UNTUK INISIALISASI DATABASE DI WEB MENGGUNAKAN SHAREDPREFERENCES.
+  // =========================================================================
   Future<void> _initWebDB() async {
     if (_webUsers != null) return;
     final prefs = await SharedPreferences.getInstance();
     
+    // =========================================================================
+    // MEMUAT DATA PENGGUNA WEB YANG DISIMPAN SEBAGAI FORMAT STRING JSON.
+    // =========================================================================
     final usersStr = prefs.getString('web_users');
     if (usersStr != null) {
       _webUsers = List<Map<String, dynamic>>.from(
@@ -122,12 +165,18 @@ class DatabaseHelper {
       _webUsers = [];
     }
 
+    // =========================================================================
+    // MEMUAT DATA BOOKING WEB.
+    // =========================================================================
     final bookingsStr = prefs.getString('web_bookings');
     if (bookingsStr != null) {
       _webBookings = List<Map<String, dynamic>>.from(
         (jsonDecode(bookingsStr) as List).map((x) => Map<String, dynamic>.from(x as Map))
       );
     } else {
+      // =========================================================================
+      // DATA DUMMY DEFAULT UNTUK SIMULASI BOOKING DI WEB.
+      // =========================================================================
       _webBookings = [
         {
           'id': 1,
@@ -167,22 +216,31 @@ class DatabaseHelper {
     }
   }
 
+  // =========================================================================
+  // MENYIMPAN LIST PENGGUNA WEB SIMULASI KE SHAREDPREFERENCES.
+  // =========================================================================
   Future<void> _saveWebUsers() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('web_users', jsonEncode(_webUsers));
   }
 
+  // =========================================================================
+  // MENYIMPAN LIST BOOKING WEB SIMULASI KE SHAREDPREFERENCES.
+  // =========================================================================
   Future<void> _saveWebBookings() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('web_bookings', jsonEncode(_webBookings));
   }
 
+  // =========================================================================
+  // MENDAFTARKAN PENGGUNA BARU (MENYIMPANNYA KE SQLITE / SHAREDPREFERENCES WEB).
+  // =========================================================================
   Future<Map<String, dynamic>?> registerUser(Map<String, dynamic> user) async {
     if (kIsWeb) {
       await _initWebDB();
       final email = user['email'];
       final exists = _webUsers!.any((u) => u['email'] == email);
-      if (exists) return null;
+      if (exists) return null; // EMAIL SUDAH TERDAFTAR.
       final registeredUser = Map<String, dynamic>.from(user);
       registeredUser['id'] = _webUsers!.length + 1;
       _webUsers!.add(registeredUser);
@@ -201,6 +259,9 @@ class DatabaseHelper {
     }
   }
 
+  // =========================================================================
+  // MELAKUKAN LOGIN PENGGUNA DENGAN MENCOCOKKAN EMAIL DAN PASSWORD.
+  // =========================================================================
   Future<Map<String, dynamic>?> loginUser(String email, String password) async {
     if (kIsWeb) {
       await _initWebDB();
@@ -210,6 +271,9 @@ class DatabaseHelper {
       if (matches.isNotEmpty) {
         return matches.first;
       }
+      // =========================================================================
+      // AKUN SIMULASI DEFAULT JIKA DICOBA DI WEB.
+      // =========================================================================
       if (email == 'fajar@example.com' && password == 'password') {
         return {
           'id': 9999,
@@ -231,7 +295,9 @@ class DatabaseHelper {
     if (maps.isNotEmpty) {
       return maps.first;
     }
-    // Default mock user
+    // =========================================================================
+    // AKUN SIMULASI DEFAULT JIKA SQLITE KOSONG.
+    // =========================================================================
     if (email == 'fajar@example.com' && password == 'password') {
       return {
         'id': 9999,
@@ -244,6 +310,9 @@ class DatabaseHelper {
     return null;
   }
 
+  // =========================================================================
+  // MEMBUAT PESANAN BOOKING BARU DAN MENYIMPANNYA KE DATABASE.
+  // =========================================================================
   Future<int> createBooking(Map<String, dynamic> booking) async {
     if (kIsWeb) {
       await _initWebDB();
@@ -259,11 +328,16 @@ class DatabaseHelper {
     return await db.insert('bookings', booking);
   }
 
+  // =========================================================================
+  // MENGAMBIL DAFTAR SEMUA BOOKING BERDASARKAN EMAIL USER (DIURUTKAN DARI PEMESANAN TERBARU).
+  // =========================================================================
   Future<List<Map<String, dynamic>>> getBookings(String userEmail) async {
     if (kIsWeb) {
       await _initWebDB();
       final list = _webBookings!.where((b) => b['user_email'] == userEmail).toList();
-      // Sort reverse by ID
+      // =========================================================================
+      // URUTKAN TERBALIK BERDASARKAN ID (TERBARU DI ATAS).
+      // =========================================================================
       list.sort((a, b) => (b['id'] as int).compareTo(a['id'] as int));
       return list;
     }
@@ -277,6 +351,9 @@ class DatabaseHelper {
     );
   }
 
+  // =========================================================================
+  // MEMPERBARUI INFORMASI BOOKING TERTENTU BERDASARKAN ID-NYA.
+  // =========================================================================
   Future<int> updateBooking(int id, Map<String, dynamic> booking) async {
     if (kIsWeb) {
       await _initWebDB();
@@ -300,6 +377,9 @@ class DatabaseHelper {
     );
   }
 
+  // =========================================================================
+  // MENGHAPUS DATA BOOKING BERDASARKAN ID-NYA.
+  // =========================================================================
   Future<int> deleteBooking(int id) async {
     if (kIsWeb) {
       await _initWebDB();

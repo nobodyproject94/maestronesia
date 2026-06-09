@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../widgets/main_layout.dart';
 
+// =========================================================================
+// EXPERTDASHBOARDSCREEN MERENDER BERANDA KHUSUS UNTUK PENGGUNA YANG BERSTATUS EXPERT.
+// MENAMPILKAN STATUS AKTIF (ONLINE/OFFLINE), TOTAL PENDAPATAN (EARNINGS), DAN DAFTAR NOTIFIKASI.
+// =========================================================================
 class ExpertDashboardScreen extends StatefulWidget {
   final VoidCallback onStartLiveSession;
   final ValueChanged<String> onTabChanged;
@@ -19,7 +23,7 @@ class ExpertDashboardScreen extends StatefulWidget {
 }
 
 class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
-  bool _isOnline = true;
+  bool _isOnline = true; // STATE UNTUK MEMANTAU STATUS AKTIF EXPERT (ONLINE / OFFLINE).
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +34,20 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
           activeTab: 'dashboard',
           onTabChanged: widget.onTabChanged,
           onSignOut: widget.onSignOut,
-          child: SingleChildScrollView(
-            child: Column(
+          child: Scaffold(
+            backgroundColor: Colors.transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND TERLIHAT.
+            body: SingleChildScrollView(
+              // =========================================================================
+              // PHYSICS BOUNCINGSCROLLPHYSICS UNTUK SCROLLING YANG MULUS DENGAN PANTULAN DI IOS.
+              // =========================================================================
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              child: Column(
               children: [
-                // PERBAIKAN HEADER BANNER: Emas di Dark Mode, Transparan tipis di Light Mode
+                // =========================================================================
+                // HEADER BANNER: LATAR BELAKANG EMAS JIKA MODE GELAP, DAN PUTIH TRANSPARAN TIPIS JIKA MODE TERANG.
+                // =========================================================================
                 Container(
                   color: isDark
                       ? AppColors.gold
@@ -78,6 +92,9 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                         ],
                       ),
                       const SizedBox(height: 24),
+                      // =========================================================================
+                      // BARIS STATUS TOGGLE ONLINE/OFFLINE EXPERT
+                      // =========================================================================
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -92,11 +109,14 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                             ),
                           ),
                           const SizedBox(width: 12),
+                          // =========================================================================
+                          // SWITCH WIDGET UNTUK MENGUBAH STATUS ONLINE/OFFLINE.
+                          // =========================================================================
                           Switch(
                             value: _isOnline,
                             onChanged: (val) {
                               setState(() {
-                                _isOnline = val;
+                                _isOnline = val; // MENGUBAH STATE STATUS ONLINE.
                               });
                             },
                             activeThumbColor: isDark ? Colors.black : AppColors.gold,
@@ -110,9 +130,16 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                   ),
                 ),
 
-                // Dashboard Content
+                // =========================================================================
+                // AREA KONTEN DASHBOARD EXPERT
+                // =========================================================================
                 Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.only(
+                    left: 24.0,
+                    right: 24.0,
+                    top: 24.0,
+                    bottom: 120.0, // MEMBERIKAN PADDING BAWAH AGAR TIDAK TERHALANG NAVIGASI BAR.
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -126,7 +153,9 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Earnings Card
+                      // =========================================================================
+                      // KARTU INFORMASI TOTAL PENDAPATAN (EARNINGS CARD)
+                      // =========================================================================
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
@@ -178,7 +207,8 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
               ],
             ),
           ),
-        );
+        ),
+      );
       },
     );
   }

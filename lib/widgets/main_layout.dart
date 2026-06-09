@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import '../theme.dart';
 
+// =========================================================================
+// MAINLAYOUT ADALAH KERANGKA TATA LETAK UTAMA (STATELESS) APLIKASI.
+// WIDGET INI MENYEDIAKAN STRUKTUR NAVIGASI YANG ADAPTIF: SIDEBAR UNTUK DESKTOP (LEBAR > 768PX)
+// DAN APPBAR + BOTTOMNAVIGATIONBAR (MELAYANG) + NAVIGATION DRAWER UNTUK PERANGKAT MOBILE.
+// =========================================================================
 class MainLayout extends StatelessWidget {
-  final Widget child;
-  final String activeTab;
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
-  final bool showBottomBar;
+  final Widget child; // WIDGET KONTEN UTAMA DARI SCREEN YANG AKTIF.
+  final String activeTab; // NAMA TAB/LAYAR YANG SEDANG AKTIF SAAT INI.
+  final ValueChanged<String> onTabChanged; // CALLBACK SAAT TAB NAVIGASI DIKLIK/DIUBAH.
+  final VoidCallback onSignOut; // CALLBACK KETIKA USER MENEKAN TOMBOL LOGOUT.
+  final bool showBottomBar; // MENENTUKAN APAKAH MOBILE FLOATING BOTTOM BAR PERLU DITAMPILKAN.
 
   const MainLayout({
     super.key,
@@ -21,9 +26,11 @@ class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isDesktop = screenWidth > 768;
+    final isDesktop = screenWidth > 768; // MENDETEKSI ORIENTASI DESKTOP BERDASARKAN LEBAR VIEWPORT.
 
-    // FIX UTAMA: Membungkus seluruh layout agar sensitif terhadap perubahan dark/light mode
+    // =========================================================================
+    // MEMANTAU STATUS ISDARKMODENOTIFIER UNTUK MEMPERBARUI DEKORASI GRADIEN/WARNA LATAR BELAKANG LAYOUT SECARA REAL-TIME.
+    // =========================================================================
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
@@ -36,6 +43,9 @@ class MainLayout extends StatelessWidget {
     );
   }
 
+  // =========================================================================
+  // MEMBANGUN TATA LETAK HALAMAN UNTUK TAMPILAN DESKTOP (SIDEBAR MENU DI KIRI DAN KONTEN UTAMA DI KANAN).
+  // =========================================================================
   Widget _buildDesktopLayout(BuildContext context, bool isDark) {
     return Container(
       decoration: isDark
@@ -45,8 +55,8 @@ class MainLayout extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF0B1528), // Deep Navy Blue atas
-                  Color(0xFF1E3A8A), // Soft Electric Blue bawah
+                  Color(0xFF0B1528), // NAVY GELAP DI BAGIAN ATAS.
+                  Color(0xFF1E3A8A), // BIRU ELEKTRIK DI BAGIAN BAWAH.
                 ],
               ),
             ),
@@ -54,16 +64,19 @@ class MainLayout extends StatelessWidget {
         backgroundColor: Colors.transparent,
         body: Row(
           children: [
-            // Sidebar Desktop
+            // =========================================================================
+            // SIDEBAR MENU UNTUK LAYAR LEBAR (DESKTOP).
+            // =========================================================================
             Container(
               width: 260,
-              // Kondisi Light mode: Sidebar menjadi transparan total
-              color: isDark ? AppColors.surface : Colors.transparent,
+              color: isDark ? AppColors.surface : Colors.transparent, // TRANSPARAN JIKA LIGHT MODE AGAR GRADIEN DI BELAKANG TERLIHAT.
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header/Logo
+                  // =========================================================================
+                  // JUDUL/LOGO MAESTRO.
+                  // =========================================================================
                   Row(
                     children: [
                       Container(
@@ -97,7 +110,9 @@ class MainLayout extends StatelessWidget {
                   ),
                   const SizedBox(height: 40),
 
-                  // Navigation Tabs
+                  // =========================================================================
+                  // LIST ITEM NAVIGASI UTAMA.
+                  // =========================================================================
                   Expanded(
                     child: ListView(
                       children: [
@@ -139,7 +154,9 @@ class MainLayout extends StatelessWidget {
                     ),
                   ),
 
-                  // Sidebar Footer (Profile Info & Logout)
+                  // =========================================================================
+                  // GARIS PEMBATAS DAN INFO USER DI BAGIAN BAWAH SIDEBAR.
+                  // =========================================================================
                   Divider(
                     color: isDark ? AppColors.cardBorder : Colors.white10,
                     height: 24,
@@ -180,6 +197,9 @@ class MainLayout extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
+                  // =========================================================================
+                  // TOMBOL GANTI TEMA (DARK/LIGHT) DAN TOMBOL LOGOUT DI FOOTER SIDEBAR.
+                  // =========================================================================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -205,7 +225,9 @@ class MainLayout extends StatelessWidget {
                 ],
               ),
             ),
-            // Main content area
+            // =========================================================================
+            // PANEL KONTEN UTAMA.
+            // =========================================================================
             Expanded(child: child),
           ],
         ),
@@ -213,6 +235,9 @@ class MainLayout extends StatelessWidget {
     );
   }
 
+  // =========================================================================
+  // MEMBUAT ITEM NAVIGASI LIST TILE KUSTOM UNTUK SIDEBAR DESKTOP.
+  // =========================================================================
   Widget _buildSidebarItem(
     String id,
     String label,
@@ -227,7 +252,9 @@ class MainLayout extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          // KONDISI SELEKSI: Jika Light Mode, background kapsul diganti transparan total
+          // =========================================================================
+          // KAPSUL BACKGROUND HANYA AKTIF PENUH PADA MODE GELAP, MODE TERANG DIBUAT TRANSPARAN.
+          // =========================================================================
           color: isSelected
               ? (isDark ? AppColors.gold : Colors.transparent)
               : Colors.transparent,
@@ -255,7 +282,9 @@ class MainLayout extends StatelessWidget {
                 ),
               ),
             ),
-            // KONDISI SELEKSI LIGHT MODE: Menampilkan bulatan circle emas kecil di sebelah kanan menu aktif
+            // =========================================================================
+            // LINGKARAN KECIL SEBAGAI PENANDA AKTIF JIKA DALAM LIGHT MODE.
+            // =========================================================================
             if (isSelected && !isDark)
               Container(
                 width: 6,
@@ -271,6 +300,9 @@ class MainLayout extends StatelessWidget {
     );
   }
 
+  // =========================================================================
+  // MEMBANGUN TATA LETAK HALAMAN UNTUK TAMPILAN MOBILE (APPBAR ATAS + FLOATING BOTTOM NAVIGATION BAR).
+  // =========================================================================
   Widget _buildMobileLayout(BuildContext context, bool isDark) {
     return Container(
       decoration: isDark
@@ -284,7 +316,7 @@ class MainLayout extends StatelessWidget {
             ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        drawer: _buildMobileDrawer(context, isDark),
+        drawer: _buildMobileDrawer(context, isDark), // DRAWER MENU SAMPING KIRI UNTUK MOBILE.
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -321,6 +353,9 @@ class MainLayout extends StatelessWidget {
             ],
           ),
           actions: [
+            // =========================================================================
+            // PINTASAN TOMBOL TOGGLE TEMA DI POJOK KANAN ATAS.
+            // =========================================================================
             IconButton(
               onPressed: () {
                 isDarkModeNotifier.value = !isDarkModeNotifier.value;
@@ -333,6 +368,9 @@ class MainLayout extends StatelessWidget {
             const SizedBox(width: 8),
           ],
         ),
+        // =========================================================================
+        // BOTTOMBAR MEMBUNGKUS LAYAR MOBILE DAN MEMUNCULKAN BOTTOM NAVIGATION BAR MELAYANG (FLOATING).
+        // =========================================================================
         body: showBottomBar
             ? BottomBar(
                 theme: BottomBarThemeData(
@@ -364,6 +402,9 @@ class MainLayout extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
+                      // =========================================================================
+                      // ITEM-ITEM NAVIGASI BAR BAWAH.
+                      // =========================================================================
                       _buildFloatingNavItem(0, Icons.explore_outlined, Icons.explore, isDark),
                       _buildFloatingNavItem(1, Icons.history, Icons.history_toggle_off, isDark),
                       _buildFloatingNavItem(2, Icons.account_balance_wallet_outlined, Icons.account_balance_wallet, isDark),
@@ -377,6 +418,9 @@ class MainLayout extends StatelessWidget {
     );
   }
 
+  // =========================================================================
+  // MENGUBAH PARAMETER NAMA TAB STRING MENJADI INDEKS INTEGER TAB BOTTOM BAR.
+  // =========================================================================
   int _getTabIndex(String tab) {
     if (tab == 'history') return 1;
     if (tab == 'billing') return 2;
@@ -384,6 +428,9 @@ class MainLayout extends StatelessWidget {
     return 0;
   }
 
+  // =========================================================================
+  // MENGONVERSI INDEKS INTEGER TAB BOTTOM BAR KEMBALI KE NAMA TAB STRING ROUTING.
+  // =========================================================================
   String _getTabName(int index) {
     if (index == 1) return 'history';
     if (index == 2) return 'billing';
@@ -391,6 +438,9 @@ class MainLayout extends StatelessWidget {
     return 'dashboard';
   }
 
+  // =========================================================================
+  // MEMBANGUN NAVIGASI MENU SAMPING (DRAWER) PADA TAMPILAN MOBILE.
+  // =========================================================================
   Widget _buildMobileDrawer(BuildContext context, bool isDark) {
     return Drawer(
       backgroundColor: Colors.transparent,
@@ -408,6 +458,9 @@ class MainLayout extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // =========================================================================
+              // HEADER DRAWER DENGAN INFO PROFILE PENGGUNA.
+              // =========================================================================
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
@@ -440,12 +493,15 @@ class MainLayout extends StatelessWidget {
                 ),
               ),
               const Divider(color: Colors.white10),
+              // =========================================================================
+              // MENU LINK NAVIGASI DI DALAM DRAWER.
+              // =========================================================================
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
                     _buildDrawerItem(context, 'Explore', Icons.explore_outlined, 'dashboard'),
-                    _buildDrawerItem(context, 'History', Icons.explore_outlined, 'history'), // explore_outlined as placeholder or similar
+                    _buildDrawerItem(context, 'History', Icons.history, 'history'),
                     _buildDrawerItem(context, 'Wallet', Icons.account_balance_wallet_outlined, 'billing'),
                     _buildDrawerItem(context, 'Profile', Icons.person_outline, 'profile'),
                     _buildDrawerItem(context, 'Live Chat', Icons.chat_bubble_outline, 'live_chat_list'),
@@ -453,6 +509,9 @@ class MainLayout extends StatelessWidget {
                 ),
               ),
               const Divider(color: Colors.white10),
+              // =========================================================================
+              // FOOTER DRAWER DENGAN OPSI GANTI TEMA & LOGOUT.
+              // =========================================================================
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Row(
@@ -485,6 +544,9 @@ class MainLayout extends StatelessWidget {
     );
   }
 
+  // =========================================================================
+  // MEMBUAT LISTTILE KUSTOM UNTUK DITAMPILKAN DI MENU DRAWER MOBILE.
+  // =========================================================================
   Widget _buildDrawerItem(BuildContext context, String label, IconData icon, String tabId) {
     final isSelected = activeTab == tabId;
     return ListTile(
@@ -501,12 +563,15 @@ class MainLayout extends StatelessWidget {
       ),
       selected: isSelected,
       onTap: () {
-        Navigator.pop(context); // close drawer
-        onTabChanged(tabId);
+        Navigator.pop(context); // MENUTUP DRAWER TERLEBIH DAHULU SETELAH DIKLIK.
+        onTabChanged(tabId); // MENGUBAH TAB AKTIF.
       },
     );
   }
 
+  // =========================================================================
+  // MEMBUAT ITEM NAVIGASI YANG MELAYANG (FLOATING) DI BOTTOM BAR MOBILE DENGAN ANIMASI PERUBAHAN STATE WARNA.
+  // =========================================================================
   Widget _buildFloatingNavItem(int index, IconData icon, IconData activeIcon, bool isDark) {
     final isSelected = _getTabIndex(activeTab) == index;
     return InkWell(

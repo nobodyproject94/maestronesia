@@ -1,3 +1,8 @@
+// =========================================================================
+// PORTFOLIOITEM MEREPRESENTASIKAN ITEM PORTOFOLIO DARI SEORANG AHLI (EXPERT),
+// BERISI JUDUL PROYEK, TAHUN PELAKSANAAN, DAN TIPE PROYEK.
+// =========================================================================
+// =========================================================================
 class PortfolioItem {
   final String title;
   final String year;
@@ -6,6 +11,11 @@ class PortfolioItem {
   PortfolioItem({required this.title, required this.year, required this.type});
 }
 
+// =========================================================================
+// JOURNALITEM MEREPRESENTASIKAN ARTIKEL JURNAL ILMIAH YANG PERNAH DITULIS/DITERBITKAN OLEH AHLI,
+// BERISI JUDUL JURNAL, TAHUN PUBLIKASI, DAN NAMA PENERBIT JURNAL.
+// =========================================================================
+// =========================================================================
 class JournalItem {
   final String title;
   final String year;
@@ -14,6 +24,11 @@ class JournalItem {
   JournalItem({required this.title, required this.year, required this.journal});
 }
 
+// =========================================================================
+// CREDENTIALITEM MEREPRESENTASIKAN KREDENSIAL AKADEMIK ATAU SERTIFIKASI PROFESIONAL DARI AHLI,
+// BERISI GELAR/NAMA SERTIFIKASI DAN NAMA INSTITUT PENERBITNYA.
+// =========================================================================
+// =========================================================================
 class CredentialItem {
   final String title;
   final String institute;
@@ -21,6 +36,10 @@ class CredentialItem {
   CredentialItem({required this.title, required this.institute});
 }
 
+// =========================================================================
+// EVIDENCE MENGELOMPOKKAN BUKTI-BUKTI KOMPETENSI AHLI, MELIPUTI PORTOFOLIO, PUBLIKASI JURNAL, DAN SERTIFIKASI/KREDENSIAL.
+// =========================================================================
+// =========================================================================
 class Evidence {
   final List<PortfolioItem> portfolio;
   final List<JournalItem> journals;
@@ -33,18 +52,22 @@ class Evidence {
   });
 }
 
+// =========================================================================
+// EXPERT ADALAH MODEL DATA UTAMA UNTUK MENYIMPAN INFORMASI PROFIL AHLI (EXPERT).
+// =========================================================================
+// =========================================================================
 class Expert {
-  final int id;
-  final String name;
-  final String expertise;
-  final String experience;
-  final double rating;
-  final int reviews;
-  final String price;
-  final String status;
-  final List<String> tags;
-  final String avatar;
-  final Evidence evidence;
+  final int id; // ID UNIK EXPERT.
+  final String name; // NAMA LENGKAP EXPERT BESERTA GELAR.
+  final String expertise; // BIDANG KEAHLIAN UTAMA EXPERT.
+  final String experience; // LAMA WAKTU PENGALAMAN (CONTOH: "15 YRS").
+  final double rating; // RATING RATA-RATA DARI ULASAN CLIENT.
+  final int reviews; // JUMLAH TOTAL ULASAN/REVIEWS.
+  final String price; // TARIF KONSULTASI PER SESI.
+  final String status; // STATUS KETERSEDIAAN (CONTOH: "AVAILABLE").
+  final List<String> tags; // LABEL/TAG KEAHLIAN SPESIFIK.
+  final String avatar; // URL GAMBAR FOTO PROFIL EXPERT.
+  final Evidence evidence; // BUKTI SERTIFIKASI DAN PORTOFOLIO EXPERT.
 
   Expert({
     required this.id,
@@ -61,6 +84,10 @@ class Expert {
   });
 }
 
+// =========================================================================
+// MOCKEXPERTS ADALAH DAFTAR DATA STATIS EXPERT UNTUK KEPERLUAN SIMULASI TAMPILAN DAN DATA AWAL APLIKASI.
+// =========================================================================
+// =========================================================================
 final List<Expert> mockExperts = [
   Expert(
     id: 1,

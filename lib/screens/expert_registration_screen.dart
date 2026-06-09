@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../theme.dart';
 
+// =========================================================================
+// EXPERTREGISTRATIONSCREEN MENANGANI ALUR PENDAFTARAN USER BIASA MENJADI SEORANG EXPERT (AHLI).
+// MENGGUNAKAN FORMULIR MULTI-LANGKAH (2 LANGKAH) YANG BERISI KATEGORI KEAHLIAN, RIWAYAT PENGALAMAN, DAN BUKTI BERKAS PENDUKUNG.
+// =========================================================================
 class ExpertRegistrationScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onRegistrationSuccess;
@@ -17,13 +21,16 @@ class ExpertRegistrationScreen extends StatefulWidget {
 }
 
 class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
-  int _step = 1;
-  String _category = 'academic'; // 'academic' or 'non-academic'
+  int _step = 1; // STATE PENANDA LANGKAH PENDAFTARAN AKTIF (LANGKAH 1 ATAU 2).
+  String _category = 'academic'; // KATEGORI KEAHLIAN DEFAULT ('ACADEMIC' ATAU 'NON-ACADEMIC').
   final _skillController = TextEditingController();
   final _experienceController = TextEditingController();
   final _bioController = TextEditingController();
-  bool _isLoading = false;
+  bool _isLoading = false; // STATUS PEMUATAN UNTUK MENSIMULASIKAN PROSES SUBMIT FORMULIR.
 
+  // =========================================================================
+  // STATE MAP UNTUK MELACAK STATUS UPLOAD SIMULASI BERKAS PORTOFOLIO PENDUKUNG.
+  // =========================================================================
   final Map<String, bool> _uploadedDocs = {
     'CV': false,
     'Portfolio': false,
@@ -31,6 +38,9 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
     'Journal': false,
   };
 
+  // =========================================================================
+  // FUNGSI UNTUK MENANGANI PENGIRIMAN DATA REGISTRASI DENGAN SIMULASI JEDA WAKTU 2 DETIK.
+  // =========================================================================
   void _handleSubmit() {
     setState(() {
       _isLoading = true;
@@ -40,7 +50,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
         setState(() {
           _isLoading = false;
         });
-        widget.onRegistrationSuccess();
+        widget.onRegistrationSuccess(); // MEMANGGIL CALLBACK SUKSES REGISTRASI.
       }
     });
   }
@@ -55,15 +65,15 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // PERBAIKAN UTAMA: Dibungkus MaestronesiaBackground agar gradasi biru muncul di Light Mode
     return MaestronesiaBackground(
       child: Scaffold(
-        backgroundColor:
-            Colors.transparent, // Dibuat transparan agar gradasi kelihatan
+        backgroundColor: Colors.transparent, // TRANSPARAN AGAR GRADASI LATAR BELAKANG TETAP TERLIHAT.
         body: SafeArea(
           child: Column(
             children: [
-              // Header
+              // =========================================================================
+              // HEADER APLIKASI (JUDUL LAYAR DAN PROGRESS LANGKAH PENDAFTARAN)
+              // =========================================================================
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Row(
@@ -91,6 +101,9 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                         ),
                       ],
                     ),
+                    // =========================================================================
+                    // GARIS PENANDA PROGRESS LANGKAH AKTIF
+                    // =========================================================================
                     Row(
                       children: [
                         _buildStepDot(1),
@@ -102,22 +115,32 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                 ),
               ),
 
-              // Content
+              // =========================================================================
+              // AREA KONTEN DINAMIS BERDASARKAN LANGKAH AKTIF (STEP 1 ATAU STEP 2)
+              // =========================================================================
               Expanded(
                 child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 300), // ANIMASI TRANSISI ANTAR LANGKAH SELAMA 300MS.
                     child: _step == 1 ? _buildStep1() : _buildStep2(),
                   ),
                 ),
               ),
 
-              // Footer Navigation
+              // =========================================================================
+              // BAGIAN NAVIGASI BAWAH (TOMBOL KEMBALI & TOMBOL LANJUT/KIRIM)
+              // =========================================================================
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Row(
                   children: [
+                    // =========================================================================
+                    // TOMBOL KEMBALI HANYA DITAMPILKAN DI LANGKAH KEDUA.
+                    // =========================================================================
                     if (_step > 1) ...[
                       Expanded(
                         child: SizedBox(
@@ -159,10 +182,10 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                               : () {
                                   if (_step < 2) {
                                     setState(() {
-                                      _step++;
+                                      _step++; // LANJUT KE LANGKAH KEDUA.
                                     });
                                   } else {
-                                    _handleSubmit();
+                                    _handleSubmit(); // KIRIM FORMULIR PENDAFTARAN.
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
@@ -211,6 +234,9 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
     );
   }
 
+  // =========================================================================
+  // MEMBUAT INDIKATOR DOT/GARIS PENUNJUK LANGKAH AKTIF FORMULIR.
+  // =========================================================================
   Widget _buildStepDot(int stepNum) {
     final active = stepNum <= _step;
     return AnimatedContainer(
@@ -224,6 +250,9 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
     );
   }
 
+  // =========================================================================
+  // MERENDER FORMULIR LANGKAH 1 (PILIH KATEGORI, MASUKKAN SKILL UTAMA, DAN LAMA PENGALAMAN).
+  // =========================================================================
   Widget _buildStep1() {
     return Column(
       key: const ValueKey('step1'),
@@ -325,6 +354,9 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
     );
   }
 
+  // =========================================================================
+  // MEMBUAT TOMBOL PEMILIHAN KATEGORI KEAHLIAN (AKADEMIK / NON-AKADEMIK).
+  // =========================================================================
   Widget _buildCategoryButton(String catValue, String label) {
     final active = _category == catValue;
     return GestureDetector(
@@ -357,6 +389,9 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
     );
   }
 
+  // =========================================================================
+  // MERENDER FORMULIR LANGKAH 2 (MENGUNGGAH DOKUMEN BUKTI SEPERTI CV, PORTOFOLIO, SERTIFIKAT, DLL).
+  // =========================================================================
   Widget _buildStep2() {
     final isAcademic = _category == 'academic';
     return Column(
@@ -390,12 +425,15 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
     );
   }
 
+  // =========================================================================
+  // MEMBUAT ITEM UPLOAD DOKUMEN KUSTOM DENGAN STATUS UPLOAD (SIMULASI TAP TOGGLES).
+  // =========================================================================
   Widget _buildDocRow(String key, String title, IconData icon) {
     final uploaded = _uploadedDocs[key] ?? false;
     return GestureDetector(
       onTap: () {
         setState(() {
-          _uploadedDocs[key] = !uploaded;
+          _uploadedDocs[key] = !uploaded; // SIMULASI PERGANTIAN STATUS UPLOAD KETIKA BARIS DIKLIK.
         });
       },
       child: Container(
@@ -430,6 +468,9 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                 ),
               ),
             ),
+            // =========================================================================
+            // IKON PENANDA CENTANG JIKA BERKAS TELAH DI-UPLOAD (DISIMULASIKAN).
+            // =========================================================================
             Icon(
               uploaded ? Icons.check_circle : Icons.add,
               color: uploaded ? AppColors.gold : AppColors.textSecondary,

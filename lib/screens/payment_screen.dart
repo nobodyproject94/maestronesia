@@ -3,12 +3,16 @@ import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
 
+// =========================================================================
+// PAYMENTSCREEN ADALAH STATELESSWIDGET YANG MENAMPILKAN HALAMAN CHECKOUT PEMBAYARAN
+// UNTUK MENGONFIRMASI PEMESANAN SESI KONSULTASI DENGAN PAKAR YANG DIPILIH.
+// =========================================================================
 class PaymentScreen extends StatelessWidget {
-  final Expert expert;
-  final VoidCallback onBack;
-  final VoidCallback onConfirm;
-  final ValueChanged<String> onTabChanged;
-  final VoidCallback onSignOut;
+  final Expert expert; // OBJEK DETAIL DATA PAKAR YANG AKAN DIPESAN DAN DIBAYAR JASANYA.
+  final VoidCallback onBack; // CALLBACK KETIKA PENGGUNA MEMBATALKAN CHECKOUT DAN KEMBALI KE LAYAR SEBELUMNYA.
+  final VoidCallback onConfirm; // CALLBACK SAAT PENGGUNA MENYETUJUI TRANSAKSI DAN MENEKAN TOMBOL KONFIRMASI.
+  final ValueChanged<String> onTabChanged; // CALLBACK NAVIGASI PERPINDAHAN TAB LAYOUT UTAMA.
+  final VoidCallback onSignOut; // CALLBACK KETIKA PENGGUNA KELUAR APLIKASI.
 
   const PaymentScreen({
     super.key,
@@ -21,9 +25,15 @@ class PaymentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // =========================================================================
+    // VALUELISTENABLEBUILDER MEMANTAU PERUBAHAN STATUS MODE GELAP/TERANG.
+    // =========================================================================
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
+        // =========================================================================
+        // HALAMAN CHECKOUT DIBUNGKUS MAINLAYOUT AGAR BOTTOM NAVIGATION BAR TERPADU TETAP DAPAT DIAKSES.
+        // =========================================================================
         return MainLayout(
           activeTab: 'dashboard',
           onTabChanged: onTabChanged,
@@ -31,11 +41,28 @@ class PaymentScreen extends StatelessWidget {
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              // =========================================================================
+              // BOUNCINGSCROLLPHYSICS MEMBERIKAN ANIMASI MEMANTUL SAAT DAFTAR CHECKOUT DITARIK MELEWATI BATAS SCROLL.
+              // =========================================================================
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              // =========================================================================
+              // PENTING: MENAMBAHKAN BOTTOM PADDING SEBESAR 120.0 AGAR TOMBOL "CONFIRM & PAY" DI BAWAH
+              // TIDAK TERTUTUP ATAU TERHALANGI OLEH BOTTOM NAVIGATION BAR MILIK MAINLAYOUT.
+              // =========================================================================
+              padding: const EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 24.0,
+                bottom: 120.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header Row
+                  // =========================================================================
+                  // 1. HEADER BAR: TOMBOL KEMBALI + JUDUL HALAMAN
+                  // =========================================================================
                   Row(
                     children: [
                       IconButton(
@@ -66,7 +93,9 @@ class PaymentScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  // Checkout Summary Card
+                  // =========================================================================
+                  // 2. KARTU RINGKASAN PEMBAYARAN (CHECKOUT SUMMARY CARD)
+                  // =========================================================================
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -84,7 +113,9 @@ class PaymentScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Expert summary row
+                        // =========================================================================
+                        // DETAIL NAMA PAKAR DAN HARGA PEMESANAN.
+                        // =========================================================================
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -113,13 +144,13 @@ class PaymentScreen extends StatelessWidget {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.check_circle,
                                         color: AppColors.gold,
                                         size: 14,
                                       ),
                                       const SizedBox(width: 6),
-                                      Text(
+                                      const Text(
                                         'Verified Expert',
                                         style: TextStyle(
                                           color: AppColors.gold,
@@ -158,7 +189,9 @@ class PaymentScreen extends StatelessWidget {
                         const Divider(color: Colors.white10, height: 1),
                         const SizedBox(height: 24),
 
-                        // Payment method selector
+                        // =========================================================================
+                        // BAGIAN METODE PEMBAYARAN AKTIF YANG DIPILIH.
+                        // =========================================================================
                         const Text(
                           'PAYMENT METHOD',
                           style: TextStyle(
@@ -170,7 +203,9 @@ class PaymentScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
 
-                        // Wallet method (active)
+                        // =========================================================================
+                        // METODE: MAESTRONESIA WALLET (PILIHAN AKTIF DEFAULT)
+                        // =========================================================================
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
@@ -218,6 +253,9 @@ class PaymentScreen extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                              // =========================================================================
+                              // BULATAN RADIO BUTTON AKTIF WARNA EMAS.
+                              // =========================================================================
                               Container(
                                 width: 24,
                                 height: 24,
@@ -232,7 +270,9 @@ class PaymentScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
 
-                        // Other method (disabled mock)
+                        // =========================================================================
+                        // METODE: TAMBAH BARU (MOCK DINONAKTIFKAN / DISAMARKAN TRANSPARANSINYA)
+                        // =========================================================================
                         Opacity(
                           opacity: 0.4,
                           child: Container(
@@ -289,7 +329,9 @@ class PaymentScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  // Guarantee Box
+                  // =========================================================================
+                  // 3. GUARANTEE BOX: KOTAK JAMINAN KEAMANAN DANA
+                  // =========================================================================
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -316,6 +358,9 @@ class PaymentScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
+                  // =========================================================================
+                  // 4. TOMBOL UTAMA KONFIRMASI & BAYAR
+                  // =========================================================================
                   SizedBox(
                     width: double.infinity,
                     height: 60,

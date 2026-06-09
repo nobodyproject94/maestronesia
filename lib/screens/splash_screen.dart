@@ -2,8 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../theme.dart';
 
+// =========================================================================
+// SPLASHSCREEN ADALAH STATEFULWIDGET YANG MENYAJIKAN LAYAR SELAMAT DATANG PEMBUKA (SPLASH SCREEN)
+// YANG MEMUTAR ANIMASI LOGO TRANSISI SKALA DAN OPASITAS SAAT PERTAMA KALI APLIKASI DIJALANKAN.
+// =========================================================================
 class SplashScreen extends StatefulWidget {
-  final VoidCallback onFinish;
+  final VoidCallback onFinish; // CALLBACK YANG DIPICU UNTUK BERPINDAH LAYAR SETELAH DURASI SPLASH SCREEN SELESAI.
 
   const SplashScreen({super.key, required this.onFinish});
 
@@ -13,53 +17,72 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
+  // =========================================================================
+  // KONTROLER UTAMA UNTUK MENGATUR JALANNYA ANIMASI LOGO.
+  // =========================================================================
   late AnimationController _controller;
+  // =========================================================================
+  // ANIMASI TRANSISI SKALA (UKURAN) LOGO.
+  // =========================================================================
   late Animation<double> _scaleAnimation;
+  // =========================================================================
+  // ANIMASI TRANSISI OPASITAS (EFEK MEMUDAR/FADE-IN) LOGO.
+  // =========================================================================
   late Animation<double> _fadeAnimation;
-  double _progressValue = 0.0;
+  // =========================================================================
+  // TIMER UNTUK MELACAK DURASI TAMPIL LAYAR SEBELUM BERPINDAH HALAMAN.
+  // =========================================================================
   Timer? _progressTimer;
 
   @override
   void initState() {
     super.initState();
+    // =========================================================================
+    // MENGINISIALISASI ANIMATIONCONTROLLER DENGAN DURASI TRANSISI SELAMA 1200 MILIDETIK (1.2 DETIK).
+    // =========================================================================
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
 
+    // =========================================================================
+    // ANIMASI SKALA LOGO YANG MEMBESAR SECARA HALUS DARI UKURAN 80% KE 100% MENGGUNAKAN KURVA EASEOUTCUBIC.
+    // =========================================================================
     _scaleAnimation = Tween<double>(
       begin: 0.8,
       end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
+    // =========================================================================
+    // ANIMASI OPASITAS YANG MENGUBAH LOGO DARI TRANSPARAN PENUH (0.0) KE SOLID PENUH (1.0).
+    // =========================================================================
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
+    // =========================================================================
+    // MEMULAI PEMUTARAN ANIMASI MAJU.
+    // =========================================================================
     _controller.forward();
 
-    // Progress bar simulation (2 seconds)
-    const duration = Duration(milliseconds: 2000);
-    const interval = Duration(milliseconds: 50);
-    int totalTicks = duration.inMilliseconds ~/ interval.inMilliseconds;
-    int currentTick = 0;
-
-    _progressTimer = Timer.periodic(interval, (timer) {
-      currentTick++;
-      setState(() {
-        _progressValue = currentTick / totalTicks;
-      });
-      if (currentTick >= totalTicks) {
-        timer.cancel();
-        widget.onFinish();
-      }
+    // =========================================================================
+    // MEMICU CALLBACK NAVIGASI PINDAH LAYAR OTOMATIS SETELAH DURASI DIAM TOTAL SELAMA 2 DETIK (2000 MILIDETIK).
+    // =========================================================================
+    _progressTimer = Timer(const Duration(milliseconds: 2000), () {
+      widget.onFinish();
     });
   }
 
   @override
   void dispose() {
+    // =========================================================================
+    // MEMBEBASKAN SUMBER DAYA KONTROLER ANIMASI DARI MEMORI.
+    // =========================================================================
     _controller.dispose();
+    // =========================================================================
+    // MEMBATALKAN TIMER BERJALAN JIKA WIDGET DI-DISPOSE SEBELUM DURASI TIMER SELESAI.
+    // =========================================================================
     _progressTimer?.cancel();
     super.dispose();
   }
@@ -68,11 +91,13 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return MaestronesiaBackground(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent, // TRANSPARAN AGAR LATAR BELAKANG GRADIEN TERLIHAT JELAS.
         body: Stack(
           alignment: Alignment.center,
           children: [
-            // Blurred background decoration
+            // =========================================================================
+            // AKSEN VISUAL LINGKARAN EMAS REDUP (BLURRED BACKGROUND DECORATION) DI BELAKANG LOGO.
+            // =========================================================================
             Positioned(
               child: Container(
                 width: 300,
@@ -85,89 +110,33 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
             Center(
+              // =========================================================================
+              // ANIMATEDBUILDER MENGGAMBAR ULANG ELEMEN ANAK (CHILD) SETIAP KALI NILAI ANIMASI BERUBAH.
+              // =========================================================================
               child: AnimatedBuilder(
                 animation: _controller,
                 builder: (context, child) {
                   return Opacity(
-                    opacity: _fadeAnimation.value,
+                    opacity: _fadeAnimation.value, // MENGATUR KEBURAMAN LOGO SESUAI KEMAJUAN ANIMASI.
                     child: Transform.scale(
-                      scale: _scaleAnimation.value,
+                      scale: _scaleAnimation.value, // MENGATUR SKALA PERBESARAN LOGO SESUAI KEMAJUAN ANIMASI.
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Logo Container
-                          Container(
-                            width: 180,
-                            height: 180,
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(32),
-                              border: Border.all(
-                                color: AppColors.gold.withOpacity(0.15),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.gold.withOpacity(0.05),
-                                  blurRadius: 40,
-                                  spreadRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.menu_book,
-                              size: 80,
-                              color: AppColors.gold,
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-                          // Title & Subtitle
-                          const Text(
-                            'MAESTRONESIA',
-                            style: TextStyle(
-                              color: AppColors.gold,
-                              fontSize: 36,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'EMPOWERING EXPERTISE',
-                            style: TextStyle(
-                              color: AppColors.textSecondary.withOpacity(0.6),
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 5.0,
-                            ),
+                          // =========================================================================
+                          // MENAMPILKAN ASET GAMBAR LOGO APLIKASI UTAMA MAESTRONESIA.
+                          // =========================================================================
+                          Image.asset(
+                            'assets/logo.png',
+                            width: 280,
+                            height: 280,
+                            fit: BoxFit.contain,
                           ),
                         ],
                       ),
                     ),
                   );
                 },
-              ),
-            ),
-            // Progress Indicator at Bottom
-            Positioned(
-              bottom: 80,
-              child: Container(
-                width: 200,
-                height: 3,
-                decoration: BoxDecoration(
-                  color: AppColors.gold.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    value: _progressValue,
-                    backgroundColor: Colors.transparent,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.gold,
-                    ),
-                  ),
-                ),
               ),
             ),
           ],

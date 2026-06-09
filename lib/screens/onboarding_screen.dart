@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../widgets/custom_button.dart';
 
+// =========================================================================
+// ONBOARDINGSCREEN ADALAH STATEFULWIDGET YANG BERFUNGSI SEBAGAI LAYAR PENYAMBUT UTAMA (ONBOARDING)
+// DI MANA PENGGUNA DAPAT MEMAHAMI TUJUAN APLIKASI DAN MEMILIH PERAN (ROLE) SEBAGAI CLIENT ATAU EXPERT.
+// =========================================================================
 class OnboardingScreen extends StatefulWidget {
-  final String selectedRole;
-  final ValueChanged<String> onRoleChanged;
-  final VoidCallback onBegin;
-  final VoidCallback onSignIn;
+  final String selectedRole; // PERAN AKTIF YANG DIPILIH OLEH PENGGUNA SAAT INI ('CLIENT' ATAU 'EXPERT').
+  final ValueChanged<String> onRoleChanged; // CALLBACK UNTUK MEMPERBARUI PILIHAN PERAN DI WIDGET INDUK.
+  final VoidCallback onBegin; // CALLBACK UNTUK MELANJUTKAN PERJALANAN (MENUJU REGISTRASI/DASHBOARD).
+  final VoidCallback onSignIn; // CALLBACK UNTUK MENGARAHKAN PENGGUNA YANG SUDAH MEMILIKI AKUN KE LAYAR LOGIN.
 
   const OnboardingScreen({
     super.key,
@@ -23,10 +27,16 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
+    // =========================================================================
+    // VALUELISTENABLEBUILDER DIGUNAKAN UNTUK MENDENGARKAN PERUBAHAN STATUS MODE GELAP/TERANG SECARA DINAMIS.
+    // =========================================================================
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
         return Scaffold(
+          // =========================================================================
+          // MENGATUR WARNA LATAR BELAKANG SCAFFOLD MENYESUAIKAN TEMA AKTIF.
+          // =========================================================================
           backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
           body: MaestronesiaBackground(
             child: SafeArea(
@@ -39,10 +49,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Spacer(),
-                    // Title Area
+                    
+                    // =========================================================================
+                    // 1. AREA JUDUL & DESKRIPSI UTAMA
+                    // =========================================================================
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // =========================================================================
+                        // AKSEN GARIS DEKORATIF WARNA EMAS KHAS MAESTRONESIA.
+                        // =========================================================================
                         Container(
                           width: 48,
                           height: 4,
@@ -52,6 +68,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         ),
                         const SizedBox(height: 24),
+                        // =========================================================================
+                        // JUDUL SAMBUTAN UTAMA.
+                        // =========================================================================
                         Text(
                           'Expertise,\nSimplified.',
                           style: TextStyle(
@@ -63,6 +82,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
+                        // =========================================================================
+                        // PENJELASAN SINGKAT FITUR UTAMA APLIKASI.
+                        // =========================================================================
                         Text(
                           'Connect with world-class experts for real-time guidance and professional consultation.',
                           style: TextStyle(
@@ -74,7 +96,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                     ),
                     const Spacer(),
-                    // Role Selection
+                    
+                    // =========================================================================
+                    // 2. PANEL PEMILIHAN PERAN (ROLE SELECTION)
+                    // =========================================================================
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -88,6 +113,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
+                        // =========================================================================
+                        // DUA BUAH KARTU PEMILIHAN PERAN BERDAMPINGAN.
+                        // =========================================================================
                         Row(
                           children: [
                             Expanded(
@@ -112,9 +140,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                     ),
                     const Spacer(),
-                    // Action Buttons
+                    
+                    // =========================================================================
+                    // 3. TOMBOL AKSI DI BAGIAN BAWAH HALAMAN
+                    // =========================================================================
                     Column(
                       children: [
+                        // =========================================================================
+                        // MENAMPILKAN TOMBOL NONAKTIF ABU-ABU JIKA BELUM ADA PERAN YANG DIPILIH.
+                        // =========================================================================
                         if (widget.selectedRole != 'client' && widget.selectedRole != 'expert')
                           Container(
                             height: 60,
@@ -137,6 +171,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                           )
+                        // =========================================================================
+                        // MENAMPILKAN TOMBOL EMAS AKTIF JIKA PERAN SUDAH BERHASIL DIPILIH.
+                        // =========================================================================
                         else
                           MaestronesiaButton(
                             onPressed: widget.onBegin,
@@ -151,6 +188,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                           ),
                         const SizedBox(height: 24),
+                        // =========================================================================
+                        // MENGARAHKAN KE LAYAR MASUK JIKA SUDAH TERDAFTAR SEBAGAI ANGGOTA.
+                        // =========================================================================
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -199,6 +239,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+  // =========================================================================
+  // FUNGSI PEMBANTU UNTUK MEMBANGUN WIDGET KARTU PEMILIHAN PERAN (CLIENT / EXPERT).
+  // =========================================================================
   Widget _buildRoleCard({
     required String roleName,
     required String label,
@@ -207,11 +250,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }) {
     final isSelected = widget.selectedRole == roleName;
     return GestureDetector(
-      onTap: () => widget.onRoleChanged(roleName),
+      onTap: () => widget.onRoleChanged(roleName), // MEMICU CALLBACK PERUBAHAN PERAN KETIKA KARTU DIKLIK.
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
+        duration: const Duration(milliseconds: 250), // DURASI TRANSISI VISUAL YANG HALUS SAAT BERUBAH STATE.
         padding: const EdgeInsets.symmetric(vertical: 32),
         decoration: BoxDecoration(
+          // =========================================================================
+          // MEWARNAI KARTU SECARA DINAMIS BERDASARKAN STATUS PILIHAN DAN TEMA AKTIF.
+          // =========================================================================
           color: isDark
               ? (isSelected ? AppColors.gold.withOpacity(0.05) : AppColors.surface)
               : Colors.white.withOpacity(0.05),
@@ -229,12 +275,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // =========================================================================
+                // IKON REPRESENTATIF PERAN (WARNA EMAS JIKA TERPILIH).
+                // =========================================================================
                 Icon(
                   icon,
                   size: 32,
                   color: isSelected ? AppColors.gold : AppColors.textSecondary,
                 ),
                 const SizedBox(height: 12),
+                // =========================================================================
+                // NAMA PERAN.
+                // =========================================================================
                 Text(
                   label,
                   style: TextStyle(
@@ -245,6 +297,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ],
             ),
+            // =========================================================================
+            // TOMBOL STATUS SELEKSI MELINGKAR DI POJOK KANAN ATAS KARTU (RADIO BUTTON MOCK).
+            // =========================================================================
             Positioned(
               top: 0,
               right: 12,

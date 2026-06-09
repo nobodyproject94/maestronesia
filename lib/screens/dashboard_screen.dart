@@ -3,6 +3,10 @@ import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
 
+// =========================================================================
+// DASHBOARDSCREEN MERENDER HALAMAN BERANDA UTAMA (CLIENT DASHBOARD) APLIKASI MAESTRONESIA.
+// MENAMPILKAN KOLOM PENCARIAN, DAFTAR KATEGORI KEAHLIAN, EXPERT REKOMENDASI BULAN INI (HERO CARD), DAN DAFTAR REKOMENDASI EXPERT LAINNYA.
+// =========================================================================
 class DashboardScreen extends StatefulWidget {
   final ValueChanged<int> onSelectExpert;
   final ValueChanged<String> onTabChanged;
@@ -20,6 +24,9 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  // =========================================================================
+  // DAFTAR KATEGORI SPESIALISASI UNTUK FILTER HORIZONTAL.
+  // =========================================================================
   final List<String> _categories = [
     'Technology',
     'Creative',
@@ -28,7 +35,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     'Healthcare',
     'Engineering'
   ];
-  int _selectedCategoryIndex = 0;
+  int _selectedCategoryIndex = 0; // STATE INDEKS KATEGORI AKTIF TERPILIH.
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +49,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
-              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 100.0),
+              // =========================================================================
+              // EFEK SCROLL BOUNCE.
+              // =========================================================================
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 120.0), // PADDING DISESUAIKAN BOTTOM BAR.
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Unified Search Bar
+                  // =========================================================================
+                  // KOLOM PENCARIAN (SEARCH BAR) TERPADU
+                  // =========================================================================
                   Container(
                     decoration: BoxDecoration(
                       color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
@@ -67,7 +82,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Categories list (Horizontal Scroll)
+                  // =========================================================================
+                  // LIST HORIZONTAL KATEGORI KEAHLIAN (FILTER CHIPS)
+                  // =========================================================================
                   SizedBox(
                     height: 48,
                     child: ListView.separated(
@@ -82,6 +99,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Border chipBorder;
                         Color chipTextColor;
 
+                        // =========================================================================
+                        // KONFIGURASI VISUAL WARNA CHIP BERDASARKAN TEMA AKTIF DAN STATUS SELEKSI CHIP.
+                        // =========================================================================
                         if (active) {
                           if (isDark) {
                             chipBg = AppColors.gold;
@@ -116,6 +136,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  // =========================================================================
+                                  // MENAMPILKAN TITIK LINGKARAN KECIL EMAS DI SEBELAH KIRI TEKS JIKA TERPILIH DI LIGHT MODE.
+                                  // =========================================================================
                                   if (active && !isDark) ...[
                                     Container(
                                       width: 6,
@@ -145,9 +168,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Featured Hero Card
+                  // =========================================================================
+                  // KARTU UTAMA REKOMENDASI (FEATURED HERO CARD)
+                  // =========================================================================
                   GestureDetector(
-                    onTap: () => widget.onSelectExpert(1), // Hero is Prof Hermanto (ID: 1)
+                    onTap: () => widget.onSelectExpert(1), // MENGHUBUNGKAN LANGSUNG KE PROFILE PROF. HERMANTO (ID: 1).
                     child: Container(
                       height: 220,
                       decoration: BoxDecoration(
@@ -223,7 +248,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Featured Experts Title
+                  // =========================================================================
+                  // BARIS HEADER DAFTAR EXPERT
+                  // =========================================================================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -246,9 +273,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Expert Cards List
+                  // =========================================================================
+                  // LIST CARD EXPERT REKOMENDASI
+                  // =========================================================================
                   ListView.separated(
-                    physics: const NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(), // SCROLL DINONAKTIFKAN AGAR SCROLL DIPEGANG PENUH OLEH SINGLECHILDSCROLLVIEW.
                     shrinkWrap: true,
                     itemCount: mockExperts.length,
                     separatorBuilder: (context, index) => const SizedBox(height: 16),
@@ -267,6 +296,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             children: [
                               Row(
                                 children: [
+                                  // =========================================================================
+                                  // FOTO PROFIL DENGAN INDIKATOR STATUS KETERSEDIAAN
+                                  // =========================================================================
                                   Stack(
                                     children: [
                                       CircleAvatar(
@@ -292,6 +324,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ],
                                   ),
                                   const SizedBox(width: 16),
+                                  // =========================================================================
+                                  // DETAIL IDENTITAS EXPERT
+                                  // =========================================================================
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -354,6 +389,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 height: 1,
                               ),
                               const SizedBox(height: 16),
+                              // =========================================================================
+                              // BARIS TAG DAN TARIF LAYANAN PER SESI
+                              // =========================================================================
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [

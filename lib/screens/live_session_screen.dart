@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 
+// =========================================================================
+// LIVESESSIONSCREEN ADALAH STATEFULWIDGET UNTUK MENGELOLA VISUALISASI SESI PANGGILAN VIDEO
+// INTERAKTIF YANG DILENGKAPI DENGAN TEKNOLOGI SIMULASI HAMPARAN AUGMENTED REALITY (AR).
+// =========================================================================
 class LiveSessionScreen extends StatefulWidget {
-  final Expert expert;
-  final VoidCallback onHangUp;
+  final Expert expert; // DATA PAKAR YANG SEDANG MEMANDU SESI LANGSUNG INI.
+  final VoidCallback onHangUp; // CALLBACK UNTUK MENGAKHIRI PANGGILAN DAN MENUTUP SESI.
 
   const LiveSessionScreen({
     super.key,
@@ -18,11 +22,17 @@ class LiveSessionScreen extends StatefulWidget {
 
 class _LiveSessionScreenState extends State<LiveSessionScreen>
     with SingleTickerProviderStateMixin {
+  // =========================================================================
+  // ANIMATIONCONTROLLER DIGUNAKAN UNTUK MENGGERAKKAN ANIMASI ELEMEN GRAFIS AR SECARA BERULANG.
+  // =========================================================================
   late AnimationController _arController;
 
   @override
   void initState() {
     super.initState();
+    // =========================================================================
+    // MENGINISIALISASI KONTROLER ANIMASI BERDURASI 3 DETIK YANG AKAN BERULANG TERUS-MENERUS.
+    // =========================================================================
     _arController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
@@ -31,6 +41,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
 
   @override
   void dispose() {
+    // =========================================================================
+    // MENGHAPUS KONTROLER ANIMASI DARI MEMORI SAAT LAYAR INI DITUTUP.
+    // =========================================================================
     _arController.dispose();
     super.dispose();
   }
@@ -40,9 +53,14 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
     return MaestronesiaBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
+        // =========================================================================
+        // STACK MENUMPUK ELEMEN-ELEMEN DI ATAS FEED VIDEO UTAMA (KAMERA BELAKANG/DEPAN).
+        // =========================================================================
         body: Stack(
           children: [
-            // Simulated Main Camera Feed (Dark grey placeholder with camera icon)
+            // =========================================================================
+            // 1. FEED KAMERA UTAMA SIMULASI (LATAR BELAKANG TRANSPARAN DENGAN IKON STATUS MENGHUBUNGKAN)
+            // =========================================================================
             Container(
               color: Colors.transparent,
               alignment: Alignment.center,
@@ -56,7 +74,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                       color: AppColors.textSecondary,
                       size: 80,
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Text(
                       'CONNECTING FEED...',
                       style: TextStyle(
@@ -71,7 +89,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
               ),
             ),
   
-            // AR Custom Painter overlay
+            // =========================================================================
+            // 2. HAMPARAN ELEMEN AR (MENGGUNAKAN CUSTOMPAINT DAN DIANIMASIKAN VIA ANIMATEDBUILDER)
+            // =========================================================================
             Positioned.fill(
               child: AnimatedBuilder(
                 animation: _arController,
@@ -83,7 +103,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
               ),
             ),
   
-            // Top status indicator (Call in progress)
+            // =========================================================================
+            // 3. INDIKATOR STATUS PANGGILAN AKTIF DI POJOK KIRI ATAS
+            // =========================================================================
             Positioned(
               top: 60,
               left: 24,
@@ -96,16 +118,22 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                 ),
                 child: Row(
                   children: [
+                    // =========================================================================
+                    // LAMPU INDIKATOR MERAH BERKEDIP/MENYALA
+                    // =========================================================================
                     Container(
                       width: 8,
                       height: 8,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.red,
                         shape: BoxShape.circle,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    // =========================================================================
+                    // WAKTU DURASI PANGGILAN BERJALAN PALSU
+                    // =========================================================================
+                    const Text(
                       '45:12',
                       style: TextStyle(
                         color: Colors.white,
@@ -115,7 +143,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                     ),
                     const SizedBox(width: 8),
                     Container(width: 1, height: 12, color: Colors.white10),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
                       'CALL IN PROGRESS',
                       style: TextStyle(
@@ -130,7 +158,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
               ),
             ),
   
-            // Expert Floating Video Box
+            // =========================================================================
+            // 4. FLOATING VIDEO BOX PAKAR (MENAMPILKAN WAJAH PAKAR DI POJOK KANAN ATAS)
+            // =========================================================================
             Positioned(
               top: 100,
               right: 24,
@@ -153,6 +183,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                 ),
                 child: Stack(
                   children: [
+                    // =========================================================================
+                    // LABEL NAMA PAKAR DI BAGIAN BAWAH KOTAK MELAYANG.
+                    // =========================================================================
                     Positioned(
                       bottom: 12,
                       left: 12,
@@ -172,7 +205,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                             Container(
                               width: 6,
                               height: 6,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: AppColors.gold,
                                 shape: BoxShape.circle,
                               ),
@@ -181,7 +214,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                             Expanded(
                               child: Text(
                                 widget.expert.name.split(' ')[0],
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 9,
                                   fontWeight: FontWeight.bold,
@@ -198,7 +231,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
               ),
             ),
   
-            // Translation/Instruction overlay banner
+            // =========================================================================
+            // 5. SPANDUK INSTRUKSI/PETUNJUK AR DI BAGIAN TENGAH BAWAH
+            // =========================================================================
             Positioned(
               bottom: 180,
               left: 24,
@@ -222,7 +257,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
+                      const Text(
                         'Instruction',
                         style: TextStyle(
                           color: AppColors.gold,
@@ -230,7 +265,10 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
+                      // =========================================================================
+                      // TEKS PETUNJUK LANGKAH PEMOSISIAN JARI TANGAN PENGGUNA.
+                      // =========================================================================
                       Text(
                         '"Place your index finger on the 2nd fret, 6th string."',
                         textAlign: TextAlign.center,
@@ -247,7 +285,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
               ),
             ),
   
-            // Bottom Session Toolbar
+            // =========================================================================
+            // 6. TOOLBAR NAVIGASI & KONTROL SESI DI BAGIAN BAWAH LAYAR
+            // =========================================================================
             Positioned(
               bottom: 0,
               left: 0,
@@ -270,17 +310,25 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
+                    // =========================================================================
+                    // TOMBOL MUTE MIKROFON
+                    // =========================================================================
                     _buildToolbarButton(
                       Icons.mic,
                       Colors.white10,
                       AppColors.textSecondary,
                     ),
+                    // =========================================================================
+                    // TOMBOL SENTER/FLASHLIGHT
+                    // =========================================================================
                     _buildToolbarButton(
                       Icons.flashlight_on,
                       Colors.white10,
                       Colors.amber,
                     ),
-                    // Centered Highlight Mouse Pointer Tool
+                    // =========================================================================
+                    // TOMBOL TENGAH EMAS: PENANDA POINTER MOUSE AR
+                    // =========================================================================
                     InkWell(
                       onTap: () {},
                       borderRadius: BorderRadius.circular(20),
@@ -291,15 +339,20 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                           color: AppColors.gold,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Icon(Icons.mouse, color: Colors.black, size: 28),
+                        child: const Icon(Icons.mouse, color: Colors.black, size: 28),
                       ),
                     ),
+                    // =========================================================================
+                    // TOMBOL TEKS PETUNJUK
+                    // =========================================================================
                     _buildToolbarButton(
                       Icons.text_fields,
                       Colors.white10,
                       AppColors.textSecondary,
                     ),
-                    // Hangup button
+                    // =========================================================================
+                    // TOMBOL AKHIRI SESI (HANG UP) DENGAN INDIKATOR WARNA MERAH MENYALA
+                    // =========================================================================
                     _buildToolbarButton(
                       Icons.logout,
                       Colors.red.withOpacity(0.1),
@@ -316,6 +369,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
     );
   }
 
+  // =========================================================================
+  // FUNGSI PEMBANTU UNTUK MEMPRODUKSI TOMBOL-TOMBOL IKON PADA TOOLBAR.
+  // =========================================================================
   Widget _buildToolbarButton(
     IconData icon,
     Color bg,
@@ -339,30 +395,47 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
   }
 }
 
+// =========================================================================
+// ARPAINTER ADALAH CUSTOMPAINTER KUSTOM UNTUK MERENDER LINGKARAN VISUAL TARGET AR
+// YANG BERGETAR/ANIMATIF DI ATAS LAYAR VIDEO KONSULTASI PENGGUNA.
+// =========================================================================
 class ARPainter extends CustomPainter {
-  final double progress;
+  final double progress; // NILAI KEMAJUAN DARI ANIMATIONCONTROLLER (0.0 SAMPAI 1.0).
 
   ARPainter({required this.progress});
 
   @override
   void paint(Canvas canvas, Size size) {
+    // =========================================================================
+    // KONFIGURASI KUAS GAMBAR (PAINT) UNTUK LINGKARAN TARGET.
+    // =========================================================================
     final paint = Paint()
       ..color = AppColors.gold.withOpacity(0.2)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
+    // =========================================================================
+    // TITIK PUSAT LINGKARAN TARGET DIATUR SEDIKIT DI ATAS TENGAH LAYAR AGAR FOKUS PADA OBJEK.
+    // =========================================================================
     final center = Offset(size.width * 0.5, size.height * 0.45);
-    final radius = 55.0;
+    const radius = 55.0;
 
-    // Draw circular pointer with dashed pattern mock
+    // =========================================================================
+    // MENGGAMBAR LINGKARAN DASAR TARGET.
+    // =========================================================================
     canvas.drawCircle(center, radius, paint);
 
-    // Draw pointing vectors
+    // =========================================================================
+    // KONFIGURASI KUAS GAMBAR UNTUK GARIS PENUNJUK KOORDINAT AR YANG TEGAK LURUS.
+    // =========================================================================
     final pointerPaint = Paint()
       ..color = AppColors.gold
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
+    // =========================================================================
+    // MENGGAMBAR GARIS PENUNJUK VERTIKAL DI BAGIAN ATAS LINGKARAN TARGET.
+    // =========================================================================
     canvas.drawLine(
       Offset(center.dx, center.dy - radius - 20),
       Offset(center.dx, center.dy - radius - 5),
@@ -371,5 +444,8 @@ class ARPainter extends CustomPainter {
   }
 
   @override
+  // =========================================================================
+  // SELALU GAMBAR ULANG KANVAS KETIKA STATUS NILAI PROGRESS BERUBAH AGAR ANIMASI BERJALAN MULUS.
+  // =========================================================================
   bool shouldRepaint(covariant ARPainter oldDelegate) => true;
 }

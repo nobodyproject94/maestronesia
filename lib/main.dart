@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'databases/database_helper.dart';
 import 'models/expert.dart';
 import 'screens/billing_screen.dart';
@@ -21,22 +20,35 @@ import 'screens/profile_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/splash_screen.dart';
 import 'theme.dart';
-
 import 'package:flutter/services.dart';
 
+// =========================================================================
+// FUNGSI MAIN MERUPAKAN ENTRY POINT (TITIK AWAL) SAAT APLIKASI FLUTTER DIJALANKAN.
+// =========================================================================
 void main() {
   runApp(const MaestronesiaApp());
 }
 
+// =========================================================================
+// MAESTRONESIAAPP ADALAH ROOT WIDGET APLIKASI YANG BERSIFAT STATELESS.
+// WIDGET INI BERTUGAS MENGATUR TEMA GLOBAL (TERANG/GELAP) SECARA DINAMIS MENGGUNAKAN VALUELISTENABLEBUILDER.
+// =========================================================================
 class MaestronesiaApp extends StatelessWidget {
   const MaestronesiaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // =========================================================================
+    // VALUELISTENABLEBUILDER MEMANTAU PERUBAHAN STATUS ISDARKMODENOTIFIER.
+    // JIKA NILAINYA BERUBAH, BUILDER AKAN DIPANGGIL ULANG UNTUK MEMPERBARUI TEMA APLIKASI.
+    // =========================================================================
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, child) {
         if (isDark) {
+          // =========================================================================
+          // MENGUBAH SKEMA WARNA GLOBAL KE MODE GELAP (DARK MODE).
+          // =========================================================================
           AppColors.setToDark();
           SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
@@ -45,6 +57,9 @@ class MaestronesiaApp extends StatelessWidget {
             systemNavigationBarIconBrightness: Brightness.light,
           ));
         } else {
+          // =========================================================================
+          // MENGUBAH SKEMA WARNA GLOBAL KE MODE TERANG (LIGHT MODE).
+          // =========================================================================
           AppColors.setToLight();
           SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
@@ -55,15 +70,18 @@ class MaestronesiaApp extends StatelessWidget {
         }
         return MaterialApp(
           title: 'MAESTRONESIA',
-          theme: buildAppTheme(),
-          debugShowCheckedModeBanner: false,
-          home: const MainAppController(),
+          theme: buildAppTheme(), // MENGAMBIL KONFIGURASI TEMA BERDASARKAN WARNA YANG AKTIF.
+          debugShowCheckedModeBanner: false, // MENGHILANGKAN BANNER DEBUG DI POJOK KANAN ATAS SCREEN.
+          home: const MainAppController(), // MENGARAHKAN KE CONTROLLER UTAMA APLIKASI UNTUK NAVIGASI SCREEN.
         );
       },
     );
   }
 }
 
+// =========================================================================
+// MAINAPPCONTROLLER BERFUNGSI SEBAGAI STATE MANAGER SENTRAL UNTUK MENANGANI ROUTING/NAVIGASI MANUAL ANTAR LAYAR.
+// =========================================================================
 class MainAppController extends StatefulWidget {
   const MainAppController({super.key});
 
@@ -72,50 +90,67 @@ class MainAppController extends StatefulWidget {
 }
 
 class _MainAppControllerState extends State<MainAppController> {
+  // =========================================================================
+  // STATE LOKAL UNTUK MENYIMPAN SCREEN AKTIF, PERAN USER, ID EXPERT TERPILIH, DATA BOOKING, DAN SESSION EMAIL/NAMA.
+  // =========================================================================
   String _screen =
-      'splash'; // splash, onboarding, login, signup, expert_registration, dashboard, ...
-  String _role = 'client'; // client, expert
-  int _selectedExpertId = 1;
-  int _selectedDay = 13;
-  String _selectedTime = '09:00 AM';
-  String _currentUserEmail = 'client@gmail.com';
-  String _currentUserName = 'Fajar Ramadhan';
+      'splash'; // DEFAULT SCREEN SAAT PERTAMA KALI DIJALANKAN ADALAH SPLASH SCREEN.
+  String _role = 'client'; // PERAN PENGGUNA (CLIENT ATAU EXPERT).
+  int _selectedExpertId = 1; // ID EXPERT YANG DIPILIH UNTUK BOOKING/CHAT.
+  int _selectedDay = 13; // HARI TERPILIH UNTUK BOOKING.
+  String _selectedTime = '09:00 AM'; // WAKTU TERPILIH UNTUK BOOKING.
+  String _currentUserEmail = 'client@gmail.com'; // EMAIL USER YANG SEDANG LOGIN.
+  String _currentUserName = 'Fajar Ramadhan'; // NAMA USER YANG SEDANG LOGIN.
 
   @override
   void initState() {
     super.initState();
-    _loadSessionAndTheme();
+    _loadSessionAndTheme(); // MEMUAT PREFERENSI TEMA DAN SESI LOGIN PENGGUNA DARI MEMORI LOKAL.
   }
 
+  // =========================================================================
+  // FUNGSI ASINKRONUS UNTUK MEMUAT DATA SESSION DARI SHAREDPREFERENCES.
+  // =========================================================================
   Future<void> _loadSessionAndTheme() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Load theme setting
+    // =========================================================================
+    // MEMBACA STATUS TEMA GELAP (DEFAULT FALSE JIKA BELUM ADA).
+    // =========================================================================
     final isDark = prefs.getBool('theme_is_dark') ?? false;
     isDarkModeNotifier.value = isDark;
 
-    // Persist theme settings dynamically on toggling
+    // =========================================================================
+    // MENAMBAHKAN LISTENER UNTUK MENDETEKSI PERUBAHAN TEMA SECARA DINAMIS LALU MENYIMPANNYA KE SHAREDPREFERENCES.
+    // =========================================================================
     isDarkModeNotifier.addListener(() async {
       final p = await SharedPreferences.getInstance();
       await p.setBool('theme_is_dark', isDarkModeNotifier.value);
     });
 
-    // Load login session
+    // =========================================================================
+    // MEMBACA DATA LOGIN USER (SESSION).
+    // =========================================================================
     final email = prefs.getString('session_email');
     final name = prefs.getString('session_name');
     final role = prefs.getString('session_role');
 
+    // =========================================================================
+    // JIKA DATA SESSION ADA, LANGSUNG ARAHKAN USER KE DASHBOARD YANG SESUAI (MELEWATI SPLASH/ONBOARDING).
+    // =========================================================================
     if (email != null && role != null) {
       setState(() {
         _currentUserEmail = email;
         _currentUserName = name ?? 'User';
         _role = role;
-        // Skip splash/onboarding if session is restored
         _screen = role == 'expert' ? 'expert_dashboard' : 'dashboard';
       });
     }
   }
 
+  // =========================================================================
+  // FUNGSI ASINKRONUS UNTUK MENANGANI LOGOUT PENGGUNA (MENGHAPUS SESSION DARI SHAREDPREFERENCES).
+  // =========================================================================
   Future<void> _handleSignOut() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('session_email');
@@ -124,11 +159,17 @@ class _MainAppControllerState extends State<MainAppController> {
     setState(() {
       _currentUserEmail = 'client@gmail.com';
       _currentUserName = 'Fajar Ramadhan';
-      _screen = 'onboarding';
+      _screen = 'onboarding'; // ARAHKAN KEMBALI KE HALAMAN ONBOARDING SETELAH LOGOUT.
     });
   }
 
+  // =========================================================================
+  // FUNGSI PEMBANTU UNTUK BERPINDAH KE HALAMAN/LAYAR TERTENTU SECARA DINAMIS.
+  // =========================================================================
   void _navigateTo(String screenName) {
+    // =========================================================================
+    // MENGECEK JIKA TUJUANNYA ADALAH LIVE CHAT DENGAN ID EXPERT SPESIFIK.
+    // =========================================================================
     if (screenName.startsWith('live_chat_expert_')) {
       final idStr = screenName.replaceAll('live_chat_expert_', '');
       final id = int.tryParse(idStr) ?? 1;
@@ -143,6 +184,9 @@ class _MainAppControllerState extends State<MainAppController> {
     });
   }
 
+  // =========================================================================
+  // FUNGSI ASINKRONUS UNTUK MENYIMPAN PESANAN BOOKING BARU KE DALAM DATABASE LOKAL SQLITE.
+  // =========================================================================
   void _confirmBooking() async {
     final expert = mockExperts.firstWhere(
       (e) => e.id == _selectedExpertId,
@@ -158,16 +202,22 @@ class _MainAppControllerState extends State<MainAppController> {
       'status': 'Upcoming',
       'price': expert.price,
     });
-    _navigateTo('payment_success');
+    _navigateTo('payment_success'); // PINDAH KE HALAMAN PEMBAYARAN SUKSES.
   }
 
   @override
   Widget build(BuildContext context) {
+    // =========================================================================
+    // MENCARI EXPERT YANG DIPILIH BERDASARKAN ID EXPERT.
+    // =========================================================================
     final currentExpert = mockExperts.firstWhere(
       (e) => e.id == _selectedExpertId,
       orElse: () => mockExperts.first,
     );
 
+    // =========================================================================
+    // MENGGUNAKAN PERCABANGAN SWITCH-CASE UNTUK MERENDER HALAMAN BERDASARKAN NILAI _SCREEN.
+    // =========================================================================
     switch (_screen) {
       case 'splash':
         return SplashScreen(onFinish: () => _navigateTo('onboarding'));
