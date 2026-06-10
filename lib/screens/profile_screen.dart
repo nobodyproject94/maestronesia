@@ -10,10 +10,13 @@ class ProfileScreen extends StatefulWidget {
   final String role; // PERAN PENGGUNA SAAT INI ('CLIENT' ATAU 'EXPERT').
   final String email; // EMAIL PENGGUNA YANG SEDANG MASUK.
   final String name; // NAMA LENGKAP PENGGUNA.
-  final ValueChanged<String> onTabChanged; // CALLBACK NAVIGASI PERPINDAHAN TAB NAVIGASI UTAMA.
-  final VoidCallback onSignOut; // CALLBACK KETIKA PENGGUNA MENEKAN TOMBOL KELUAR (SIGN OUT).
+  final ValueChanged<String>
+  onTabChanged; // CALLBACK NAVIGASI PERPINDAHAN TAB NAVIGASI UTAMA.
+  final VoidCallback
+  onSignOut; // CALLBACK KETIKA PENGGUNA MENEKAN TOMBOL KELUAR (SIGN OUT).
 
-  final bool isOriginalExpert; // MENENTUKAN APAKAH PERAN ASLI PENGGUNA ADALAH EXPERT.
+  final bool
+  isOriginalExpert; // MENENTUKAN APAKAH PERAN ASLI PENGGUNA ADALAH EXPERT.
   final VoidCallback? onSwitchRole; // CALLBACK PENGALIHAN PERAN SECARA DINAMIS.
 
   const ProfileScreen({
@@ -46,11 +49,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       activeTab: 'profile',
       onTabChanged: widget.onTabChanged,
       onSignOut: widget.onSignOut,
-      isOriginalExpert: widget.isOriginalExpert, // MENANDAI JIKA USER ASLINYA ADALAH EXPERT.
-      onSwitchRole: widget.onSwitchRole, // CALLBACK PENGALIKAN PERAN SECARA DINAMIS.
-      currentRole: widget.role, // PERAN AKTIF SAAT INI ('CLIENT' ATAU 'EXPERT').
+      isOriginalExpert:
+          widget.isOriginalExpert, // MENANDAI JIKA USER ASLINYA ADALAH EXPERT.
+      onSwitchRole:
+          widget.onSwitchRole, // CALLBACK PENGALIKAN PERAN SECARA DINAMIS.
+      currentRole:
+          widget.role, // PERAN AKTIF SAAT INI ('CLIENT' ATAU 'EXPERT').
       child: Scaffold(
-        backgroundColor: Colors.transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND DI BAWAHNYA TERLIHAT.
+        backgroundColor: Colors
+            .transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND DI BAWAHNYA TERLIHAT.
         body: SingleChildScrollView(
           // =========================================================================
           // BOUNCINGSCROLLPHYSICS MEMBERIKAN EFEK MEMANTUL (ELASTIC BOUNCE) KHAS IOS SAAT SCROLL.
@@ -61,7 +68,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // =========================================================================
           // PENTING: PADDING BOTTOM 120.0 DISEMATKAN AGAR TOMBOL "SIGN OUT" PALING BAWAH TIDAK TERHALANG OLEH BOTTOM NAVIGATION BAR.
           // =========================================================================
-          padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 120.0),
+          padding: const EdgeInsets.only(
+            left: 24.0,
+            right: 24.0,
+            top: 24.0,
+            bottom: 120.0,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -156,50 +168,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // =========================================================================
                     // TANDA BADGE LEVEL & TIER PENGGUNA.
                     // =========================================================================
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.gold.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            'LEVEL 4',
-                            style: TextStyle(
-                              color: AppColors.gold,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            'CLIENT TIER',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Container(
+                    //       padding: const EdgeInsets.symmetric(
+                    //         horizontal: 16,
+                    //         vertical: 6,
+                    //       ),
+                    //       decoration: BoxDecoration(
+                    //         color: AppColors.gold.withOpacity(0.1),
+                    //         borderRadius: BorderRadius.circular(20),
+                    //       ),
+                    //       child: const Text(
+                    //         'LEVEL 4',
+                    //         style: TextStyle(
+                    //           color: AppColors.gold,
+                    //           fontSize: 10,
+                    //           fontWeight: FontWeight.bold,
+                    //           letterSpacing: 1.0,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 8),
+                    //     Container(
+                    //       padding: const EdgeInsets.symmetric(
+                    //         horizontal: 16,
+                    //         vertical: 6,
+                    //       ),
+                    //       decoration: BoxDecoration(
+                    //         color: Colors.white.withOpacity(0.05),
+                    //         borderRadius: BorderRadius.circular(20),
+                    //       ),
+                    //       child: const Text(
+                    //         'CLIENT TIER',
+                    //         style: TextStyle(
+                    //           color: Colors.white,
+                    //           fontSize: 10,
+                    //           fontWeight: FontWeight.bold,
+                    //           letterSpacing: 1.0,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     const SizedBox(height: 24),
                     // =========================================================================
                     // TOMBOL GARIS TEPI UNTUK MELIHAT PROFIL PUBLIK.
@@ -346,7 +358,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: AppColors.gold.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Icon(Icons.swap_horiz, color: AppColors.gold, size: 20),
+                        child: const Icon(
+                          Icons.swap_horiz,
+                          color: AppColors.gold,
+                          size: 20,
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -387,8 +403,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : AppColors.gold,
                           side: isDarkModeNotifier.value
                               ? null
-                              : const BorderSide(color: AppColors.gold, width: 1.5),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              : const BorderSide(
+                                  color: AppColors.gold,
+                                  width: 1.5,
+                                ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),

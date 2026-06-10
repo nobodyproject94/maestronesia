@@ -95,6 +95,8 @@ class _MainAppControllerState extends State<MainAppController> {
   // =========================================================================
   String _screen =
       'splash'; // DEFAULT SCREEN SAAT PERTAMA KALI DIJALANKAN ADALAH SPLASH SCREEN.
+  String _targetScreen =
+      'onboarding'; // TUJUAN SCREEN BERIKUTNYA SETELAH SPLASH SCREEN SELESAI DIPUTAR.
   String _role = 'client'; // PERAN AKTIF PENGGUNA (CLIENT ATAU EXPERT).
   String _originalRole = 'client'; // PERAN ASLI/UTAMA PENGGUNA SAAT LOGIN (CLIENT ATAU EXPERT).
   int _selectedExpertId = 1; // ID EXPERT YANG DIPILIH UNTUK BOOKING/CHAT.
@@ -134,7 +136,7 @@ class _MainAppControllerState extends State<MainAppController> {
     final role = await PreferenceHandler.getSessionRole();
 
     // =========================================================================
-    // JIKA DATA SESSION ADA, LANGSUNG ARAHKAN USER KE DASHBOARD YANG SESUAI (MELEWATI SPLASH/ONBOARDING).
+    // JIKA DATA SESSION ADA, MENGATUR TARGET SCREEN BERIKUTNYA YANG AKAN DITUJU SETELAH SPLASH SELESAI.
     // =========================================================================
     if (email != null && role != null) {
       setState(() {
@@ -142,7 +144,7 @@ class _MainAppControllerState extends State<MainAppController> {
         _currentUserName = name ?? 'User';
         _role = role;
         _originalRole = role; // MENYIMPAN PERAN ASLI PENGGUNA DARI SESSION SHAREDPREFERENCES.
-        _screen = role == 'expert' ? 'expert_dashboard' : 'dashboard';
+        _targetScreen = role == 'expert' ? 'expert_dashboard' : 'dashboard';
       });
     }
   }
@@ -155,6 +157,7 @@ class _MainAppControllerState extends State<MainAppController> {
     setState(() {
       _currentUserEmail = 'client@gmail.com';
       _currentUserName = 'Fajar Ramadhan';
+      _targetScreen = 'onboarding'; // SET ULANG TARGET SCREEN BERIKUTNYA KE ONBOARDING.
       _screen = 'onboarding'; // ARAHKAN KEMBALI KE HALAMAN ONBOARDING SETELAH LOGOUT.
     });
   }
@@ -236,7 +239,7 @@ class _MainAppControllerState extends State<MainAppController> {
     // =========================================================================
     switch (_screen) {
       case 'splash':
-        return SplashScreen(onFinish: () => _navigateTo('onboarding'));
+        return SplashScreen(onFinish: () => _navigateTo(_targetScreen));
       case 'onboarding':
         return OnboardingScreen(
           selectedRole: _role,

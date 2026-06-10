@@ -29,6 +29,48 @@ class MainLayout extends StatelessWidget {
     this.currentRole,
   });
 
+  // =========================================================================
+  // MENDAPATKAN JUDUL LAYAR SECARA DINAMIS BERDASARKAN TAB AKTIF DAN PERAN AKTIF PENGGUNA.
+  // =========================================================================
+  String _getScreenTitle() {
+    switch (activeTab) {
+      case 'dashboard':
+        return currentRole == 'expert' ? 'Dashboard' : 'Explore';
+      case 'history':
+        return 'History';
+      case 'billing':
+        return 'Wallet';
+      case 'profile':
+        return 'Profile';
+      case 'live_chat_list':
+      case 'live_chat':
+        return 'Live Chat';
+      default:
+        return 'Maestro';
+    }
+  }
+
+  // =========================================================================
+  // MENDAPATKAN IKON LAYAR SECARA DINAMIS BERDASARKAN TAB AKTIF DAN PERAN AKTIF PENGGUNA.
+  // =========================================================================
+  IconData _getScreenIcon() {
+    switch (activeTab) {
+      case 'dashboard':
+        return currentRole == 'expert' ? Icons.dashboard_outlined : Icons.explore_outlined;
+      case 'history':
+        return Icons.history;
+      case 'billing':
+        return Icons.account_balance_wallet_outlined;
+      case 'profile':
+        return Icons.person_outline;
+      case 'live_chat_list':
+      case 'live_chat':
+        return Icons.chat_bubble_outline;
+      default:
+        return Icons.menu_book;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -383,12 +425,12 @@ class MainLayout extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.gold.withOpacity(0.2)),
                 ),
-                child: Icon(Icons.menu_book, color: AppColors.gold, size: 16),
+                child: Icon(_getScreenIcon(), color: AppColors.gold, size: 16),
               ),
               const SizedBox(width: 8),
               Text(
-                'Maestro',
-                style: TextStyle(
+                _getScreenTitle(),
+                style: const TextStyle(
                   color: AppColors.gold,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
