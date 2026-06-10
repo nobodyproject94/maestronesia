@@ -105,10 +105,10 @@ class BillingScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 6),
                         Text(
-                          '1,300,400,500,200',
+                          '99.300.400.500.200',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 27,
+                            fontSize: 26,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
