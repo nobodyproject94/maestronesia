@@ -95,7 +95,8 @@ class _MainAppControllerState extends State<MainAppController> {
   // =========================================================================
   String _screen =
       'splash'; // DEFAULT SCREEN SAAT PERTAMA KALI DIJALANKAN ADALAH SPLASH SCREEN.
-  String _role = 'client'; // PERAN PENGGUNA (CLIENT ATAU EXPERT).
+  String _role = 'client'; // PERAN AKTIF PENGGUNA (CLIENT ATAU EXPERT).
+  String _originalRole = 'client'; // PERAN ASLI/UTAMA PENGGUNA SAAT LOGIN (CLIENT ATAU EXPERT).
   int _selectedExpertId = 1; // ID EXPERT YANG DIPILIH UNTUK BOOKING/CHAT.
   int _selectedDay = 13; // HARI TERPILIH UNTUK BOOKING.
   String _selectedTime = '09:00 AM'; // WAKTU TERPILIH UNTUK BOOKING.
@@ -140,6 +141,7 @@ class _MainAppControllerState extends State<MainAppController> {
         _currentUserEmail = email;
         _currentUserName = name ?? 'User';
         _role = role;
+        _originalRole = role; // MENYIMPAN PERAN ASLI PENGGUNA DARI SESSION SHAREDPREFERENCES.
         _screen = role == 'expert' ? 'expert_dashboard' : 'dashboard';
       });
     }
@@ -176,6 +178,26 @@ class _MainAppControllerState extends State<MainAppController> {
     setState(() {
       _screen = screenName;
     });
+  }
+
+  // =========================================================================
+  // FUNGSI UNTUK MENGALIHKAN PERAN USER SECARA DINAMIS (KHUSUS PERAN ASLI EXPERT).
+  // JIKA EXPERT INGIN KONSULTASI, PERAN AKTIF (_ROLE) DIUBAH MENJADI 'CLIENT'
+  // DAN PENGGUNA DIALIHKAN KE DASHBOARD CLIENT. JIKA INGIN KEMBALI, PERAN AKTIF
+  // DIKEMBALIKAN MENJADI 'EXPERT' DAN DIALIHKAN KEMBALI KE DASHBOARD EXPERT.
+  // =========================================================================
+  void _switchRole() {
+    if (_originalRole == 'expert') {
+      setState(() {
+        if (_role == 'expert') {
+          _role = 'client';
+          _screen = 'dashboard';
+        } else {
+          _role = 'expert';
+          _screen = 'expert_dashboard';
+        }
+      });
+    }
   }
 
   // =========================================================================
@@ -234,6 +256,7 @@ class _MainAppControllerState extends State<MainAppController> {
             setState(() {
               _currentUserEmail = email;
               _currentUserName = name;
+              _originalRole = _role; // MENETAPKAN PERAN ASLI SESUAI PERAN PILIHAN SAAT LOGIN.
             });
             _navigateTo(_role == 'expert' ? 'expert_dashboard' : 'dashboard');
           },
@@ -247,6 +270,7 @@ class _MainAppControllerState extends State<MainAppController> {
             setState(() {
               _currentUserEmail = email;
               _currentUserName = name;
+              _originalRole = _role; // MENETAPKAN PERAN ASLI SESUAI PERAN PILIHAN SAAT DAFTAR.
             });
             _navigateTo(
               _role == 'expert' ? 'expert_registration' : 'dashboard',
@@ -269,12 +293,15 @@ class _MainAppControllerState extends State<MainAppController> {
           },
           onTabChanged: _navigateTo,
           onSignOut: _handleSignOut,
+          isOriginalExpert: _originalRole == 'expert', // MENANDAI JIKA USER ASLINYA ADALAH EXPERT.
+          onSwitchRole: _switchRole, // PENGALIH PERAN DARI CLIENT KEMBALI KE EXPERT.
         );
       case 'expert_dashboard':
         return ExpertDashboardScreen(
           onStartLiveSession: () => _navigateTo('live_session'),
           onTabChanged: _navigateTo,
           onSignOut: _handleSignOut,
+          onSwitchRole: _switchRole, // PENGALIH PERAN DARI EXPERT KE CLIENT.
         );
       case 'expert_profile':
         return ExpertProfileScreen(
@@ -341,6 +368,8 @@ class _MainAppControllerState extends State<MainAppController> {
           name: _currentUserName,
           onTabChanged: _navigateTo,
           onSignOut: _handleSignOut,
+          isOriginalExpert: _originalRole == 'expert', // MENANDAI JIKA USER ASLINYA ADALAH EXPERT.
+          onSwitchRole: _switchRole, // CALLBACK PENGALIKAN PERAN SECARA DINAMIS.
         );
       case 'billing':
         return BillingScreen(

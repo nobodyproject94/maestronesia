@@ -13,6 +13,9 @@ class MainLayout extends StatelessWidget {
   final ValueChanged<String> onTabChanged; // CALLBACK SAAT TAB NAVIGASI DIKLIK/DIUBAH.
   final VoidCallback onSignOut; // CALLBACK KETIKA USER MENEKAN TOMBOL LOGOUT.
   final bool showBottomBar; // MENENTUKAN APAKAH MOBILE FLOATING BOTTOM BAR PERLU DITAMPILKAN.
+  final bool isOriginalExpert; // MENUNJUKKAN APAKAH PERAN ASLI USER ADALAH EXPERT.
+  final VoidCallback? onSwitchRole; // CALLBACK PENGALIHAN PERAN SECARA DINAMIS.
+  final String? currentRole; // PERAN AKTIF USER AKTIF ('CLIENT' ATAU 'EXPERT').
 
   const MainLayout({
     super.key,
@@ -21,6 +24,9 @@ class MainLayout extends StatelessWidget {
     required this.onTabChanged,
     required this.onSignOut,
     this.showBottomBar = true,
+    this.isOriginalExpert = false,
+    this.onSwitchRole,
+    this.currentRole,
   });
 
   @override
@@ -150,6 +156,44 @@ class MainLayout extends StatelessWidget {
                           Icons.chat_bubble_outline,
                           isDark,
                         ),
+                        if (isOriginalExpert && onSwitchRole != null) ...[
+                          const SizedBox(height: 16),
+                          // =========================================================================
+                          // TOMBOL KHUSUS UNTUK MENGALIHKAN PERAN DI DALAM SIDEBAR DESKTOP
+                          // =========================================================================
+                          InkWell(
+                            onTap: onSwitchRole,
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.05),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: AppColors.gold.withOpacity(0.2)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.swap_horiz,
+                                    color: AppColors.gold,
+                                    size: 22,
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Text(
+                                      currentRole == 'expert' ? 'Switch to Client' : 'Switch to Expert',
+                                      style: const TextStyle(
+                                        color: AppColors.gold,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -505,6 +549,29 @@ class MainLayout extends StatelessWidget {
                     _buildDrawerItem(context, 'Wallet', Icons.account_balance_wallet_outlined, 'billing'),
                     _buildDrawerItem(context, 'Profile', Icons.person_outline, 'profile'),
                     _buildDrawerItem(context, 'Live Chat', Icons.chat_bubble_outline, 'live_chat_list'),
+                    if (isOriginalExpert && onSwitchRole != null) ...[
+                      const Divider(color: Colors.white10),
+                      // =========================================================================
+                      // LISTTILE KHUSUS UNTUK MENGALIHKAN PERAN DI DALAM MENU DRAWER MOBILE
+                      // =========================================================================
+                      ListTile(
+                        leading: const Icon(
+                          Icons.swap_horiz,
+                          color: AppColors.gold,
+                        ),
+                        title: Text(
+                          currentRole == 'expert' ? 'Switch to Client Mode' : 'Switch to Expert Mode',
+                          style: const TextStyle(
+                            color: AppColors.gold,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context); // MENUTUP DRAWER SEBELUM BERPINDAH
+                          onSwitchRole!(); // MEMICU FUNGSI SWAP ROLE
+                        },
+                      ),
+                    ],
                   ],
                 ),
               ),

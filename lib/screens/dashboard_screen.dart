@@ -12,11 +12,16 @@ class DashboardScreen extends StatefulWidget {
   final ValueChanged<String> onTabChanged;
   final VoidCallback onSignOut;
 
+  final bool isOriginalExpert; // MENUNJUKKAN APAKAH PERAN ASLI USER ADALAH EXPERT.
+  final VoidCallback? onSwitchRole; // CALLBACK UNTUK MELAKUKAN PENGALIHAN PERAN.
+
   const DashboardScreen({
     super.key,
     required this.onSelectExpert,
     required this.onTabChanged,
     required this.onSignOut,
+    this.isOriginalExpert = false,
+    this.onSwitchRole,
   });
 
   @override
@@ -46,6 +51,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           activeTab: 'dashboard',
           onTabChanged: widget.onTabChanged,
           onSignOut: widget.onSignOut,
+          isOriginalExpert: widget.isOriginalExpert, // MENUNJUKKAN STATUS USER ASLINYA EXPERT.
+          onSwitchRole: widget.onSwitchRole, // CALLBACK PENGALIHAN PERAN KEMBALI KE EXPERT.
+          currentRole: 'client', // PERAN AKTIF SAAT INI ADALAH CLIENT.
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
@@ -59,6 +67,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Banner pengalihan peran di dashboard utama telah dipindahkan ke drawer menu
+                  // dan profile screen agar tampilan beranda client tetap bersih dan luas.
                   // =========================================================================
                   // KOLOM PENCARIAN (SEARCH BAR) TERPADU
                   // =========================================================================

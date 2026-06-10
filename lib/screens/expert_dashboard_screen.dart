@@ -11,11 +11,14 @@ class ExpertDashboardScreen extends StatefulWidget {
   final ValueChanged<String> onTabChanged;
   final VoidCallback onSignOut;
 
+  final VoidCallback? onSwitchRole; // CALLBACK UNTUK MELAKUKAN PENGALIHAN PERAN KE CLIENT.
+
   const ExpertDashboardScreen({
     super.key,
     required this.onStartLiveSession,
     required this.onTabChanged,
     required this.onSignOut,
+    this.onSwitchRole,
   });
 
   @override
@@ -34,6 +37,9 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
           activeTab: 'dashboard',
           onTabChanged: widget.onTabChanged,
           onSignOut: widget.onSignOut,
+          isOriginalExpert: true, // PERAN ASLI DARI PENGGUNA DI DASHBOARD INI ADALAH EXPERT.
+          onSwitchRole: widget.onSwitchRole, // CALLBACK PENGALIHAN PERAN KE CLIENT.
+          currentRole: 'expert', // PERAN AKTIF SAAT INI ADALAH EXPERT.
           child: Scaffold(
             backgroundColor: Colors.transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND TERLIHAT.
             body: SingleChildScrollView(

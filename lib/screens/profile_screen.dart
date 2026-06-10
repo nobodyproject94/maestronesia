@@ -13,6 +13,9 @@ class ProfileScreen extends StatefulWidget {
   final ValueChanged<String> onTabChanged; // CALLBACK NAVIGASI PERPINDAHAN TAB NAVIGASI UTAMA.
   final VoidCallback onSignOut; // CALLBACK KETIKA PENGGUNA MENEKAN TOMBOL KELUAR (SIGN OUT).
 
+  final bool isOriginalExpert; // MENENTUKAN APAKAH PERAN ASLI PENGGUNA ADALAH EXPERT.
+  final VoidCallback? onSwitchRole; // CALLBACK PENGALIHAN PERAN SECARA DINAMIS.
+
   const ProfileScreen({
     super.key,
     required this.role,
@@ -20,6 +23,8 @@ class ProfileScreen extends StatefulWidget {
     required this.name,
     required this.onTabChanged,
     required this.onSignOut,
+    this.isOriginalExpert = false,
+    this.onSwitchRole,
   });
 
   @override
@@ -41,6 +46,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       activeTab: 'profile',
       onTabChanged: widget.onTabChanged,
       onSignOut: widget.onSignOut,
+      isOriginalExpert: widget.isOriginalExpert, // MENANDAI JIKA USER ASLINYA ADALAH EXPERT.
+      onSwitchRole: widget.onSwitchRole, // CALLBACK PENGALIKAN PERAN SECARA DINAMIS.
+      currentRole: widget.role, // PERAN AKTIF SAAT INI ('CLIENT' ATAU 'EXPERT').
       child: Scaffold(
         backgroundColor: Colors.transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND DI BAWAHNYA TERLIHAT.
         body: SingleChildScrollView(
@@ -301,6 +309,98 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           });
                         },
                         activeThumbColor: AppColors.gold,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+
+              // =========================================================================
+              // STATUS PENGATURAN PERAN (ROLE SETTINGS) - HANYA TAMPIL JIKA USER ASLINYA ADALAH EXPERT.
+              // MENYEDIAKAN KEMUDAHAN PINDAH KE CLIENT MODE MAUPUN RESTORE KEMBALI KE EXPERT MODE.
+              // =========================================================================
+              if (widget.isOriginalExpert) ...[
+                Text(
+                  'ROLE SETTINGS',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.gold.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Icon(Icons.swap_horiz, color: AppColors.gold, size: 20),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.role == 'expert'
+                                  ? 'Switch to Client Mode'
+                                  : 'Switch to Expert Mode',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              widget.role == 'expert'
+                                  ? 'View and consult with other experts'
+                                  : 'Return to your expert dashboard',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: widget.onSwitchRole,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isDarkModeNotifier.value
+                              ? AppColors.gold
+                              : Colors.white.withOpacity(0.12),
+                          foregroundColor: isDarkModeNotifier.value
+                              ? Colors.black
+                              : AppColors.gold,
+                          side: isDarkModeNotifier.value
+                              ? null
+                              : const BorderSide(color: AppColors.gold, width: 1.5),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          widget.role == 'expert' ? 'Switch' : 'Restore',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ],
                   ),

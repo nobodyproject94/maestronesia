@@ -100,8 +100,8 @@ class _SplashScreenState extends State<SplashScreen>
             // =========================================================================
             Positioned(
               child: Container(
-                width: 300,
-                height: 300,
+                width: 380,
+                height: 380,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.gold.withOpacity(0.04),
@@ -128,8 +128,8 @@ class _SplashScreenState extends State<SplashScreen>
                           // =========================================================================
                           Image.asset(
                             'assets/logo.png',
-                            width: 280,
-                            height: 280,
+                            width: 340,
+                            height: 340,
                             fit: BoxFit.contain,
                           ),
                         ],
