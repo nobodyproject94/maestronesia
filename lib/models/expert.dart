@@ -1,5 +1,5 @@
 // =========================================================================
-// PORTFOLIOITEM MEREPRESENTASIKAN ITEM PORTOFOLIO DARI SEORANG AHLI (EXPERT),
+// PORTFOLIO ITEM MEREPRESENTASIKAN ITEM PORTOFOLIO DARI SEORANG AHLI (EXPERT),
 // BERISI JUDUL PROYEK, TAHUN PELAKSANAAN, DAN TIPE PROYEK.
 // =========================================================================
 // =========================================================================
@@ -12,7 +12,7 @@ class PortfolioItem {
 }
 
 // =========================================================================
-// JOURNALITEM MEREPRESENTASIKAN ARTIKEL JURNAL ILMIAH YANG PERNAH DITULIS/DITERBITKAN OLEH AHLI,
+// JOURNAL ITEM MEREPRESENTASIKAN ARTIKEL JURNAL ILMIAH YANG PERNAH DITULIS/DITERBITKAN OLEH AHLI,
 // BERISI JUDUL JURNAL, TAHUN PUBLIKASI, DAN NAMA PENERBIT JURNAL.
 // =========================================================================
 // =========================================================================
@@ -25,7 +25,7 @@ class JournalItem {
 }
 
 // =========================================================================
-// CREDENTIALITEM MEREPRESENTASIKAN KREDENSIAL AKADEMIK ATAU SERTIFIKASI PROFESIONAL DARI AHLI,
+// CREDENTIAL ITEM MEREPRESENTASIKAN KREDENSIAL AKADEMIK ATAU SERTIFIKASI PROFESIONAL DARI AHLI,
 // BERISI GELAR/NAMA SERTIFIKASI DAN NAMA INSTITUT PENERBITNYA.
 // =========================================================================
 // =========================================================================

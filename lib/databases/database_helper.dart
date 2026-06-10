@@ -238,7 +238,7 @@ class DatabaseHelper {
   }
 
   // =========================================================================
-  // MENDAFTARKAN PENGGUNA BARU (MENYIMPANNYA KE SQLITE / SHAREDPREFERENCES WEB).
+  // MENDAFTARKAN PENGGUNA BARU (MENYIMPANNYA KE SQLITE / SHARED PREFERENCES WEB).
   // =========================================================================
   Future<Map<String, dynamic>?> registerUser(Map<String, dynamic> user) async {
     if (_useWebSim) {

@@ -5,7 +5,7 @@ import '../widgets/main_layout.dart';
 import '../databases/database_helper.dart';
 
 // =========================================================================
-// HISTORYSCREEN MENAMPILKAN RIWAYAT PEMESANAN SESI KONSULTASI DARI PENGGUNA.
+// HISTORY SCREEN MENAMPILKAN RIWAYAT PEMESANAN SESI KONSULTASI DARI PENGGUNA.
 // MEMUNGKINKAN PENGGUNA UNTUK MELIHAT SESI MENDATANG (UPCOMING), SESI SELESAI (COMPLETED), SESI DIBATALKAN (CANCELLED),
 // SERTA MENAMBAHKAN CATATAN PERSIAPAN, MENJADWALKAN ULANG (RESCHEDULE), ATAU MEMBATALKAN SESI.
 // =========================================================================
