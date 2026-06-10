@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 
 // =========================================================================
-// MAESTRONESIABUTTON ADALAH WIDGET TOMBOL KUSTOM (STATEFUL) DENGAN EFEK SENTUH, HOVER, DAN PENDARAN CAHAYA (GLOW).
+// MAESTRONESIA BUTTON ADALAH WIDGET TOMBOL KUSTOM (STATEFUL) DENGAN EFEK SENTUH, HOVER, DAN PENDARAN CAHAYA (GLOW).
 // =========================================================================
 class MaestronesiaButton extends StatefulWidget {
   final VoidCallback? onPressed; // AKSI CALLBACK KETIKA TOMBOL DITEKAN.
@@ -24,10 +24,12 @@ class MaestronesiaButton extends StatefulWidget {
   State<MaestronesiaButton> createState() => _MaestronesiaButtonState();
 }
 
-class _MaestronesiaButtonState extends State<MaestronesiaButton> with SingleTickerProviderStateMixin {
+class _MaestronesiaButtonState extends State<MaestronesiaButton>
+    with SingleTickerProviderStateMixin {
   bool _isHovered = false; // STATE UNTUK MENDETEKSI KURSOR HOVER (DESKTOP/WEB).
   bool _isPressed = false; // STATE UNTUK MENDETEKSI AKSI TAP/SENTUH AKTIF.
-  late AnimationController _glowController; // CONTROLLER ANIMASI UNTUK EFEK PENDARAN BAYANGAN.
+  late AnimationController
+  _glowController; // CONTROLLER ANIMASI UNTUK EFEK PENDARAN BAYANGAN.
   late Animation<double> _glowAnimation; // ANIMASI NILAI RADIUS PENDARAN.
 
   @override
@@ -50,7 +52,8 @@ class _MaestronesiaButtonState extends State<MaestronesiaButton> with SingleTick
 
   @override
   void dispose() {
-    _glowController.dispose(); // MEMBEBASKAN RESOURCE CONTROLLER ANIMASI DARI MEMORI.
+    _glowController
+        .dispose(); // MEMBEBASKAN RESOURCE CONTROLLER ANIMASI DARI MEMORI.
     super.dispose();
   }
 
@@ -79,16 +82,21 @@ class _MaestronesiaButtonState extends State<MaestronesiaButton> with SingleTick
           animation: _glowAnimation,
           builder: (context, child) {
             return AnimatedContainer(
-              duration: const Duration(milliseconds: 200), // TRANSISI PERUBAHAN WARNA DAN BAYANGAN SELAMA 200MS.
+              duration: const Duration(
+                milliseconds: 200,
+              ), // TRANSISI PERUBAHAN WARNA DAN BAYANGAN SELAMA 200MS.
               height: widget.height,
               decoration: BoxDecoration(
-                color: Colors.transparent, // WARNA LATAR BELAKANG TOMBOL DIATUR TRANSPARAN SESUAI KONSEP UI.
+                color: Colors
+                    .transparent, // WARNA LATAR BELAKANG TOMBOL DIATUR TRANSPARAN SESUAI KONSEP UI.
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 border: Border.all(
                   // =========================================================================
                   // MENGUBAH WARNA DAN KETEBALAN GARIS TEPI JIKA TOMBOL SEDANG AKTIF (WARNA EMAS).
                   // =========================================================================
-                  color: active ? AppColors.gold : Colors.white.withOpacity(0.08),
+                  color: active
+                      ? AppColors.gold
+                      : Colors.white.withOpacity(0.08),
                   width: active ? 2.0 : 1.5,
                 ),
                 boxShadow: active
@@ -100,7 +108,7 @@ class _MaestronesiaButtonState extends State<MaestronesiaButton> with SingleTick
                           color: AppColors.gold.withOpacity(0.25),
                           blurRadius: _glowAnimation.value,
                           spreadRadius: 1.0,
-                        )
+                        ),
                       ]
                     : [],
               ),
