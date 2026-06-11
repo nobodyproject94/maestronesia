@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'databases/preferences_helper.dart';
+import 'databases/preference_handler.dart';
 import 'databases/database_helper.dart';
 import 'models/expert.dart';
 import 'screens/billing_screen.dart';
@@ -116,22 +116,22 @@ class _MainAppControllerState extends State<MainAppController> {
     // =========================================================================
     // MEMBACA STATUS TEMA GELAP (DEFAULT FALSE JIKA BELUM ADA).
     // =========================================================================
-    final isDark = await PreferencesHelper.getThemeIsDark();
+    final isDark = await PreferenceHandler.getThemeIsDark();
     isDarkModeNotifier.value = isDark;
 
     // =========================================================================
     // MENAMBAHKAN LISTENER UNTUK MENDETEKSI PERUBAHAN TEMA SECARA DINAMIS LALU MENYIMPANNYA KE SHAREDPREFERENCES.
     // =========================================================================
     isDarkModeNotifier.addListener(() async {
-      await PreferencesHelper.setThemeIsDark(isDarkModeNotifier.value);
+      await PreferenceHandler.setThemeIsDark(isDarkModeNotifier.value);
     });
 
     // =========================================================================
     // MEMBACA DATA LOGIN USER (SESSION).
     // =========================================================================
-    final email = await PreferencesHelper.getSessionEmail();
-    final name = await PreferencesHelper.getSessionName();
-    final role = await PreferencesHelper.getSessionRole();
+    final email = await PreferenceHandler.getSessionEmail();
+    final name = await PreferenceHandler.getSessionName();
+    final role = await PreferenceHandler.getSessionRole();
 
     // =========================================================================
     // JIKA DATA SESSION ADA, LANGSUNG ARAHKAN USER KE DASHBOARD YANG SESUAI (MELEWATI SPLASH/ONBOARDING).
@@ -150,7 +150,7 @@ class _MainAppControllerState extends State<MainAppController> {
   // FUNGSI ASINKRONUS UNTUK MENANGANI LOGOUT PENGGUNA (MENGHAPUS SESSION DARI SHAREDPREFERENCES).
   // =========================================================================
   Future<void> _handleSignOut() async {
-    await PreferencesHelper.clearSession();
+    await PreferenceHandler.clearSession();
     setState(() {
       _currentUserEmail = 'client@gmail.com';
       _currentUserName = 'Fajar Ramadhan';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../databases/preferences_helper.dart';
+import '../databases/preference_handler.dart';
 import '../theme.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/interesting_logos.dart';
@@ -81,7 +81,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         });
 
         if (result != null) {
-            await PreferencesHelper.saveSession(
+            await PreferenceHandler.saveSession(
               email: email,
               name: name,
               role: widget.role,

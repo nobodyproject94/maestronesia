@@ -23,7 +23,7 @@ class PreferenceHandler {
   // =========================================================================
   // MENDAPATKAN INSTANCE SHAREDPREFERENCES SECARA ASINKRONUS (DISIMPAN DI MEMORI/CACHED).
   // =========================================================================
-  static Future<SharedPreferences> get _instance async {
+  static Future<SharedPreferences> get prefs async {
     _prefs ??= await SharedPreferences.getInstance();
     return _prefs!;
   }
@@ -33,40 +33,40 @@ class PreferenceHandler {
   // DEFAULT ADALAH FALSE JIKA BELUM PERNAH DISIMPAN.
   // =========================================================================
   static Future<bool> getThemeIsDark() async {
-    final prefs = await _instance;
-    return prefs.getBool(_keyThemeIsDark) ?? false;
+    final p = await prefs;
+    return p.getBool(_keyThemeIsDark) ?? false;
   }
 
   // =========================================================================
   // MENYIMPAN STATUS TEMA GELAP (DARK MODE) SECARA ASINKRONUS KE SHAREDPREFERENCES.
   // =========================================================================
   static Future<bool> setThemeIsDark(bool isDark) async {
-    final prefs = await _instance;
-    return await prefs.setBool(_keyThemeIsDark, isDark);
+    final p = await prefs;
+    return await p.setBool(_keyThemeIsDark, isDark);
   }
 
   // =========================================================================
   // MENGAMBIL DATA EMAIL SESI PENGGUNA YANG SEDANG LOGIN.
   // =========================================================================
   static Future<String?> getSessionEmail() async {
-    final prefs = await _instance;
-    return prefs.getString(_keySessionEmail);
+    final p = await prefs;
+    return p.getString(_keySessionEmail);
   }
 
   // =========================================================================
   // MENGAMBIL DATA NAMA SESI PENGGUNA YANG SEDANG LOGIN.
   // =========================================================================
   static Future<String?> getSessionName() async {
-    final prefs = await _instance;
-    return prefs.getString(_keySessionName);
+    final p = await prefs;
+    return p.getString(_keySessionName);
   }
 
   // =========================================================================
   // MENGAMBIL DATA PERAN (ROLE) SESI PENGGUNA YANG SEDANG LOGIN.
   // =========================================================================
   static Future<String?> getSessionRole() async {
-    final prefs = await _instance;
-    return prefs.getString(_keySessionRole);
+    final p = await prefs;
+    return p.getString(_keySessionRole);
   }
 
   // =========================================================================
@@ -77,51 +77,51 @@ class PreferenceHandler {
     required String name,
     required String role,
   }) async {
-    final prefs = await _instance;
-    await prefs.setString(_keySessionEmail, email);
-    await prefs.setString(_keySessionName, name);
-    await prefs.setString(_keySessionRole, role);
+    final p = await prefs;
+    await p.setString(_keySessionEmail, email);
+    await p.setString(_keySessionName, name);
+    await p.setString(_keySessionRole, role);
   }
 
   // =========================================================================
   // MENGHAPUS SELURUH DATA SESI LOGIN PENGGUNA SAAT LOGOUT (SIGN OUT).
   // =========================================================================
   static Future<void> clearSession() async {
-    final prefs = await _instance;
-    await prefs.remove(_keySessionEmail);
-    await prefs.remove(_keySessionName);
-    await prefs.remove(_keySessionRole);
+    final p = await prefs;
+    await p.remove(_keySessionEmail);
+    await p.remove(_keySessionName);
+    await p.remove(_keySessionRole);
   }
 
   // =========================================================================
   // MENGAMBIL DATA PENGGUNA SIMULASI WEB (FORMAT JSON) DARI SHAREDPREFERENCES.
   // =========================================================================
   static Future<String?> getWebUsers() async {
-    final prefs = await _instance;
-    return prefs.getString(_keyWebUsers);
+    final p = await prefs;
+    return p.getString(_keyWebUsers);
   }
 
   // =========================================================================
   // MENYIMPAN DATA PENGGUNA SIMULASI WEB (FORMAT JSON) KE SHAREDPREFERENCES.
   // =========================================================================
   static Future<bool> setWebUsers(String json) async {
-    final prefs = await _instance;
-    return await prefs.setString(_keyWebUsers, json);
+    final p = await prefs;
+    return await p.setString(_keyWebUsers, json);
   }
 
   // =========================================================================
   // MENGAMBIL DATA BOOKING SIMULASI WEB (FORMAT JSON) DARI SHAREDPREFERENCES.
   // =========================================================================
   static Future<String?> getWebBookings() async {
-    final prefs = await _instance;
-    return prefs.getString(_keyWebBookings);
+    final p = await prefs;
+    return p.getString(_keyWebBookings);
   }
 
   // =========================================================================
   // MENYIMPAN DATA BOOKING SIMULASI WEB (FORMAT JSON) KE SHAREDPREFERENCES.
   // =========================================================================
   static Future<bool> setWebBookings(String json) async {
-    final prefs = await _instance;
-    return await prefs.setString(_keyWebBookings, json);
+    final p = await prefs;
+    return await p.setString(_keyWebBookings, json);
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'preferences_helper.dart';
+import 'preference_handler.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -151,7 +151,7 @@ class DatabaseHelper {
   // =========================================================================
   Future<void> _initWebDB() async {
     if (_webUsers != null) return;
-    final prefs = await PreferencesHelper.prefs;
+    final prefs = await PreferenceHandler.prefs;
     
     // =========================================================================
     // MEMUAT DATA PENGGUNA WEB YANG DISIMPAN SEBAGAI FORMAT STRING JSON.
@@ -220,7 +220,7 @@ class DatabaseHelper {
   // MENYIMPAN LIST PENGGUNA WEB SIMULASI KE SHAREDPREFERENCES.
   // =========================================================================
   Future<void> _saveWebUsers() async {
-    final prefs = await PreferencesHelper.prefs;
+    final prefs = await PreferenceHandler.prefs;
     await prefs.setString('web_users', jsonEncode(_webUsers));
   }
 
@@ -228,7 +228,7 @@ class DatabaseHelper {
   // MENYIMPAN LIST BOOKING WEB SIMULASI KE SHAREDPREFERENCES.
   // =========================================================================
   Future<void> _saveWebBookings() async {
-    final prefs = await PreferencesHelper.prefs;
+    final prefs = await PreferenceHandler.prefs;
     await prefs.setString('web_bookings', jsonEncode(_webBookings));
   }
 

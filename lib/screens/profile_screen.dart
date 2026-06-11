@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
 import '../widgets/main_layout.dart';
-import '../databases/preferences_helper.dart';
+import '../databases/preference_handler.dart';
 
 // =========================================================================
 // PROFILESCREEN ADALAH STATEFULWIDGET (WIDGET YANG BISA BERUBAH DATA/TAMPILANNYA).
@@ -91,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await prefs.setString('profile_phone', _profilePhone);
     
     // Menyimpan sesi global nama, email dan peran pengguna agar sinkron di seluruh aplikasi.
-    await PreferencesHelper.saveSession(
+    await PreferenceHandler.saveSession(
       email: _profileEmail,
       name: _profileName,
       role: widget.role,

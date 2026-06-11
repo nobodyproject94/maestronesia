@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../databases/preferences_helper.dart';
+import '../databases/preference_handler.dart';
 import '../theme.dart';
 import '../databases/database_helper.dart';
 import '../widgets/custom_button.dart';
@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
           // MEMASTIKAN PERAN (ROLE) AKUN YANG DITEMUKAN DI DATABASE COCOK DENGAN PERAN LAYAR LOGIN SAAT INI.
           // =========================================================================
           if (user['role'] == widget.role) {
-            await PreferencesHelper.saveSession(
+            await PreferenceHandler.saveSession(
               email: user['email'],
               name: user['name'] ?? 'User',
               role: widget.role,
