@@ -1,56 +1,39 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import '../theme.dart';
+import 'drawer.dart';
 
+// =========================================================================
+// MAINLAYOUT ADALAH KERANGKA TATA LETAK UTAMA (STATELESS) APLIKASI.
+// WIDGET INI MENYEDIAKAN STRUKTUR NAVIGASI YANG ADAPTIF: SIDEBAR UNTUK DESKTOP (LEBAR > 768PX)
+// DAN APPBAR + BOTTOMNAVIGATIONBAR (MELAYANG) + NAVIGATION DRAWER UNTUK PERANGKAT MOBILE.
+// =========================================================================
 class MainLayout extends StatelessWidget {
-  final Widget child;
-  final String activeTab;
-  final bool showNavbar;
+  final Widget child; // WIDGET KONTEN UTAMA DARI SCREEN YANG AKTIF.
+  final String activeTab; // NAMA TAB/LAYAR YANG SEDANG AKTIF SAAT INI.
+  final ValueChanged<String> onTabChanged; // CALLBACK SAAT TAB NAVIGASI DIKLIK/DIUBAH.
+  final VoidCallback onSignOut; // CALLBACK KETIKA USER MENEKAN TOMBOL LOGOUT.
+  final bool showBottomBar; // MENENTUKAN APAKAH MOBILE FLOATING BOTTOM BAR PERLU DITAMPILKAN.
+  final bool showAppBar; // MENENTUKAN APAKAH MOBILE APP BAR UTAMA PERLU DITAMPILKAN.
 
   const MainLayout({
     super.key,
     required this.child,
     required this.activeTab,
-    this.showNavbar = true,
+    required this.onTabChanged,
+    required this.onSignOut,
+    this.showBottomBar = true,
+    this.showAppBar = true,
   });
-
-  void _changeTab(BuildContext context, String tabName) async {
-    HapticFeedback.lightImpact();
-    if (activeTab != tabName) {
-      if (tabName == 'dashboard') {
-        final prefs = await SharedPreferences.getInstance();
-        final role = prefs.getString('session_role') ?? 'client';
-        if (context.mounted) {
-          Navigator.pushReplacementNamed(
-            context,
-            role == 'expert' ? '/expert_dashboard' : '/dashboard',
-          );
-        }
-      } else {
-        Navigator.pushReplacementNamed(context, '/$tabName');
-      }
-    }
-  }
-
-  void _handleSignOut(BuildContext context) async {
-    HapticFeedback.lightImpact();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    isDarkModeNotifier.value = false;
-    if (context.mounted) {
-      Navigator.pushNamedAndRemoveUntil(context, '/onboarding', (route) => false);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isDesktop = screenWidth > 768;
+    final isDesktop = screenWidth > 768; // MENDETEKSI ORIENTASI DESKTOP BERDASARKAN LEBAR VIEWPORT.
 
-    // FIX UTAMA: Membungkus seluruh layout agar sensitif terhadap perubahan dark/light mode
+    // =========================================================================
+    // MEMANTAU STATUS ISDARKMODENOTIFIER UNTUK MEMPERBARUI DEKORASI GRADIEN/WARNA LATAR BELAKANG LAYOUT SECARA REAL-TIME.
+    // =========================================================================
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
@@ -63,35 +46,40 @@ class MainLayout extends StatelessWidget {
     );
   }
 
+  // =========================================================================
+  // MEMBANGUN TATA LETAK HALAMAN UNTUK TAMPILAN DESKTOP (SIDEBAR MENU DI KIRI DAN KONTEN UTAMA DI KANAN).
+  // =========================================================================
   Widget _buildDesktopLayout(BuildContext context, bool isDark) {
-    return Scaffold(
-      backgroundColor: isDark ? AppColors.background : Colors.transparent,
-      body: Container(
-        // Kondisi Light Mode: Memunculkan gradasi Biru Tua ke Biru Muda Elektrik
-        decoration: isDark
-            ? null
-            : const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF0B1528), // Deep Navy Blue atas
-                    Color(0xFF1E3A8A), // Soft Electric Blue bawah
-                  ],
-                ),
+    return Container(
+      decoration: isDark
+          ? const BoxDecoration(color: Color(0xFF131D24))
+          : const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF0B1528), // NAVY GELAP DI BAGIAN ATAS.
+                  Color(0xFF1E3A8A), // BIRU ELEKTRIK DI BAGIAN BAWAH.
+                ],
               ),
-        child: Row(
+            ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Row(
           children: [
-            // Sidebar Desktop
+            // =========================================================================
+            // SIDEBAR MENU UNTUK LAYAR LEBAR (DESKTOP).
+            // =========================================================================
             Container(
               width: 260,
-              // Kondisi Light mode: Sidebar menjadi transparan total
-              color: isDark ? AppColors.surface : Colors.transparent,
+              color: isDark ? AppColors.surface : Colors.transparent, // TRANSPARAN JIKA LIGHT MODE AGAR GRADIEN DI BELAKANG TERLIHAT.
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header/Logo
+                  // =========================================================================
+                  // JUDUL/LOGO MAESTRO.
+                  // =========================================================================
                   Row(
                     children: [
                       Container(
@@ -125,12 +113,13 @@ class MainLayout extends StatelessWidget {
                   ),
                   const SizedBox(height: 40),
 
-                  // Navigation Tabs
+                  // =========================================================================
+                  // LIST ITEM NAVIGASI UTAMA.
+                  // =========================================================================
                   Expanded(
                     child: ListView(
                       children: [
                         _buildSidebarItem(
-                          context,
                           'dashboard',
                           'Explore',
                           Icons.explore_outlined,
@@ -138,15 +127,6 @@ class MainLayout extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         _buildSidebarItem(
-                          context,
-                          'chat',
-                          'Chat',
-                          Icons.chat_bubble_outline,
-                          isDark,
-                        ),
-                        const SizedBox(height: 8),
-                        _buildSidebarItem(
-                          context,
                           'history',
                           'History',
                           Icons.history,
@@ -154,7 +134,6 @@ class MainLayout extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         _buildSidebarItem(
-                          context,
                           'billing',
                           'Wallet',
                           Icons.account_balance_wallet_outlined,
@@ -162,17 +141,25 @@ class MainLayout extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         _buildSidebarItem(
-                          context,
                           'profile',
                           'Profile',
                           Icons.person_outline,
+                          isDark,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildSidebarItem(
+                          'live_chat_list',
+                          'Live Chat',
+                          Icons.chat_bubble_outline,
                           isDark,
                         ),
                       ],
                     ),
                   ),
 
-                  // Sidebar Footer (Profile Info & Logout)
+                  // =========================================================================
+                  // GARIS PEMBATAS DAN INFO USER DI BAGIAN BAWAH SIDEBAR.
+                  // =========================================================================
                   Divider(
                     color: isDark ? AppColors.cardBorder : Colors.white10,
                     height: 24,
@@ -213,6 +200,9 @@ class MainLayout extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
+                  // =========================================================================
+                  // TOMBOL GANTI TEMA (DARK/LIGHT) DAN TOMBOL LOGOUT DI FOOTER SIDEBAR.
+                  // =========================================================================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -229,7 +219,7 @@ class MainLayout extends StatelessWidget {
                         tooltip: isDark ? 'Mode Terang' : 'Mode Gelap',
                       ),
                       IconButton(
-                        onPressed: () => _handleSignOut(context),
+                        onPressed: onSignOut,
                         icon: const Icon(Icons.logout, color: Colors.redAccent),
                         tooltip: 'Sign Out',
                       ),
@@ -238,7 +228,9 @@ class MainLayout extends StatelessWidget {
                 ],
               ),
             ),
-            // Main content area
+            // =========================================================================
+            // PANEL KONTEN UTAMA.
+            // =========================================================================
             Expanded(child: child),
           ],
         ),
@@ -246,8 +238,10 @@ class MainLayout extends StatelessWidget {
     );
   }
 
+  // =========================================================================
+  // MEMBUAT ITEM NAVIGASI LIST TILE KUSTOM UNTUK SIDEBAR DESKTOP.
+  // =========================================================================
   Widget _buildSidebarItem(
-    BuildContext context,
     String id,
     String label,
     IconData icon,
@@ -255,13 +249,15 @@ class MainLayout extends StatelessWidget {
   ) {
     final isSelected = activeTab == id;
     return InkWell(
-      onTap: () => _changeTab(context, id),
+      onTap: () => onTabChanged(id),
       borderRadius: BorderRadius.circular(20),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          // KONDISI SELEKSI: Jika Light Mode, background kapsul diganti transparan total
+          // =========================================================================
+          // KAPSUL BACKGROUND HANYA AKTIF PENUH PADA MODE GELAP, MODE TERANG DIBUAT TRANSPARAN.
+          // =========================================================================
           color: isSelected
               ? (isDark ? AppColors.gold : Colors.transparent)
               : Colors.transparent,
@@ -289,7 +285,9 @@ class MainLayout extends StatelessWidget {
                 ),
               ),
             ),
-            // KONDISI SELEKSI LIGHT MODE: Menampilkan bulatan circle emas kecil di sebelah kanan menu aktif
+            // =========================================================================
+            // LINGKARAN KECIL SEBAGAI PENANDA AKTIF JIKA DALAM LIGHT MODE.
+            // =========================================================================
             if (isSelected && !isDark)
               Container(
                 width: 6,
@@ -305,109 +303,135 @@ class MainLayout extends StatelessWidget {
     );
   }
 
-  String _getTabTitle(String tab) {
-    switch (tab) {
-      case 'chat':
-        return 'Inbox Messages';
-      case 'history':
-        return 'Session History';
-      case 'billing':
-        return 'Billing & Wallet';
-      case 'profile':
-        return 'Profile Settings';
-      case 'dashboard':
-      default:
-        return 'MAESTRONESIA';
-    }
-  }
-
+  // =========================================================================
+  // MEMBANGUN TATA LETAK HALAMAN UNTUK TAMPILAN MOBILE (APPBAR ATAS + FLOATING BOTTOM NAVIGATION BAR).
+  // =========================================================================
   Widget _buildMobileLayout(BuildContext context, bool isDark) {
     return Container(
       decoration: isDark
-          ? const BoxDecoration(color: Color(0xFF0B141C))
+          ? const BoxDecoration(color: Color(0xFF131D24))
           : const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF0B1528), // Deep Navy Blue atas
-                  Color(0xFF1E3A8A), // Soft Electric Blue bawah
-                ],
+                colors: [Color(0xFF0B1528), Color(0xFF1E3A8A)],
               ),
             ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        extendBody: false,
-        extendBodyBehindAppBar: false,
-        appBar: showNavbar
+        drawer: MaestronesiaDrawer(
+          activeTab: activeTab,
+          onTabChanged: onTabChanged,
+          onSignOut: onSignOut,
+        ),
+        appBar: showAppBar
             ? AppBar(
-                backgroundColor: isDark ? const Color(0xFF172128) : Colors.transparent,
+                backgroundColor: Colors.transparent,
                 elevation: 0,
-                shadowColor: Colors.transparent,
                 scrolledUnderElevation: 0,
-                iconTheme: const IconThemeData(
-                  color: Colors.white,
+                leading: Builder(
+                  builder: (context) {
+                    // =========================================================================
+                    // JIKA BUKAN DI HALAMAN UTAMA, TAMPILKAN TOMBOL BACK.
+                    // JIKA DI HALAMAN UTAMA, TAMPILKAN TOMBOL MENU DRAWER.
+                    // =========================================================================
+                    if (activeTab != 'dashboard' && activeTab != 'expert_dashboard') {
+                      return IconButton(
+                        icon: const Icon(Icons.chevron_left, color: AppColors.gold, size: 28),
+                        onPressed: () => onTabChanged('dashboard'),
+                      );
+                    } else {
+                      return IconButton(
+                        icon: const Icon(Icons.menu, color: AppColors.gold),
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                      );
+                    }
+                  },
                 ),
-                title: Text(
-                  _getTabTitle(activeTab),
-                  style: const TextStyle(
-                    color: AppColors.gold,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.0,
-                  ),
+                title: Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? AppColors.surface
+                      : Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.gold.withOpacity(0.2)),
                 ),
-              )
-            : null,
-        drawer: showNavbar ? _buildCustomDrawer(context, isDark) : null,
-        body: showNavbar
+                child: Icon(Icons.menu_book, color: AppColors.gold, size: 16),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                _getAppBarTitle(activeTab),
+                style: const TextStyle(
+                  color: AppColors.gold,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            // =========================================================================
+            // PINTASAN TOMBOL TOGGLE TEMA DI POJOK KANAN ATAS.
+            // =========================================================================
+            IconButton(
+              onPressed: () {
+                isDarkModeNotifier.value = !isDarkModeNotifier.value;
+              },
+              icon: Icon(
+                isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
+        )
+        : null,
+        // =========================================================================
+        // BOTTOMBAR MEMBUNGKUS LAYAR MOBILE DAN MEMUNCULKAN BOTTOM NAVIGATION BAR MELAYANG (FLOATING).
+        // =========================================================================
+        body: showBottomBar
             ? BottomBar(
-                body: child,
-                layout: BottomBarLayout(
-                  width: MediaQuery.of(context).size.width - 32,
-                  borderRadius: BorderRadius.circular(24),
-                  offset: 16,
-                  respectSafeArea: true,
-                ),
                 theme: BottomBarThemeData(
                   barDecoration: BoxDecoration(
-                    color: isDark 
-                        ? const Color(0xFF172128).withOpacity(0.9) 
-                        : const Color(0xFF0B1528).withOpacity(0.85),
-                    borderRadius: BorderRadius.circular(24),
+                    color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(32),
                     border: Border.all(
-                      color: isDark 
-                          ? AppColors.cardBorder 
-                          : Colors.white.withOpacity(0.12),
+                      color: isDark ? AppColors.cardBorder : Colors.white.withOpacity(0.08),
                       width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        blurRadius: 15,
-                        spreadRadius: 2,
-                        offset: const Offset(0, 4),
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildFloatingNavItem(context, 'dashboard', Icons.explore_outlined, Icons.explore, 'Explore', isDark),
-                          _buildFloatingNavItem(context, 'chat', Icons.chat_bubble_outline, Icons.chat_bubble, 'Chat', isDark),
-                          _buildFloatingNavItem(context, 'history', Icons.history_outlined, Icons.history, 'Sessions', isDark),
-                          _buildFloatingNavItem(context, 'billing', Icons.account_balance_wallet_outlined, Icons.account_balance_wallet, 'Wallet', isDark),
-                          _buildFloatingNavItem(context, 'profile', Icons.person_outline, Icons.person, 'Profile', isDark),
-                        ],
-                      ),
-                    ),
+                layout: BottomBarLayout(
+                  width: MediaQuery.of(context).size.width - 48,
+                  borderRadius: BorderRadius.circular(32),
+                  alignment: Alignment.bottomCenter,
+                  respectSafeArea: true,
+                ),
+                body: child,
+                child: SizedBox(
+                  height: 64,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      // =========================================================================
+                      // ITEM-ITEM NAVIGASI BAR BAWAH.
+                      // =========================================================================
+                      _buildFloatingNavItem(0, Icons.explore_outlined, Icons.explore, isDark),
+                      _buildFloatingNavItem(1, Icons.history, Icons.history_toggle_off, isDark),
+                      _buildFloatingNavItem(2, Icons.account_balance_wallet_outlined, Icons.account_balance_wallet, isDark),
+                      _buildFloatingNavItem(3, Icons.person_outline, Icons.person, isDark),
+                    ],
                   ),
                 ),
               )
@@ -416,409 +440,71 @@ class MainLayout extends StatelessWidget {
     );
   }
 
+  // =========================================================================
+  // MENDAPATKAN JUDUL HALAMAN APPBAR MOBILE SECARA DINAMIS BERDASARKAN TAB YANG AKTIF.
+  // =========================================================================
+  String _getAppBarTitle(String tab) {
+    switch (tab) {
+      case 'dashboard':
+        return 'Dashboard';
+      case 'history':
+        return 'History';
+      case 'billing':
+        return 'Wallet';
+      case 'profile':
+        return 'Profile';
+      case 'live_chat_list':
+        return 'Live Chat';
+      case 'expert_dashboard':
+        return 'Expert Dashboard';
+      default:
+        return 'Maestro';
+    }
+  }
+
+  // =========================================================================
+  // MENGUBAH PARAMETER NAMA TAB STRING MENJADI INDEKS INTEGER TAB BOTTOM BAR.
+  // =========================================================================
+  int _getTabIndex(String tab) {
+    if (tab == 'history') return 1;
+    if (tab == 'billing') return 2;
+    if (tab == 'profile') return 3;
+    return 0;
+  }
+
+  // =========================================================================
+  // MENGONVERSI INDEKS INTEGER TAB BOTTOM BAR KEMBALI KE NAMA TAB STRING ROUTING.
+  // =========================================================================
+  String _getTabName(int index) {
+    if (index == 1) return 'history';
+    if (index == 2) return 'billing';
+    if (index == 3) return 'profile';
+    return 'dashboard';
+  }
 
 
-  Widget _buildFloatingNavItem(
-    BuildContext context,
-    String id,
-    IconData icon,
-    IconData activeIcon,
-    String label,
-    bool isDark,
-  ) {
-    final isSelected = activeTab == id;
-    final color = isSelected 
-        ? AppColors.gold 
-        : (isDark ? AppColors.textSecondary : Colors.white70);
 
-    return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _changeTab(context, id),
+  // =========================================================================
+  // MEMBUAT ITEM NAVIGASI YANG MELAYANG (FLOATING) DI BOTTOM BAR MOBILE DENGAN ANIMASI PERUBAHAN STATE WARNA.
+  // =========================================================================
+  Widget _buildFloatingNavItem(int index, IconData icon, IconData activeIcon, bool isDark) {
+    final isSelected = _getTabIndex(activeTab) == index;
+    return InkWell(
+      onTap: () => onTabChanged(_getTabName(index)),
+      borderRadius: BorderRadius.circular(16),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDark ? AppColors.gold.withOpacity(0.15) : AppColors.gold.withOpacity(0.2))
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                isSelected ? activeIcon : icon,
-                color: color,
-                size: 22,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  color: color,
-                  fontSize: 10,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
-          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildCustomDrawer(BuildContext context, bool isDark) {
-    return Drawer(
-      backgroundColor: Colors.transparent,
-      child: FutureBuilder<SharedPreferences>(
-        future: SharedPreferences.getInstance(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.gold));
-          }
-          final prefs = snapshot.data!;
-          final role = prefs.getString('session_role') ?? 'client';
-
-          return Container(
-            decoration: isDark
-                ? const BoxDecoration(color: Color(0xFF0B141C))
-                : const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF0B141C),
-                        Color(0xFF1E4578),
-                        Color(0xFF6C9DDC),
-                      ],
-                    ),
-                  ),
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                // Custom Drawer Header matching Image 3
-                Container(
-                  padding: const EdgeInsets.only(top: 60, bottom: 24, left: 24, right: 24),
-                  decoration: BoxDecoration(
-                    gradient: isDark
-                        ? const LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color(0xFF0F2033),
-                              Color(0xFF0B141C),
-                            ],
-                          )
-                        : null,
-                    color: isDark ? null : Colors.white.withOpacity(0.05),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: const BoxDecoration(
-                          color: AppColors.gold,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.black,
-                          size: 32,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "MAESTRONESIA",
-                        style: TextStyle(
-                          color: AppColors.gold,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        "Be your maestro",
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Drawer Items matching Image 3
-                _buildDrawerItem(
-                  context: context,
-                  id: 'dashboard',
-                  title: role == 'expert' ? 'Dashboard' : 'Explore',
-                  subtitle: role == 'expert' ? 'Expert overview' : 'Home overview',
-                  icon: Icons.explore_outlined,
-                  activeIcon: Icons.explore,
-                  isSelected: activeTab == 'dashboard',
-                  isDark: isDark,
-                ),
-                _buildDrawerItem(
-                  context: context,
-                  id: 'chat',
-                  title: 'Chat',
-                  subtitle: 'Messages & inbox',
-                  icon: Icons.chat_bubble_outline,
-                  activeIcon: Icons.chat_bubble,
-                  isSelected: activeTab == 'chat',
-                  isDark: isDark,
-                ),
-                _buildDrawerItem(
-                  context: context,
-                  id: 'history',
-                  title: 'Sessions',
-                  subtitle: 'Booking details',
-                  icon: Icons.history_outlined,
-                  activeIcon: Icons.history,
-                  isSelected: activeTab == 'history',
-                  isDark: isDark,
-                ),
-                _buildDrawerItem(
-                  context: context,
-                  id: 'billing',
-                  title: 'Wallet',
-                  subtitle: 'Transactions & saldo',
-                  icon: Icons.account_balance_wallet_outlined,
-                  activeIcon: Icons.account_balance_wallet,
-                  isSelected: activeTab == 'billing',
-                  isDark: isDark,
-                ),
-                _buildDrawerItem(
-                  context: context,
-                  id: 'profile',
-                  title: 'Profile',
-                  subtitle: 'Account settings',
-                  icon: Icons.person_outline,
-                  activeIcon: Icons.person,
-                  isSelected: activeTab == 'profile',
-                  isDark: isDark,
-                ),
-                _buildDrawerItem(
-                  context: context,
-                  id: 'switch_role',
-                  title: 'Switch Role',
-                  subtitle: 'Current: ${role.toUpperCase()}',
-                  icon: Icons.swap_horiz,
-                  activeIcon: Icons.swap_horiz,
-                  isSelected: false,
-                  isDark: isDark,
-                ),
-
-                // Dark Mode Switch
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF172128),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(
-                            isDark ? Icons.nights_stay : Icons.light_mode_outlined,
-                            color: AppColors.gold,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                "Dark Mode",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                "Toggle theme",
-                                style: TextStyle(
-                                  color: Color(0xFFBBCAC1),
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Switch(
-                          value: isDark,
-                          onChanged: (val) {
-                            isDarkModeNotifier.value = val;
-                          },
-                          activeThumbColor: AppColors.gold,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                  child: Divider(color: Colors.white10),
-                ),
-
-                // Logout Item
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _handleSignOut(context);
-                    },
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF172128),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.logout,
-                              color: Colors.redAccent,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  "Logout",
-                                  style: TextStyle(
-                                    color: Colors.redAccent,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 2),
-                                Text(
-                                  "Sign out of account",
-                                  style: TextStyle(
-                                    color: Color(0xFFBBCAC1),
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildDrawerItem({
-    required BuildContext context,
-    required String id,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required IconData activeIcon,
-    required bool isSelected,
-    required bool isDark,
-  }) {
-    final activeBgColor = AppColors.gold;
-    final inactiveBgColor = const Color(0xFF172128);
-    final iconColor = isSelected ? Colors.black : AppColors.gold;
-    final textColor = isSelected ? AppColors.gold : Colors.white;
-    final subtitleColor = isSelected ? AppColors.gold.withOpacity(0.7) : const Color(0xFFBBCAC1);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-      child: InkWell(
-        onTap: () async {
-          HapticFeedback.lightImpact();
-          Navigator.pop(context);
-          if (id == 'switch_role') {
-            final prefs = await SharedPreferences.getInstance();
-            final currentRole = prefs.getString('session_role') ?? 'client';
-            final newRole = currentRole == 'client' ? 'expert' : 'client';
-            await prefs.setString('session_role', newRole);
-            if (context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                newRole == 'expert' ? '/expert_dashboard' : '/dashboard',
-                (route) => false,
-              );
-            }
-          } else {
-            _changeTab(context, id);
-          }
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: isSelected ? activeBgColor : inactiveBgColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  isSelected ? activeIcon : icon,
-                  color: iconColor,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color: subtitleColor,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        child: Icon(
+          isSelected ? activeIcon : icon,
+          color: isSelected ? AppColors.gold : AppColors.textSecondary,
+          size: 24,
         ),
       ),
     );

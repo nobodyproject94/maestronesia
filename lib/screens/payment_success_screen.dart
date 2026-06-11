@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/custom_button.dart';
 
+// =========================================================================
+// PAYMENTSUCCESSSCREEN ADALAH STATELESSWIDGET YANG MENAMPILKAN LAYAR KONFIRMASI SUKSES
+// SETELAH PENGGUNA BERHASIL MENYELESAIKAN PEMBAYARAN SESI PEMESANAN KONSULTASI PAKAR.
+// =========================================================================
 class PaymentSuccessScreen extends StatelessWidget {
-  final Expert expert;
-  final int selectedDay;
-  final String selectedTime;
+  final Expert expert; // OBJEK DATA PAKAR YANG BERHASIL DIPESAN.
+  final int selectedDay; // HARI/TANGGAL PELAKSANAAN KONSULTASI TERPILIH.
+  final String selectedTime; // WAKTU/JAM PELAKSANAAN KONSULTASI TERPILIH.
+  final VoidCallback
+  onReturn; // CALLBACK UNTUK KEMBALI KE HALAMAN DASHBOARD UTAMA.
+  final VoidCallback
+  onViewSessions; // CALLBACK UNTUK MENGARAHKAN PENGGUNA KE HALAMAN RIWAYAT SESI.
 
   const PaymentSuccessScreen({
     super.key,
     required this.expert,
     required this.selectedDay,
     required this.selectedTime,
+    required this.onReturn,
+    required this.onViewSessions,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors
+          .transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND DI BAWAHNYA TERLIHAT.
       body: MaestronesiaBackground(
         child: SafeArea(
           child: Padding(
@@ -31,7 +41,10 @@ class PaymentSuccessScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Spacer(),
-                // Success Icon Animation/Mock
+
+                // =========================================================================
+                // 1. IKON CENTANG SUKSES BERPENDAR (SUCCESS ICON WITH GLOW EFFECT)
+                // =========================================================================
                 Container(
                   width: 120,
                   height: 120,
@@ -46,7 +59,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.check_circle,
                     color: Colors.black,
                     size: 64,
@@ -54,7 +67,9 @@ class PaymentSuccessScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // Title & Sub
+                // =========================================================================
+                // 2. JUDUL HALAMAN DAN SUBJUDUL KUSTOM
+                // =========================================================================
                 Text(
                   'Payment Successful',
                   style: TextStyle(
@@ -65,6 +80,9 @@ class PaymentSuccessScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
+                // =========================================================================
+                // MENGGUNAKAN RICHTEXT UNTUK MEMBERIKAN AKSEN WARNA BERBEDA PADA NAMA PAKAR DI DALAM TEKS.
+                // =========================================================================
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
@@ -77,7 +95,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                       const TextSpan(text: 'Your consultation with '),
                       TextSpan(
                         text: expert.name,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.gold,
                           fontWeight: FontWeight.bold,
                         ),
@@ -88,7 +106,9 @@ class PaymentSuccessScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // Summary receipt card
+                // =========================================================================
+                // 3. KARTU RINGKASAN TANDA TERIMA (SUMMARY RECEIPT CARD)
+                // =========================================================================
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -98,6 +118,9 @@ class PaymentSuccessScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
+                      // =========================================================================
+                      // BARIS TANGGAL SESI KONSULTASI.
+                      // =========================================================================
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -112,7 +135,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                           ),
                           Text(
                             'Sep $selectedDay, 2024',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.gold,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -121,8 +144,11 @@ class PaymentSuccessScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      Divider(color: Colors.white10, height: 1),
+                      const Divider(color: Colors.white10, height: 1),
                       const SizedBox(height: 16),
+                      // =========================================================================
+                      // BARIS WAKTU SESI KONSULTASI.
+                      // =========================================================================
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -137,7 +163,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                           ),
                           Text(
                             selectedTime,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.gold,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -146,8 +172,11 @@ class PaymentSuccessScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      Divider(color: Colors.white10, height: 1),
+                      const Divider(color: Colors.white10, height: 1),
                       const SizedBox(height: 16),
+                      // =========================================================================
+                      // BARIS NAMA PAKAR YANG DIPESAN.
+                      // =========================================================================
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -175,17 +204,12 @@ class PaymentSuccessScreen extends StatelessWidget {
                 ),
                 const Spacer(),
 
-                // Primary return CTA
+                // =========================================================================
+                // 4. TOMBOL UTAMA KEMBALI KE DASHBOARD
+                // =========================================================================
                 MaestronesiaButton(
-                  onPressed: () {
-                    HapticFeedback.lightImpact();
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/dashboard',
-                      (route) => false,
-                    );
-                  },
-                  child: Text(
+                  onPressed: onReturn,
+                  child: const Text(
                     'RETURN TO DASHBOARD',
                     style: TextStyle(
                       fontSize: 11,
@@ -196,16 +220,11 @@ class PaymentSuccessScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // Secondary list link
+                // =========================================================================
+                // 5. TOMBOL SEKUNDER TEKS UNTUK MELIHAT LIST PEMESANAN SESI
+                // =========================================================================
                 GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/history',
-                      (route) => false,
-                    );
-                  },
+                  onTap: onViewSessions,
                   child: Text(
                     'VIEW MY SESSIONS',
                     style: TextStyle(

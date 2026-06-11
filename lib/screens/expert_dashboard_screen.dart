@@ -2,15 +2,28 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../widgets/main_layout.dart';
 
+// =========================================================================
+// EXPERTDASHBOARDSCREEN MERENDER BERANDA KHUSUS UNTUK PENGGUNA YANG BERSTATUS EXPERT.
+// MENAMPILKAN STATUS AKTIF (ONLINE/OFFLINE), TOTAL PENDAPATAN (EARNINGS), DAN DAFTAR NOTIFIKASI.
+// =========================================================================
 class ExpertDashboardScreen extends StatefulWidget {
-  const ExpertDashboardScreen({super.key});
+  final VoidCallback onStartLiveSession;
+  final ValueChanged<String> onTabChanged;
+  final VoidCallback onSignOut;
+
+  const ExpertDashboardScreen({
+    super.key,
+    required this.onStartLiveSession,
+    required this.onTabChanged,
+    required this.onSignOut,
+  });
 
   @override
   State<ExpertDashboardScreen> createState() => _ExpertDashboardScreenState();
 }
 
 class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
-  bool _isOnline = true;
+  bool _isOnline = true; // STATE UNTUK MEMANTAU STATUS AKTIF EXPERT (ONLINE / OFFLINE).
 
   @override
   Widget build(BuildContext context) {
@@ -19,163 +32,183 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'dashboard',
+          onTabChanged: widget.onTabChanged,
+          onSignOut: widget.onSignOut,
           child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: isDark ? const Color(0xFF0B141C) : Colors.transparent,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // PERBAIKAN HEADER BANNER: Emas di Dark Mode, Transparan tipis di Light Mode
-                    Container(
-                      color: isDark
-                          ? AppColors.gold
-                          : Colors.white.withOpacity(0.05),
-                      padding: const EdgeInsets.only(
-                        top: 24,
-                        bottom: 24,
-                        left: 24,
-                        right: 24,
-                      ),
-                      child: Column(
+            backgroundColor: Colors.transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND TERLIHAT.
+            body: SingleChildScrollView(
+              // =========================================================================
+              // PHYSICS BOUNCINGSCROLLPHYSICS UNTUK SCROLLING YANG MULUS DENGAN PANTULAN DI IOS.
+              // =========================================================================
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              child: Column(
+              children: [
+                // =========================================================================
+                // HEADER BANNER: LATAR BELAKANG EMAS JIKA MODE GELAP, DAN PUTIH TRANSPARAN TIPIS JIKA MODE TERANG.
+                // =========================================================================
+                Container(
+                  color: isDark
+                      ? AppColors.gold
+                      : Colors.white.withOpacity(0.05),
+                  padding: const EdgeInsets.only(
+                    top: 24,
+                    bottom: 24,
+                    left: 24,
+                    right: 24,
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.book_outlined,
-                                    color: isDark ? Colors.black : AppColors.gold,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Maestronesia',
-                                    style: TextStyle(
-                                      color: isDark
-                                          ? Colors.black
-                                          : AppColors.textPrimary,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
                               Icon(
-                                Icons.notifications_none,
-                                color: isDark
-                                    ? Colors.black
-                                    : AppColors.textSecondary,
+                                Icons.book_outlined,
+                                color: isDark ? Colors.black : AppColors.gold,
+                                size: 20,
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
+                              const SizedBox(width: 8),
                               Text(
-                                _isOnline ? 'You are Online' : 'You are Offline',
+                                'Maestronesia',
                                 style: TextStyle(
                                   color: isDark
                                       ? Colors.black
                                       : AppColors.textPrimary,
-                                  fontSize: 14,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Switch(
-                                value: _isOnline,
-                                onChanged: (val) {
-                                  setState(() {
-                                    _isOnline = val;
-                                  });
-                                },
-                                activeThumbColor: isDark ? Colors.black : AppColors.gold,
-                                activeTrackColor: isDark
-                                    ? Colors.black.withOpacity(0.2)
-                                    : Colors.white24,
-                              ),
                             ],
+                          ),
+                          Icon(
+                            Icons.notifications_none,
+                            color: isDark
+                                ? Colors.black
+                                : AppColors.textSecondary,
                           ),
                         ],
                       ),
-                    ),
-
-                    // Dashboard Content
-                    Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 24),
+                      // =========================================================================
+                      // BARIS STATUS TOGGLE ONLINE/OFFLINE EXPERT
+                      // =========================================================================
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Expert Dashboard',
+                            _isOnline ? 'You are Online' : 'You are Offline',
                             style: TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 26,
-                              fontWeight: FontWeight.w900,
+                              color: isDark
+                                  ? Colors.black
+                                  : AppColors.textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(width: 12),
+                          // =========================================================================
+                          // SWITCH WIDGET UNTUK MENGUBAH STATUS ONLINE/OFFLINE.
+                          // =========================================================================
+                          Switch(
+                            value: _isOnline,
+                            onChanged: (val) {
+                              setState(() {
+                                _isOnline = val; // MENGUBAH STATE STATUS ONLINE.
+                              });
+                            },
+                            activeThumbColor: isDark ? Colors.black : AppColors.gold,
+                            activeTrackColor: isDark
+                                ? Colors.black.withOpacity(0.2)
+                                : Colors.white24,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
 
-                          // Earnings Card
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(32),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.05),
+                // =========================================================================
+                // AREA KONTEN DASHBOARD EXPERT
+                // =========================================================================
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 24.0,
+                    right: 24.0,
+                    top: 24.0,
+                    bottom: 120.0, // MEMBERIKAN PADDING BAWAH AGAR TIDAK TERHALANG NAVIGASI BAR.
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Expert Dashboard',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // =========================================================================
+                      // KARTU INFORMASI TOTAL PENDAPATAN (EARNINGS CARD)
+                      // =========================================================================
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(32),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.05),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'TOTAL EARNINGS',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 2.0,
                               ),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
                                 Text(
-                                  'TOTAL EARNINGS',
+                                  'Rp 2.5M',
                                   style: TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 10,
+                                    color: AppColors.gold,
+                                    fontSize: 40,
                                     fontWeight: FontWeight.w900,
-                                    letterSpacing: 2.0,
+                                    letterSpacing: -1.0,
                                   ),
                                 ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: const [
-                                    Text(
-                                      'Rp 2.5M',
-                                      style: TextStyle(
-                                        color: AppColors.gold,
-                                        fontSize: 40,
-                                        fontWeight: FontWeight.w900,
-                                        letterSpacing: -1.0,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.book_outlined,
-                                      color: Colors.white10,
-                                      size: 48,
-                                    ),
-                                  ],
+                                Icon(
+                                  Icons.book_outlined,
+                                  color: Colors.white10,
+                                  size: 48,
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
-        );
+        ),
+      );
       },
     );
   }

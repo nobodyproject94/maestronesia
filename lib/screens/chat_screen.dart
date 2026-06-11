@@ -135,6 +135,8 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'chat',
+          onTabChanged: (_) {},
+          onSignOut: () {},
           child: Scaffold(
             backgroundColor: Colors.transparent,
             body: Container(

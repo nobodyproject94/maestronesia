@@ -1,54 +1,61 @@
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
 import '../widgets/main_layout.dart';
 import '../databases/database_helper.dart';
-import 'live_session_screen.dart';
-import '../models/expert.dart';
 
+// =========================================================================
+// HISTORYSCREEN MENAMPILKAN RIWAYAT PEMESANAN SESI KONSULTASI DARI PENGGUNA.
+// MEMUNGKINKAN PENGGUNA UNTUK MELIHAT SESI MENDATANG (UPCOMING), SESI SELESAI (COMPLETED), SESI DIBATALKAN (CANCELLED),
+// SERTA MENAMBAHKAN CATATAN PERSIAPAN, MENJADWALKAN ULANG (RESCHEDULE), ATAU MEMBATALKAN SESI.
+// =========================================================================
 class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({super.key});
+  final String email;
+  final ValueChanged<String> onTabChanged;
+  final VoidCallback onSignOut;
+
+  const HistoryScreen({
+    super.key,
+    required this.email,
+    required this.onTabChanged,
+    required this.onSignOut,
+  });
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  // =========================================================================
+  // OPSI FILTER STATUS PEMESANAN.
+  // =========================================================================
   final List<String> _filters = [
     'All Sessions',
     'Completed',
     'Upcoming',
     'Cancelled',
   ];
-  int _activeFilterIndex = 0;
-  String? _currentUserEmail;
-  late Future<List<Map<String, dynamic>>> _futureBookings;
+  int _activeFilterIndex = 0; // STATE PENYIMPAN INDEKS FILTER AKTIF TERPILIH.
+  late Future<List<Map<String, dynamic>>> _futureBookings; // FUTURE PENAMPUNG DATA BOOKING DARI SQLITE.
 
   @override
   void initState() {
     super.initState();
-    _futureBookings = Future.value([]);
-    _loadUserEmail();
+    _refreshBookings(); // MEMUAT DATA BOOKING DARI DATABASE SAAT INISIALISASI STATE PERTAMA KALI.
   }
 
-  void _loadUserEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('session_email') ?? 'client@gmail.com';
+  // =========================================================================
+  // FUNGSI PEMBANTU UNTUK MEMUAT ULANG DAFTAR DATA BOOKING DARI DATABASE.
+  // =========================================================================
+  void _refreshBookings() {
     setState(() {
-      _currentUserEmail = email;
-      _futureBookings = DatabaseHelper.instance.getBookings(email);
+      _futureBookings = DatabaseHelper.instance.getBookings(widget.email);
     });
   }
 
-  void _refreshBookings() {
-    if (_currentUserEmail != null) {
-      setState(() {
-        _futureBookings = DatabaseHelper.instance.getBookings(_currentUserEmail!);
-      });
-    }
-  }
-
+  // =========================================================================
+  // MENAMPILKAN DIALOG MODAL BLUR UNTUK MENAMBAHKAN ATAU MENGEDIT CATATAN SESI.
+  // =========================================================================
   void _showAddNoteDialog(Map<String, dynamic> item) {
     final noteController = TextEditingController(text: item['notes'] ?? '');
     final isDark = isDarkModeNotifier.value;
@@ -57,7 +64,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       context: context,
       builder: (context) {
         return BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // MEMBERIKAN EFEK BLUR DI BELAKANG DIALOG MODAL.
           child: AlertDialog(
             backgroundColor: isDark
                 ? const Color(0xFF131D24)
@@ -107,24 +114,30 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  // =========================================================================
+                  // MEMPERBARUI KOLOM 'NOTES' UNTUK ID BOOKING TERKAIT DI DATABASE.
+                  // =========================================================================
                   await DatabaseHelper.instance.updateBooking(item['id'], {
                     'notes': noteController.text,
                   });
                   if (context.mounted) {
-                    Navigator.pop(context);
+                    Navigator.pop(context); // MENUTUP DIALOG SETELAH BERHASIL.
                   }
-                  _refreshBookings();
+                  _refreshBookings(); // MEMPERBARUI UI DENGAN MEMUAT ULANG DATA.
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gold,
+                  backgroundColor: Colors.white.withOpacity(0.12),
+                  foregroundColor: AppColors.gold,
+                  side: const BorderSide(color: AppColors.gold, width: 1.5),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  elevation: 0,
                 ),
                 child: const Text(
                   'Save Note',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: AppColors.gold,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -136,24 +149,48 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
+  // =========================================================================
+  // MENAMPILKAN PEMILIH TANGGAL & WAKTU, LALU MEMICU KONFIRMASI RESCHEDULING SESI KONSULTASI.
+  // =========================================================================
   void _showRescheduleDialog(Map<String, dynamic> item) async {
     final isDark = isDarkModeNotifier.value;
+    final dialogBgColor = isDark
+        ? const Color(0xFF131D24)
+        : Colors.white.withOpacity(0.05);
+
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 30)),
       builder: (context, child) {
-        return Theme(
-          data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppColors.gold,
-              onPrimary: Colors.black,
-              surface: Color(0xFF131D24),
-              onSurface: Colors.white,
-            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF131D24)),
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Theme(
+            data: ThemeData.dark().copyWith(
+              colorScheme: ColorScheme.dark(
+                primary: AppColors.gold,
+                onPrimary: Colors.black,
+                surface: dialogBgColor,
+                onSurface: Colors.white,
+              ),
+              dialogBackgroundColor: dialogBgColor,
+              dialogTheme: DialogThemeData(
+                backgroundColor: dialogBgColor,
+                surfaceTintColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                  side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                ),
+              ),
+              datePickerTheme: DatePickerThemeData(
+                backgroundColor: dialogBgColor,
+                headerBackgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+              ),
+            ),
+            child: child!,
           ),
-          child: child!,
         );
       },
     );
@@ -165,16 +202,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
       context: context,
       initialTime: TimeOfDay.now(),
       builder: (context, child) {
-        return Theme(
-          data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppColors.gold,
-              onPrimary: Colors.black,
-              surface: Color(0xFF131D24),
-              onSurface: Colors.white,
-            ), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF131D24)),
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Theme(
+            data: ThemeData.dark().copyWith(
+              colorScheme: ColorScheme.dark(
+                primary: AppColors.gold,
+                onPrimary: Colors.black,
+                surface: dialogBgColor,
+                onSurface: Colors.white,
+              ),
+              dialogBackgroundColor: dialogBgColor,
+              dialogTheme: DialogThemeData(
+                backgroundColor: dialogBgColor,
+                surfaceTintColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                  side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                ),
+              ),
+              timePickerTheme: TimePickerThemeData(
+                backgroundColor: dialogBgColor,
+                entryModeIconColor: AppColors.gold,
+              ),
+            ),
+            child: child!,
           ),
-          child: child!,
         );
       },
     );
@@ -224,6 +277,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  // =========================================================================
+                  // MEMPERBARUI KOLOM TANGGAL DAN WAKTU SESI BOOKING BARU DI DATABASE.
+                  // =========================================================================
                   await DatabaseHelper.instance.updateBooking(item['id'], {
                     'date': dateStr,
                     'time': timeStr,
@@ -231,18 +287,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   if (context.mounted) {
                     Navigator.pop(context);
                   }
-                  _refreshBookings();
+                  _refreshBookings(); // MEMUAT ULANG DATA BOOKING UNTUK MEREFRESH UI LIST.
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gold,
+                  backgroundColor: Colors.white.withOpacity(0.12),
+                  foregroundColor: AppColors.gold,
+                  side: const BorderSide(color: AppColors.gold, width: 1.5),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  elevation: 0,
                 ),
                 child: const Text(
                   'Confirm',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: AppColors.gold,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -254,6 +313,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
+  // =========================================================================
+  // MENAMPILKAN DIALOG KONFIRMASI UNTUK MEMBATALKAN SESI KONSULTASI MENDATANG (STATUS MENJADI CANCELLED).
+  // =========================================================================
   void _showDeleteDialog(Map<String, dynamic> item) {
     final isDark = isDarkModeNotifier.value;
 
@@ -291,6 +353,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  // =========================================================================
+                  // MEMPERBARUI STATUS PEMESANAN MENJADI 'CANCELLED' DI DATABASE.
+                  // =========================================================================
                   await DatabaseHelper.instance.updateBooking(item['id'], {
                     'status': 'Cancelled',
                   });
@@ -300,15 +365,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   _refreshBookings();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
+                  backgroundColor: Colors.white.withOpacity(0.05),
+                  foregroundColor: Colors.redAccent,
+                  side: const BorderSide(color: Colors.redAccent, width: 1.5),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  elevation: 0,
                 ),
                 child: const Text(
                   'Cancel Session',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.redAccent,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -325,31 +393,34 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
-        final isDesktop = MediaQuery.of(context).size.width > 768;
         return MainLayout(
           activeTab: 'history',
+          onTabChanged: widget.onTabChanged,
+          onSignOut: widget.onSignOut,
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(24.0),
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 120.0), // JARAK PADDING BAWAH AGAR AMAN DARI NAVIGATION BAR.
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top row
+                  // =========================================================================
+                  // BARIS JUDUL LAYAR DAN TOMBOL MUAT ULANG (REFRESH)
+                  // =========================================================================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      if (isDesktop) ...[
-                        Text(
-                          'Session History',
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      Text(
+                        'Session History',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
+                      ),
                       IconButton(
                         onPressed: _refreshBookings,
                         icon: Icon(Icons.refresh, color: AppColors.textSecondary),
@@ -366,7 +437,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Filters horizontal list
+                  // =========================================================================
+                  // LIST HORIZONTAL TOMBOL FILTER STATUS SESI
+                  // =========================================================================
                   SizedBox(
                     height: 48,
                     child: ListView.separated(
@@ -381,6 +454,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         Border border;
                         Color textColor;
 
+                        // =========================================================================
+                        // KONFIGURASI VISUAL WARNA FILTER CHIP BERDASARKAN STATUS AKTIF & TEMA.
+                        // =========================================================================
                         if (active) {
                           if (isDark) {
                             bgColor = AppColors.gold;
@@ -447,7 +523,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // History Card List using FutureBuilder
+                  // =========================================================================
+                  // MERENDER DAFTAR SESI TRANSAKSI DENGAN FUTUREBUILDER
+                  // =========================================================================
                   FutureBuilder<List<Map<String, dynamic>>>(
                     future: _futureBookings,
                     builder: (context, snapshot) {
@@ -474,6 +552,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       }
 
                       final allBookings = snapshot.data ?? [];
+                      // =========================================================================
+                      // MEMFILTER DATA BOOKING BERDASARKAN STATUS YANG DIPILIH PADA FILTER HORIZONTAL.
+                      // =========================================================================
                       final filtered = allBookings.where((b) {
                         if (_activeFilterIndex == 0) return true;
                         final filterStatus = _filters[_activeFilterIndex];
@@ -495,7 +576,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       }
 
                       return ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(), // SCROLL UTAMA DIATUR OLEH SINGLECHILDSCROLLVIEW DI PARENT.
                         shrinkWrap: true,
                         itemCount: filtered.length,
                         separatorBuilder: (context, index) =>
@@ -506,6 +587,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           final isCompleted = status == 'Completed';
                           final isCancelled = status == 'Cancelled';
 
+                          // =========================================================================
+                          // MENGATUR NILAI RATING SIMULASI JIKA SESI TELAH SELESAI DILAKUKAN.
+                          // =========================================================================
                           double? rating;
                           if (isCompleted) {
                             if (item['expert_name'].toString().contains('Hermanto')) {
@@ -566,6 +650,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         ],
                                       ),
                                     ),
+                                    // =========================================================================
+                                    // LABEL TAG STATUS BOOKING (COMPLETED, CANCELLED, UPCOMING) DENGAN WARNA ADAPTIF.
+                                    // =========================================================================
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 10,
@@ -596,97 +683,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   ],
                                 ),
 
-                                if (status == 'Upcoming') ...[
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            final expertId = item['expert_id'] is int
-                                                ? item['expert_id']
-                                                : int.tryParse(item['expert_id'].toString()) ?? 1;
-                                            final expert = mockExperts.firstWhere(
-                                              (e) => e.id == expertId,
-                                              orElse: () => mockExperts.first,
-                                            );
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => LiveSessionScreen(
-                                                  expert: expert,
-                                                  onHangUp: () => Navigator.pop(context),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(0xFF25D366), // WhatsApp Green
-                                            foregroundColor: Colors.white,
-                                            padding: const EdgeInsets.symmetric(vertical: 12),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            elevation: 0,
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: const [
-                                              Icon(Icons.videocam, size: 18),
-                                              SizedBox(width: 8),
-                                              Text(
-                                                'Start Video Call',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: OutlinedButton(
-                                          onPressed: () {
-                                            final expertId = item['expert_id'] is int
-                                                ? item['expert_id']
-                                                : int.tryParse(item['expert_id'].toString()) ?? 1;
-                                            Navigator.pushNamed(
-                                              context,
-                                              '/chat',
-                                              arguments: expertId,
-                                            );
-                                          },
-                                          style: OutlinedButton.styleFrom(
-                                            foregroundColor: AppColors.gold,
-                                            side: const BorderSide(color: AppColors.gold, width: 1.5),
-                                            padding: const EdgeInsets.symmetric(vertical: 12),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: const [
-                                              Icon(Icons.chat_bubble_outline, size: 18),
-                                              SizedBox(width: 8),
-                                              Text(
-                                                'Direct Chat',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-
-                                // Display notes if present
+                                // =========================================================================
+                                // MENAMPILKAN CATATAN PERSIAPAN JIKA DATA NOTES TIDAK KOSONG.
+                                // =========================================================================
                                 if (item['notes'] != null &&
                                     item['notes'].toString().isNotEmpty) ...[
                                   const SizedBox(height: 16),
@@ -714,10 +713,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 const SizedBox(height: 16),
                                 const Divider(color: Colors.white10, height: 1),
                                 const SizedBox(height: 16),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                Wrap(
+                                  alignment: WrapAlignment.spaceBetween,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 12,
+                                  runSpacing: 8,
                                   children: [
+                                    // =========================================================================
+                                    // INFORMASI HARGA DAN RATING SESI.
+                                    // =========================================================================
                                     Row(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
                                           item['price'] ?? 'Rp 0',
@@ -755,109 +761,151 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         ],
                                       ],
                                     ),
-                                    Expanded(
-                                      child: SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: Row(
-                                          children: [
-                                            // Reschedule action (Upcoming only)
-                                            if (status == 'Upcoming') ...[
-                                              InkWell(
-                                                onTap: () => _showRescheduleDialog(item),
-                                                borderRadius: BorderRadius.circular(8),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 4,
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.edit_calendar,
-                                                        color: AppColors.gold,
-                                                        size: 14,
-                                                      ),
-                                                      const SizedBox(width: 4),
-                                                      Text(
-                                                        'Reschedule',
-                                                        style: TextStyle(
-                                                          color: AppColors.gold,
-                                                          fontSize: 12,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
+                                    // =========================================================================
+                                    // MENAMPILKAN TOMBOL-TOMBOL AKSI DINAMIS BERDASARKAN STATUS SESI.
+                                    // =========================================================================
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 4,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      children: [
+                                        // =========================================================================
+                                        // OPSI AKSI 1: CHAT & PANGGILAN VIDEO (HANYA JIKA SESI UPCOMING).
+                                        // =========================================================================
+                                        if (status == 'Upcoming') ...[
+                                          InkWell(
+                                            onTap: () {
+                                              widget.onTabChanged('live_chat_expert_${item['expert_id'] ?? 1}');
+                                            },
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
                                               ),
-                                              const SizedBox(width: 8),
-                                              InkWell(
-                                                onTap: () => _showDeleteDialog(item),
-                                                borderRadius: BorderRadius.circular(8),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 4,
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.chat_bubble_outline,
+                                                    color: AppColors.gold,
+                                                    size: 14,
                                                   ),
-                                                  child: Row(
-                                                    children: const [
-                                                      Icon(
-                                                        Icons.delete_outline,
-                                                        color: Colors.redAccent,
-                                                        size: 14,
-                                                      ),
-                                                      SizedBox(width: 4),
-                                                      Text(
-                                                        'Cancel',
-                                                        style: TextStyle(
-                                                          color: Colors.redAccent,
-                                                          fontSize: 12,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'Chat & Video',
+                                                    style: TextStyle(
+                                                      color: AppColors.gold,
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                            ],
-                                            // Add/Edit Note action (Any status)
-                                            InkWell(
-                                              onTap: () => _showAddNoteDialog(item),
-                                              borderRadius: BorderRadius.circular(8),
-                                              child: Padding(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: 8,
-                                                  vertical: 4,
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.note_add_outlined,
-                                                      color: AppColors.textSecondary,
-                                                      size: 14,
-                                                    ),
-                                                    const SizedBox(width: 4),
-                                                    Text(
-                                                      item['notes'] == null ||
-                                                              item['notes']
-                                                                  .toString()
-                                                                  .isEmpty
-                                                          ? 'Add Note'
-                                                          : 'Edit Note',
-                                                      style: TextStyle(
-                                                        color: AppColors.textSecondary,
-                                                        fontSize: 12,
-                                                        fontWeight: FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                                ],
                                               ),
                                             ),
-                                          ],
+                                          ),
+                                        ],
+                                        // =========================================================================
+                                        // OPSI AKSI 2: RESCHEDULE/BATAL (HANYA JIKA SESI UPCOMING).
+                                        // =========================================================================
+                                        if (status == 'Upcoming') ...[
+                                          InkWell(
+                                            onTap: () => _showRescheduleDialog(item),
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.edit_calendar,
+                                                    color: AppColors.gold,
+                                                    size: 14,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'Reschedule',
+                                                    style: TextStyle(
+                                                      color: AppColors.gold,
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: () => _showDeleteDialog(item),
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: const [
+                                                  Icon(
+                                                    Icons.delete_outline,
+                                                    color: Colors.redAccent,
+                                                    size: 14,
+                                                  ),
+                                                  SizedBox(width: 4),
+                                                  Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                      color: Colors.redAccent,
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                        // =========================================================================
+                                        // OPSI AKSI 3: TAMBAH / EDIT CATATAN SESI (TERSEDIA UNTUK SEMUA STATUS BOOKING).
+                                        // =========================================================================
+                                        InkWell(
+                                          onTap: () => _showAddNoteDialog(item),
+                                          borderRadius: BorderRadius.circular(8),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.note_add_outlined,
+                                                  color: AppColors.textSecondary,
+                                                  size: 14,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  item['notes'] == null ||
+                                                          item['notes']
+                                                              .toString()
+                                                              .isEmpty
+                                                      ? 'Add Note'
+                                                      : 'Edit Note',
+                                                  style: TextStyle(
+                                                    color: AppColors.textSecondary,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -868,7 +916,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 110), // Extra space to clear the floating bottom bar
                 ],
               ),
             ),

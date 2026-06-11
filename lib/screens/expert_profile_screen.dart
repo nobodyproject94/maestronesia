@@ -2,14 +2,25 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
-import 'booking_screen.dart';
 
+// =========================================================================
+// EXPERTPROFILESCREEN MENAMPILKAN PROFIL DETAIL LENGKAP DARI SEORANG AHLI (EXPERT) YANG DILIHAT OLEH CLIENT.
+// MENYEDIAKAN INFORMASI DESKRIPSI KUALIFIKASI, PORTOFOLIO TERVERIFIKASI, ULASAN/TESTIMONI, DAN TOMBOL PENDAFTARAN SESI (BOOKING).
+// =========================================================================
 class ExpertProfileScreen extends StatefulWidget {
-  final Expert expert;
+  final Expert expert; // MODEL DATA EXPERT YANG AKAN DITAMPILKAN.
+  final VoidCallback onBack; // AKSI TOMBOL KEMBALI.
+  final VoidCallback onBook; // AKSI TOMBOL PEMESANAN SESI KONSULTASI.
+  final ValueChanged<String> onTabChanged;
+  final VoidCallback onSignOut;
 
   const ExpertProfileScreen({
     super.key,
     required this.expert,
+    required this.onBack,
+    required this.onBook,
+    required this.onTabChanged,
+    required this.onSignOut,
   });
 
   @override
@@ -17,7 +28,10 @@ class ExpertProfileScreen extends StatefulWidget {
 }
 
 class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
-  String _activeSection = 'info'; // 'info' or 'proven'
+  // =========================================================================
+  // MENENTUKAN SUB-TAB DETAIL YANG SEDANG AKTIF: 'INFO' (OVERVIEW) ATAU 'PROVEN' (PORTFOLIO).
+  // =========================================================================
+  String _activeSection = 'info'; 
 
   @override
   Widget build(BuildContext context) {
@@ -26,20 +40,32 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'dashboard',
-          showNavbar: false,
+          showAppBar: false,
+          onTabChanged: widget.onTabChanged,
+          onSignOut: widget.onSignOut,
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              padding: const EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 24.0,
+                bottom: 120.0, // DIBERIKAN JARAK PADDING BAWAH AGAR TOMBOL AKSI TIDAK TERHALANG BOTTOM NAVIGATION BAR.
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header navigation row
+                  // =========================================================================
+                  // BARIS TOMBOL AKSI NAVIGASI ATAS (KEMBALI & NOTIFIKASI)
+                  // =========================================================================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: widget.onBack,
                         icon: Icon(Icons.chevron_left, color: AppColors.textSecondary),
                         style: IconButton.styleFrom(
                           backgroundColor: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
@@ -66,7 +92,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Profile info header
+                  // =========================================================================
+                  // INFORMASI UTAMA HEADER PROFIL (FOTO, NAMA, KEAHLIAN, DAN BINTANG RATING)
+                  // =========================================================================
                   Center(
                     child: Column(
                       children: [
@@ -91,6 +119,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                                 ],
                               ),
                             ),
+                            // =========================================================================
+                            // INDIKATOR STATUS KETERSEDIAAN EXPERT (TERSEDIA / TIDAK)
+                            // =========================================================================
                             Positioned(
                               bottom: 4,
                               right: 4,
@@ -114,135 +145,140 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                               widget.expert.name,
                               style: TextStyle(
                                 color: AppColors.textPrimary,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(Icons.check_circle, color: AppColors.gold, size: 20),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          widget.expert.expertise,
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                              const SizedBox(width: 8),
+                              const Icon(Icons.check_circle, color: AppColors.gold, size: 20),
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        // Rating Row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: List.generate(5, (index) {
-                                return Icon(
-                                  Icons.star,
-                                  color: index < widget.expert.rating.floor() ? Colors.amber : Colors.white10,
-                                  size: 16,
-                                );
-                              }),
+                          const SizedBox(height: 4),
+                          Text(
+                            widget.expert.expertise,
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              '${widget.expert.rating} Rating',
-                              style: TextStyle(
-                                color: AppColors.textPrimary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
+                          ),
+                          const SizedBox(height: 8),
+                          // =========================================================================
+                          // MERENDER BARIS IKON BINTANG SESUAI DENGAN RATING AHLI
+                          // =========================================================================
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: List.generate(5, (index) {
+                                  return Icon(
+                                    Icons.star,
+                                    color: index < widget.expert.rating.floor() ? Colors.amber : Colors.white10,
+                                    size: 16,
+                                  );
+                                }),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Tabs Selector
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF172128).withOpacity(0.4) : Colors.white.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
-                    ),
-                    child: Row(
-                      children: [
-                        // Overview Tab Switcher
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _activeSection = 'info';
-                              });
-                            },
-                            child: _buildSubTabContainer('Overview', _activeSection == 'info', isDark),
+                              const SizedBox(width: 8),
+                              Text(
+                                '${widget.expert.rating} Rating',
+                                style: TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        // Portfolio Tab Switcher
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _activeSection = 'proven';
-                              });
-                            },
-                            child: _buildSubTabContainer('Portfolio', _activeSection == 'proven', isDark),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Tab Content
-                  _activeSection == 'info' ? _buildOverview(isDark) : _buildPortfolio(isDark),
-                  const SizedBox(height: 40),
-
-                  // CTA Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BookingScreen(
-                              expert: widget.expert,
-                            ),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? AppColors.gold : Colors.white.withOpacity(0.12),
-                        foregroundColor: isDark ? Colors.black : AppColors.gold,
-                        side: isDark ? null : const BorderSide(color: AppColors.gold, width: 2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Book Consultation',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
+                    const SizedBox(height: 32),
+
+                    // =========================================================================
+                    // SELECTOR SUB-TAB (OVERVIEW VS PORTFOLIO)
+                    // =========================================================================
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF172128).withOpacity(0.4) : Colors.white.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      ),
+                      child: Row(
+                        children: [
+                          // =========================================================================
+                          // TAB OVERVIEW
+                          // =========================================================================
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _activeSection = 'info';
+                                });
+                              },
+                              child: _buildSubTabContainer('Overview', _activeSection == 'info', isDark),
+                            ),
+                          ),
+                          // =========================================================================
+                          // TAB PORTFOLIO
+                          // =========================================================================
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _activeSection = 'proven';
+                                });
+                              },
+                              child: _buildSubTabContainer('Portfolio', _activeSection == 'proven', isDark),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // =========================================================================
+                    // MERENDER KONTEN SUB-TAB YANG TERPILIH SECARA DINAMIS
+                    // =========================================================================
+                    _activeSection == 'info' ? _buildOverview(isDark) : _buildPortfolio(isDark),
+                    const SizedBox(height: 40),
+
+                    // =========================================================================
+                    // TOMBOL BOOKING KONSULTASI (CALL TO ACTION)
+                    // =========================================================================
+                    SizedBox(
+                      width: double.infinity,
+                      height: 60,
+                      child: ElevatedButton(
+                        onPressed: widget.onBook,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white.withOpacity(0.12),
+                          foregroundColor: AppColors.gold,
+                          side: const BorderSide(color: AppColors.gold, width: 1.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Book Consultation',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      }
-    );
-  }
+          );
+        }
+      );
+    }
 
-  // Builder helper for the tab container
+  // =========================================================================
+  // BUILDER HELPER FOR THE TAB CONTAINER
+  // =========================================================================
   Widget _buildSubTabContainer(String label, bool active, bool isDark) {
     Color tabBg;
     Border? tabBorder;
@@ -300,11 +336,16 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
     );
   }
 
+  // =========================================================================
+  // WIDGET PEMBANGUN KONTEN SUB-TAB OVERVIEW.
+  // =========================================================================
   Widget _buildOverview(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Stats grid
+        // =========================================================================
+        // GRID STATISTIK SINGKAT (CONSULTATIONS, EXPERIENCE, TARIF)
+        // =========================================================================
         Row(
           children: [
             Expanded(
@@ -322,7 +363,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
         ),
         const SizedBox(height: 32),
 
-        // Masteries
+        // =========================================================================
+        // BAGIAN PENGUASAAN KEAHLIAN (MASTERIES TAGS)
+        // =========================================================================
         Text(
           'MASTERIES',
           style: TextStyle(
@@ -358,7 +401,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
         ),
         const SizedBox(height: 32),
 
-        // Testimonials
+        // =========================================================================
+        // BAGIAN TESTIMONI TERBARU DARI PELANGGAN
+        // =========================================================================
         Text(
           'RECENT TESTIMONIALS',
           style: TextStyle(
@@ -435,6 +480,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
     );
   }
 
+  // =========================================================================
+  // MEMBUAT ITEM KOTAK STATISTIK DI BAGIAN OVERVIEW.
+  // =========================================================================
   Widget _buildStatItem(String val, String label, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -467,11 +515,16 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
     );
   }
 
+  // =========================================================================
+  // WIDGET PEMBANGUN KONTEN SUB-TAB PORTFOLIO.
+  // =========================================================================
   Widget _buildPortfolio(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Verified disclaimer
+        // =========================================================================
+        // KOTAK INFORMASI DISCLAIMER VERIFIKASI DATA OLEH APLIKASI
+        // =========================================================================
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -500,7 +553,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
         ),
         const SizedBox(height: 32),
 
-        // Experience list
+        // =========================================================================
+        // RIWAYAT PENGALAMAN KERJA (EXPERIENCE LIST)
+        // =========================================================================
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -596,7 +651,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
         ),
         const SizedBox(height: 32),
 
-        // Scientific journals (Only if they exist)
+        // =========================================================================
+        // DAFTAR PUBLIKASI JURNAL ILMIAH (SCIENTIFIC JOURNALS)
+        // =========================================================================
         if (widget.expert.evidence.journals.isNotEmpty) ...[
           Row(
             children: [
@@ -656,7 +713,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
           const SizedBox(height: 32),
         ],
 
-        // Accreditations list
+        // =========================================================================
+        // DAFTAR AKREDITASI DAN SERTIFIKASI (ACCREDITATIONS)
+        // =========================================================================
         Row(
           children: [
             Icon(Icons.workspace_premium_outlined, color: AppColors.gold, size: 20),

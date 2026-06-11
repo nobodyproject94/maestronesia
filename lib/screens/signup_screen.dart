@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../databases/preferences_helper.dart';
 import '../theme.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/interesting_logos.dart';
 import '../databases/database_helper.dart';
 
+// =========================================================================
+// SIGNUPSCREEN ADALAH STATEFULWIDGET YANG MEMPROSES PENDAFTARAN (REGISTRASI) AKUN PENGGUNA BARU
+// BERDASARKAN PERAN (ROLE) YANG DIPILIH: CLIENT ATAU EXPERT.
+// =========================================================================
 class SignUpScreen extends StatefulWidget {
-  final String? role;
+  final String role; // PERAN PENGGUNA ('CLIENT' ATAU 'EXPERT').
+  final VoidCallback onBack; // CALLBACK UNTUK KEMBALI KE HALAMAN SEBELUMNYA.
+  final Function(String email, String name) onSignUpSuccess; // CALLBACK KETIKA REGISTRASI BERHASIL DIVALIDASI.
+  final VoidCallback onLoginRedirect; // CALLBACK UNTUK MENGALIHKAN PENGGUNA KE LAYAR LOGIN.
 
   const SignUpScreen({
     super.key,
-    this.role,
+    required this.role,
+    required this.onBack,
+    required this.onSignUpSuccess,
+    required this.onLoginRedirect,
   });
 
   @override
@@ -19,49 +28,76 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  String get _resolvedRole => widget.role ?? (ModalRoute.of(context)!.settings.arguments as String? ?? 'client');
+  // =========================================================================
+  // GLOBALKEY UNTUK VALIDASI STATUS SELURUH KOLOM INPUT DI DALAM FORM.
+  // =========================================================================
   final _formKey = GlobalKey<FormState>();
+  // =========================================================================
+  // KONTROLER UNTUK MEMBACA INPUT TEKS NAMA LENGKAP.
+  // =========================================================================
   final _nameController = TextEditingController();
+  // =========================================================================
+  // KONTROLER UNTUK MEMBACA INPUT TEKS ALAMAT EMAIL.
+  // =========================================================================
   final _emailController = TextEditingController();
+  // =========================================================================
+  // KONTROLER UNTUK MEMBACA INPUT TEKS PASSWORD.
+  // =========================================================================
   final _passwordController = TextEditingController();
+  // =========================================================================
+  // STATE PELACAK PROSES LOADING PENDAFTARAN ASINKRON.
+  // =========================================================================
   bool _isLoading = false;
 
+  // =========================================================================
+  // FUNGSI UNTUK MENANGANI AKSI PENDAFTARAN AKUN BARU.
+  // =========================================================================
   void _handleSignUp() async {
+    // =========================================================================
+    // MEMASTIKAN DATA INPUT DI SELURUH TEXTFORMFIELD LOLOS VALIDASI.
+    // =========================================================================
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _isLoading = true;
+        _isLoading = true; // MENGUBAH STATE KE LOADING.
       });
 
       final name = _nameController.text.trim();
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
+      // =========================================================================
+      // MENYIMPAN DATA PENGGUNA BARU KE DATABASE SQLITE.
+      // =========================================================================
       final result = await DatabaseHelper.instance.registerUser({
         'name': name,
         'email': email,
         'password': password,
-        'role': _resolvedRole,
+        'role': widget.role,
       });
 
       if (mounted) {
         setState(() {
-          _isLoading = false;
+          _isLoading = false; // MEMATIKAN STATUS LOADING SETELAH PROSES SIMPAN SELESAI.
         });
 
         if (result != null) {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('session_email', email);
-          await prefs.setString('session_name', name);
-          await prefs.setString('session_role', _resolvedRole);
+            await PreferencesHelper.saveSession(
+              email: email,
+              name: name,
+              role: widget.role,
+            );
           
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            _resolvedRole == 'expert' ? '/expert_registration' : '/dashboard',
-            (route) => false,
-          );
+          // =========================================================================
+          // MEMICU CALLBACK SUKSES REGISTRASI UNTUK MEMPERBARUI STATE APLIKASI UTAMA.
+          // =========================================================================
+          widget.onSignUpSuccess(email, name);
         } else {
+          // =========================================================================
+          // MEMBERIKAN PERINGATAN SNACKBAR JIKA ALAMAT EMAIL SUDAH TERDAFTAR SEBELUMNYA.
+          // =========================================================================
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
+              backgroundColor: AppColors.error,
               content: Text(
                 'Email already registered. Try logging in.',
                 style: TextStyle(
@@ -70,7 +106,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   fontSize: 14,
                 ),
               ),
-              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -80,6 +115,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   void dispose() {
+    // =========================================================================
+    // MENGHAPUS KONTROLER DARI MEMORI UNTUK MENCEGAH KEBOCORAN RESOURCE.
+    // =========================================================================
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -89,7 +127,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND DI BAWAHNYA TERLIHAT.
       body: MaestronesiaBackground(
         child: SafeArea(
           child: Padding(
@@ -97,14 +135,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Back Button
+                // =========================================================================
+                // TOMBOL KEMBALI DI POJOK KIRI ATAS.
+                // =========================================================================
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: IconButton(
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.pop(context);
-                    },
+                    onPressed: widget.onBack,
                     icon: Icon(
                       Icons.arrow_back_ios_new,
                       color: AppColors.textSecondary,
@@ -122,12 +159,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Expanded(
                   child: Center(
                     child: SingleChildScrollView(
+                      // =========================================================================
+                      // BOUNCINGSCROLLPHYSICS UNTUK EFEK MEMANTUL ELASTIS KHAS IOS & MENCEGAH OVERFLOW SAAT KEYBOARD MUNCUL.
+                      // =========================================================================
+                      physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics(),
+                      ),
                       child: Form(
                         key: _formKey,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            // =========================================================================
+                            // JUDUL PEMBUATAN AKUN.
+                            // =========================================================================
                             Text(
                               'Create Account',
                               textAlign: TextAlign.center,
@@ -139,6 +185,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ),
                             const SizedBox(height: 8),
+                            // =========================================================================
+                            // RICHTEXT UNTUK MENYOROTI NAMA PERAN (ROLE) DENGAN WARNA EMAS.
+                            // =========================================================================
                             RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
@@ -150,8 +199,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 children: [
                                   const TextSpan(text: 'Sign up as a '),
                                   TextSpan(
-                                    text: _resolvedRole,
-                                    style: TextStyle(
+                                    text: widget.role,
+                                    style: const TextStyle(
                                       color: AppColors.gold,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -162,7 +211,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             const SizedBox(height: 48),
 
-                            // Name Input
+                            // =========================================================================
+                            // INPUT FORMULIR NAMA LENGKAP.
+                            // =========================================================================
                             TextFormField(
                               controller: _nameController,
                               keyboardType: TextInputType.name,
@@ -184,9 +235,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                                 hintText: 'FULL NAME',
                                 hintStyle: TextStyle(
-                                  color: AppColors.textSecondary.withOpacity(
-                                    0.3,
-                                  ),
+                                  color: AppColors.textSecondary.withOpacity(0.3),
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.5,
@@ -205,7 +254,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             const SizedBox(height: 16),
 
-                            // Email Input
+                            // =========================================================================
+                            // INPUT FORMULIR EMAIL (DILENGKAPI VALIDASI POLA REGEXP).
+                            // =========================================================================
                             TextFormField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
@@ -232,9 +283,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                                 hintText: 'EMAIL ADDRESS',
                                 hintStyle: TextStyle(
-                                  color: AppColors.textSecondary.withOpacity(
-                                    0.3,
-                                  ),
+                                  color: AppColors.textSecondary.withOpacity(0.3),
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.5,
@@ -253,7 +302,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             const SizedBox(height: 16),
 
-                            // Password Input
+                            // =========================================================================
+                            // INPUT FORMULIR PASSWORD (DILENGKAPI VALIDASI MINIMAL PANJANG KARAKTER).
+                            // =========================================================================
                             TextFormField(
                               controller: _passwordController,
                               obscureText: true,
@@ -278,9 +329,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                                 hintText: 'PASSWORD',
                                 hintStyle: TextStyle(
-                                  color: AppColors.textSecondary.withOpacity(
-                                    0.3,
-                                  ),
+                                  color: AppColors.textSecondary.withOpacity(0.3),
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.5,
@@ -299,12 +348,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             const SizedBox(height: 24),
 
-                            // Create Account Button
+                            // =========================================================================
+                            // TOMBOL SUBMIT PEMBUATAN AKUN.
+                            // =========================================================================
                             MaestronesiaButton(
-                              onPressed: _isLoading ? null : () {
-                                HapticFeedback.lightImpact();
-                                _handleSignUp();
-                              },
+                              onPressed: _isLoading ? null : _handleSignUp,
                               child: _isLoading
                                   ? const SizedBox(
                                       width: 20,
@@ -314,9 +362,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                  : const Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           'Create Account',
@@ -332,7 +379,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             const SizedBox(height: 32),
 
-                            // Divider
+                            // =========================================================================
+                            // PEMBATAS DEKORATIF PENDAFTARAN INSTAN.
+                            // =========================================================================
                             Row(
                               children: [
                                 Expanded(
@@ -347,8 +396,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   child: Text(
                                     'FAST TRACK REGISTRATION',
                                     style: TextStyle(
-                                      color: AppColors.textSecondary
-                                          .withOpacity(0.6),
+                                      color: AppColors.textSecondary.withOpacity(0.6),
                                       fontSize: 8,
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 2.0,
@@ -364,23 +412,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             const SizedBox(height: 24),
 
-                            // Google & LinkedIn Sign Up Mock
+                            // =========================================================================
+                            // SIMULASI TOMBOL REGISTRASI PIHAK KETIGA (GOOGLE & LINKEDIN).
+                            // =========================================================================
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 GestureDetector(
-                                  onTap: () {
-                                    HapticFeedback.lightImpact();
-                                    _handleSignUp();
-                                  },
+                                  onTap: _handleSignUp,
                                   child: const InterestingGoogleLogo(size: 28),
                                 ),
                                 const SizedBox(width: 24),
                                 GestureDetector(
-                                  onTap: () {
-                                    HapticFeedback.lightImpact();
-                                    _handleSignUp();
-                                  },
+                                  onTap: _handleSignUp,
                                   child: const InterestingLinkedInLogo(
                                     size: 28,
                                   ),
@@ -389,9 +433,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             const SizedBox(height: 32),
 
-                            // Motivational Quote
+                            // =========================================================================
+                            // KUTIPAN MOTIVASI BELAJAR.
+                            // =========================================================================
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 24.0),
                               child: Text(
                                 '"The beautiful thing about learning is that no one can take it away from you."',
                                 textAlign: TextAlign.center,
@@ -409,7 +455,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-                // Login redirect
+                // =========================================================================
+                // BAGIAN BAWAH: AJAKAN MASUK (LOGIN) JIKA SUDAH MEMILIKI AKUN.
+                // =========================================================================
                 Padding(
                   padding: const EdgeInsets.only(bottom: 24.0),
                   child: Row(
@@ -423,15 +471,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          Navigator.pushReplacementNamed(
-                            context,
-                            '/login',
-                            arguments: _resolvedRole,
-                          );
-                        },
-                        child: Text(
+                        onTap: widget.onLoginRedirect,
+                        child: const Text(
                           'Sign in',
                           style: TextStyle(
                             color: AppColors.gold,

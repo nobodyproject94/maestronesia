@@ -1,44 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
-import 'payment_success_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../databases/database_helper.dart';
 
+// =========================================================================
+// PAYMENTSCREEN ADALAH STATELESSWIDGET YANG MENAMPILKAN HALAMAN CHECKOUT PEMBAYARAN
+// UNTUK MENGONFIRMASI PEMESANAN SESI KONSULTASI DENGAN PAKAR YANG DIPILIH.
+// =========================================================================
 class PaymentScreen extends StatelessWidget {
-  final Expert expert;
-  final int day;
-  final String time;
+  final Expert expert; // OBJEK DETAIL DATA PAKAR YANG AKAN DIPESAN DAN DIBAYAR JASANYA.
+  final VoidCallback onBack; // CALLBACK KETIKA PENGGUNA MEMBATALKAN CHECKOUT DAN KEMBALI KE LAYAR SEBELUMNYA.
+  final VoidCallback onConfirm; // CALLBACK SAAT PENGGUNA MENYETUJUI TRANSAKSI DAN MENEKAN TOMBOL KONFIRMASI.
+  final ValueChanged<String> onTabChanged; // CALLBACK NAVIGASI PERPINDAHAN TAB LAYOUT UTAMA.
+  final VoidCallback onSignOut; // CALLBACK KETIKA PENGGUNA KELUAR APLIKASI.
 
   const PaymentScreen({
     super.key,
     required this.expert,
-    required this.day,
-    required this.time,
+    required this.onBack,
+    required this.onConfirm,
+    required this.onTabChanged,
+    required this.onSignOut,
   });
 
   @override
   Widget build(BuildContext context) {
+    // =========================================================================
+    // VALUELISTENABLEBUILDER MEMANTAU PERUBAHAN STATUS MODE GELAP/TERANG.
+    // =========================================================================
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
+        // =========================================================================
+        // HALAMAN CHECKOUT DIBUNGKUS MAINLAYOUT AGAR BOTTOM NAVIGATION BAR TERPADU TETAP DAPAT DIAKSES.
+        // =========================================================================
         return MainLayout(
           activeTab: 'dashboard',
-          showNavbar: false,
+          showAppBar: false,
+          onTabChanged: onTabChanged,
+          onSignOut: onSignOut,
           child: Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              // =========================================================================
+              // BOUNCINGSCROLLPHYSICS MEMBERIKAN ANIMASI MEMANTUL SAAT DAFTAR CHECKOUT DITARIK MELEWATI BATAS SCROLL.
+              // =========================================================================
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              // =========================================================================
+              // PENTING: MENAMBAHKAN BOTTOM PADDING SEBESAR 120.0 AGAR TOMBOL "CONFIRM & PAY" DI BAWAH
+              // TIDAK TERTUTUP ATAU TERHALANGI OLEH BOTTOM NAVIGATION BAR MILIK MAINLAYOUT.
+              // =========================================================================
+              padding: const EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 24.0,
+                bottom: 120.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header Row
+                  // =========================================================================
+                  // 1. HEADER BAR: TOMBOL KEMBALI + JUDUL HALAMAN
+                  // =========================================================================
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: onBack,
                         icon: Icon(
                           Icons.chevron_left,
                           color: AppColors.textSecondary,
@@ -65,7 +94,9 @@ class PaymentScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  // Checkout Summary Card
+                  // =========================================================================
+                  // 2. KARTU RINGKASAN PEMBAYARAN (CHECKOUT SUMMARY CARD)
+                  // =========================================================================
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -83,7 +114,9 @@ class PaymentScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Expert summary row
+                        // =========================================================================
+                        // DETAIL NAMA PAKAR DAN HARGA PEMESANAN.
+                        // =========================================================================
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -112,13 +145,13 @@ class PaymentScreen extends StatelessWidget {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.check_circle,
                                         color: AppColors.gold,
                                         size: 14,
                                       ),
                                       const SizedBox(width: 6),
-                                      Text(
+                                      const Text(
                                         'Verified Expert',
                                         style: TextStyle(
                                           color: AppColors.gold,
@@ -157,7 +190,9 @@ class PaymentScreen extends StatelessWidget {
                         const Divider(color: Colors.white10, height: 1),
                         const SizedBox(height: 24),
 
-                        // Payment method selector
+                        // =========================================================================
+                        // BAGIAN METODE PEMBAYARAN AKTIF YANG DIPILIH.
+                        // =========================================================================
                         const Text(
                           'PAYMENT METHOD',
                           style: TextStyle(
@@ -169,7 +204,9 @@ class PaymentScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
 
-                        // Wallet method (active)
+                        // =========================================================================
+                        // METODE: MAESTRONESIA WALLET (PILIHAN AKTIF DEFAULT)
+                        // =========================================================================
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
@@ -217,6 +254,9 @@ class PaymentScreen extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                              // =========================================================================
+                              // BULATAN RADIO BUTTON AKTIF WARNA EMAS.
+                              // =========================================================================
                               Container(
                                 width: 24,
                                 height: 24,
@@ -231,7 +271,9 @@ class PaymentScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
 
-                        // Other method (disabled mock)
+                        // =========================================================================
+                        // METODE: TAMBAH BARU (MOCK DINONAKTIFKAN / DISAMARKAN TRANSPARANSINYA)
+                        // =========================================================================
                         Opacity(
                           opacity: 0.4,
                           child: Container(
@@ -288,7 +330,9 @@ class PaymentScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  // Guarantee Box
+                  // =========================================================================
+                  // 3. GUARANTEE BOX: KOTAK JAMINAN KEAMANAN DANA
+                  // =========================================================================
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -315,45 +359,18 @@ class PaymentScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
+                  // =========================================================================
+                  // 4. TOMBOL UTAMA KONFIRMASI & BAYAR
+                  // =========================================================================
                   SizedBox(
                     width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
-                      onPressed: () async {
-                        HapticFeedback.lightImpact();
-                        
-                        final prefs = await SharedPreferences.getInstance();
-                        final email = prefs.getString('session_email') ?? 'client@gmail.com';
-                        
-                        await DatabaseHelper.instance.createBooking({
-                          'user_email': email,
-                          'expert_id': expert.id,
-                          'expert_name': expert.name,
-                          'topic': expert.expertise,
-                          'date': 'June $day, 2026',
-                          'time': time,
-                          'status': 'Upcoming',
-                          'price': expert.price,
-                          'notes': '',
-                        });
-                        
-                        if (context.mounted) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PaymentSuccessScreen(
-                                expert: expert,
-                                selectedDay: day,
-                                selectedTime: time,
-                              ),
-                            ),
-                          );
-                        }
-                      },
+                      onPressed: onConfirm,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? AppColors.gold : Colors.white.withOpacity(0.12),
-                        foregroundColor: isDark ? Colors.black : AppColors.gold,
-                        side: isDark ? null : const BorderSide(color: AppColors.gold, width: 2),
+                        backgroundColor: Colors.white.withOpacity(0.12),
+                        foregroundColor: AppColors.gold,
+                        side: const BorderSide(color: AppColors.gold, width: 1.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),

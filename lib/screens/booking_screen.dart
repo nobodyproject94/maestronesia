@@ -1,99 +1,140 @@
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
 import '../widgets/custom_button.dart';
-import 'payment_screen.dart';
 
+// =========================================================================
+// BOOKINGSCREEN MENANGANI PROSES PEMILIHAN JADWAL KONSULTASI (HARI DAN JAM) DENGAN EXPERT TERTENTU.
+// =========================================================================
 class BookingScreen extends StatefulWidget {
   final Expert expert;
+  final VoidCallback onBack;
+  final Function(int day, String time) onProceed;
+  final ValueChanged<String> onTabChanged;
+  final VoidCallback onSignOut;
 
-  const BookingScreen({super.key, required this.expert});
+  const BookingScreen({
+    super.key,
+    required this.expert,
+    required this.onBack,
+    required this.onProceed,
+    required this.onTabChanged,
+    required this.onSignOut,
+  });
 
   @override
   State<BookingScreen> createState() => _BookingScreenState();
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  DateTime _selectedDate = DateTime(2026, 6, 13); // Default June 13, 2026
+  // =========================================================================
+  // STATE LOKAL UNTUK MENAMPUNG TANGGAL DAN WAKTU KONSULTASI TERPILIH.
+  // =========================================================================
+  DateTime _selectedDate = DateTime(2026, 6, 13); // DEFAULT DIATUR PADA 13 JUNI 2026.
   TimeOfDay _selectedTime = const TimeOfDay(
     hour: 9,
     minute: 0,
-  ); // Default 09:00 AM
+  ); // DEFAULT WAKTU DIATUR PADA 09:00 AM.
 
+  // =========================================================================
+  // FUNGSI ASINKRONUS UNTUK MEMUNCULKAN PEMILIH TANGGAL (DATE PICKER) BAWAAN FLUTTER DENGAN TEMA GELAP KUSTOM.
+  // =========================================================================
   Future<void> _selectDate(BuildContext context) async {
+    final isDark = isDarkModeNotifier.value;
+    final dialogBgColor = isDark
+        ? const Color(0xFF131D24)
+        : Colors.white.withOpacity(0.05);
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2026, 6, 1),
       lastDate: DateTime(2026, 12, 31),
       builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(
-                0xFFC5A880,
-              ), // Warna emas untuk header & tanggal terpilih
-              onPrimary: Colors.black, // Warna teks di dalam bulatan emas
-              surface: Color(
-                0xFF131D24,
-              ), // Warna background utama kotak kalender biar adem
-              onSurface: Colors.white, // Warna angka tanggal biasa
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(
-                  0xFFC5A880,
-                ), // BIAR TOMBOL OK & CANCEL KELIATAN JELAS!
-                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Theme(
+            data: ThemeData.dark().copyWith(
+              colorScheme: ColorScheme.dark(
+                primary: AppColors.gold,
+                onPrimary: Colors.black,
+                surface: dialogBgColor,
+                onSurface: Colors.white,
+              ),
+              dialogBackgroundColor: dialogBgColor,
+              dialogTheme: DialogThemeData(
+                backgroundColor: dialogBgColor,
+                surfaceTintColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                  side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                ),
+              ),
+              datePickerTheme: DatePickerThemeData(
+                backgroundColor: dialogBgColor,
+                headerBackgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
               ),
             ),
+            child: child!,
           ),
-          child: child!,
         );
       },
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
-        _selectedDate = picked;
+        _selectedDate = picked; // MEMPERBARUI TANGGAL YANG DIPILIH.
       });
     }
   }
 
+  // =========================================================================
+  // FUNGSI ASINKRONUS UNTUK MEMUNCULKAN PEMILIH WAKTU (TIME PICKER) BAWAAN FLUTTER.
+  // =========================================================================
   Future<void> _selectTime(BuildContext context) async {
+    final isDark = isDarkModeNotifier.value;
+    final dialogBgColor = isDark
+        ? const Color(0xFF131D24)
+        : Colors.white.withOpacity(0.05);
+
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _selectedTime,
       builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: Color(
-                0xFFC5A880,
-              ), // Warna emas untuk jarum jam & aksen aktif
-              onPrimary: Colors.black, // Warna teks di dalam lingkaran aktif
-              surface: Color(
-                0xFF131D24,
-              ), // Warna background kotak dialog jam biar gelap adem
-              onSurface: Colors.white, // Warna angka jam & teks biasa
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(
-                  0xFFC5A880,
-                ), // WARNA TOMBOL OK & CANCEL BIAR KELIATAN JELAS!
-                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Theme(
+            data: ThemeData.dark().copyWith(
+              colorScheme: ColorScheme.dark(
+                primary: AppColors.gold,
+                onPrimary: Colors.black,
+                surface: dialogBgColor,
+                onSurface: Colors.white,
+              ),
+              dialogBackgroundColor: dialogBgColor,
+              dialogTheme: DialogThemeData(
+                backgroundColor: dialogBgColor,
+                surfaceTintColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                  side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                ),
+              ),
+              timePickerTheme: TimePickerThemeData(
+                backgroundColor: dialogBgColor,
+                entryModeIconColor: AppColors.gold,
               ),
             ),
+            child: child!,
           ),
-          child: child!,
         );
       },
     );
     if (picked != null && picked != _selectedTime) {
       setState(() {
-        _selectedTime = picked;
+        _selectedTime = picked; // MEMPERBARUI WAKTU YANG DIPILIH.
       });
     }
   }
@@ -105,22 +146,34 @@ class _BookingScreenState extends State<BookingScreen> {
       builder: (context, isDark, _) {
         return MainLayout(
           activeTab: 'dashboard',
-          showNavbar: false,
+          showAppBar: false,
+          onTabChanged: widget.onTabChanged,
+          onSignOut: widget.onSignOut,
           child: Scaffold(
             backgroundColor: isDark ? Colors.transparent : Colors.transparent,
             body: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              // =========================================================================
+              // EFEK SCROLL BOUNCE.
+              // =========================================================================
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              padding: const EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 24.0,
+                bottom: 120.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top Row
+                  // =========================================================================
+                  // BARIS HEADER ATAS (TOMBOL KEMBALI & JUDUL SCREEN).
+                  // =========================================================================
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          Navigator.pop(context);
-                        },
+                        onPressed: widget.onBack,
                         icon: Icon(
                           Icons.chevron_left,
                           color: AppColors.textSecondary,
@@ -167,7 +220,9 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Select Date title
+                  // =========================================================================
+                  // LABEL PEMILIHAN JADWAL
+                  // =========================================================================
                   const Text(
                     'SELECT DATE & TIME',
                     style: TextStyle(
@@ -179,12 +234,11 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Date Selection Card
+                  // =========================================================================
+                  // KARTU PEMILIH TANGGAL
+                  // =========================================================================
                   GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      _selectDate(context);
-                    },
+                    onTap: () => _selectDate(context),
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -239,12 +293,11 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Time Selection Card
+                  // =========================================================================
+                  // KARTU PEMILIH JAM
+                  // =========================================================================
                   GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      _selectTime(context);
-                    },
+                    onTap: () => _selectTime(context),
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -299,7 +352,9 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Summary Card
+                  // =========================================================================
+                  // KARTU RINGKASAN DETAIL TRANSAKSI
+                  // =========================================================================
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -383,20 +438,14 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                   const SizedBox(height: 32),
 
+                  // =========================================================================
+                  // TOMBOL LANJUT KE CHECKOUT
+                  // =========================================================================
                   MaestronesiaButton(
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PaymentScreen(
-                            expert: widget.expert,
-                            day: _selectedDate.day,
-                            time: _selectedTime.format(context),
-                          ),
-                        ),
-                      );
-                    },
+                    onPressed: () => widget.onProceed(
+                      _selectedDate.day,
+                      _selectedTime.format(context),
+                    ),
                     child: const Text(
                       'Proceed to Checkout',
                       style: TextStyle(

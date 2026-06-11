@@ -3,33 +3,54 @@ import '../theme.dart';
 import '../widgets/main_layout.dart';
 import '../widgets/custom_button.dart';
 
+// =========================================================================
+// BILLINGSCREEN MERENDER HALAMAN TAGIHAN DAN E-WALLET/DOMPET DIGITAL USER.
+// =========================================================================
 class BillingScreen extends StatelessWidget {
-  const BillingScreen({super.key});
+  final ValueChanged<String> onTabChanged;
+  final VoidCallback onSignOut;
+
+  const BillingScreen({
+    super.key,
+    required this.onTabChanged,
+    required this.onSignOut,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 768;
+    // =========================================================================
+    // MEMBUNGKUS HALAMAN DENGAN LAYOUT UTAMA (MAINLAYOUT) AGAR SERAGAM DENGAN NAVIGASI UTAMA.
+    // =========================================================================
     return MainLayout(
       activeTab: 'billing',
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (isDesktop) ...[
-              Text(
-                'Billing & Wallet',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
+      onTabChanged: onTabChanged,
+      onSignOut: onSignOut,
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // MENGGUNAKAN BACKGROUND GRADIEN DARI MAINLAYOUT.
+        body: SingleChildScrollView(
+          // =========================================================================
+          // MENAMBAHKAN SCROLL PHYSICS BOUNCING AGAR NYAMAN DIGULIR (KHUSUSNYA UNTUK IOS).
+          // =========================================================================
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 120.0), // PADDING BAWAH DISESUAIKAN AGAR TIDAK TERTUTUP BOTTOM BAR MOBILE.
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+            Text(
+              'Billing & Wallet',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 24),
-            ],
+            ),
+            const SizedBox(height: 24),
 
-            // Wallet card
+            // =========================================================================
+            // KARTU SALDO E-WALLET
+            // =========================================================================
             Container(
               padding: EdgeInsets.all(32),
               decoration: BoxDecoration(
@@ -56,6 +77,9 @@ class BillingScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  // =========================================================================
+                  // JUMLAH SALDO
+                  // =========================================================================
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
@@ -101,12 +125,14 @@ class BillingScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  // Wallet actions
+                  // =========================================================================
+                  // TOMBOL AKSI E-WALLET (TOP UP DAN WITHDRAW)
+                  // =========================================================================
                   Row(
                     children: [
                       Expanded(
                         child: MaestronesiaButton(
-                          onPressed: () {},
+                          onPressed: () {}, // CALLBACK AKSI TOP UP SALDO (SIMULASI).
                           height: 52,
                           borderRadius: 16,
                           child: Row(
@@ -128,7 +154,7 @@ class BillingScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: MaestronesiaButton(
-                          onPressed: () {},
+                          onPressed: () {}, // CALLBACK AKSI TARIK TUNAI SALDO (SIMULASI).
                           height: 52,
                           borderRadius: 16,
                           child: Row(
@@ -159,7 +185,9 @@ class BillingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
 
-            // Payment Methods header
+            // =========================================================================
+            // HEADER METODE PEMBAYARAN TERDAFTAR
+            // =========================================================================
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -185,7 +213,9 @@ class BillingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Mastercard Row
+            // =========================================================================
+            // KARTU METODE PEMBAYARAN MASTERCARD UTAMA
+            // =========================================================================
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -238,6 +268,9 @@ class BillingScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  // =========================================================================
+                  // PENANDA KARTU UTAMA (PRIMARY)
+                  // =========================================================================
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
@@ -262,7 +295,9 @@ class BillingScreen extends StatelessWidget {
             ),
             SizedBox(height: 16),
 
-            // Add new payment method dashed button
+            // =========================================================================
+            // TOMBOL PUTUS-PUTUS UNTUK MENAMBAHKAN METODE PEMBAYARAN BARU
+            // =========================================================================
             Container(
               width: double.infinity,
               height: 68,
@@ -271,11 +306,11 @@ class BillingScreen extends StatelessWidget {
                 border: Border.all(
                   color: Colors.white10,
                   width: 2,
-                  style: BorderStyle.solid, // dashed simulated in style
+                  style: BorderStyle.solid,
                 ),
               ),
               child: InkWell(
-                onTap: () {},
+                onTap: () {}, // CALLBACK TAMBAH KARTU BARU (SIMULASI).
                 borderRadius: BorderRadius.circular(28),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -294,12 +329,10 @@ class BillingScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 110,
-            ), // Extra space to clear the floating bottom bar
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }

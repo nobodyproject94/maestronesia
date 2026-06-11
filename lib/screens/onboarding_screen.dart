@@ -1,30 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../widgets/custom_button.dart';
 
+// =========================================================================
+// ONBOARDINGSCREEN ADALAH STATEFULWIDGET YANG BERFUNGSI SEBAGAI LAYAR PENYAMBUT UTAMA (ONBOARDING)
+// DI MANA PENGGUNA DAPAT MEMAHAMI TUJUAN APLIKASI DAN MEMILIH PERAN (ROLE) SEBAGAI CLIENT ATAU EXPERT.
+// =========================================================================
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  final String selectedRole; // PERAN AKTIF YANG DIPILIH OLEH PENGGUNA SAAT INI ('CLIENT' ATAU 'EXPERT').
+  final ValueChanged<String> onRoleChanged; // CALLBACK UNTUK MEMPERBARUI PILIHAN PERAN DI WIDGET INDUK.
+  final VoidCallback onBegin; // CALLBACK UNTUK MELANJUTKAN PERJALANAN (MENUJU REGISTRASI/DASHBOARD).
+  final VoidCallback onSignIn; // CALLBACK UNTUK MENGARAHKAN PENGGUNA YANG SUDAH MEMILIKI AKUN KE LAYAR LOGIN.
+
+  const OnboardingScreen({
+    super.key,
+    required this.selectedRole,
+    required this.onRoleChanged,
+    required this.onBegin,
+    required this.onSignIn,
+  });
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  // Menyimpan role yang dipilih pengguna (default: 'client')
-  String selectedRole = 'client';
-
   @override
   Widget build(BuildContext context) {
-    // Memantau perubahan tema (Gelap/Terang) secara real-time tanpa rebuild seluruh screen
+    // =========================================================================
+    // VALUELISTENABLEBUILDER DIGUNAKAN UNTUK MENDENGARKAN PERUBAHAN STATUS MODE GELAP/TERANG SECARA DINAMIS.
+    // =========================================================================
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
         return Scaffold(
-          // Mengubah warna latar belakang secara kondisional berdasarkan mode tema
-          backgroundColor: isDark
-              ? const Color(0xFF131D24)
-              : Colors.transparent,
+          // =========================================================================
+          // MENGATUR WARNA LATAR BELAKANG SCAFFOLD MENYESUAIKAN TEMA AKTIF.
+          // =========================================================================
+          backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
           body: MaestronesiaBackground(
             child: SafeArea(
               child: Padding(
@@ -35,12 +48,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Spacer(), // Memberikan ruang kosong fleksibel (mendorong konten ke tengah/bawah)
-                    // ================= TITLE AREA =================
+                    const Spacer(),
+                    
+                    // =========================================================================
+                    // 1. AREA JUDUL & DESKRIPSI UTAMA
+                    // =========================================================================
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Garis dekoratif kecil berwarna emas
+                        // =========================================================================
+                        // AKSEN GARIS DEKORATIF WARNA EMAS KHAS MAESTRONESIA.
+                        // =========================================================================
                         Container(
                           width: 48,
                           height: 4,
@@ -50,18 +68,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         ),
                         const SizedBox(height: 24),
+                        // =========================================================================
+                        // JUDUL SAMBUTAN UTAMA.
+                        // =========================================================================
                         Text(
                           'Expertise,\nSimplified.',
                           style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
-                            height:
-                                1.1, // Mengatur jarak antar baris teks (line-height)
-                            letterSpacing: -1.0, // Merapatkan jarak antar huruf
+                            height: 1.1,
+                            letterSpacing: -1.0,
                           ),
                         ),
                         const SizedBox(height: 16),
+                        // =========================================================================
+                        // PENJELASAN SINGKAT FITUR UTAMA APLIKASI.
+                        // =========================================================================
                         Text(
                           'Connect with world-class experts for real-time guidance and professional consultation.',
                           style: TextStyle(
@@ -73,8 +96,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                     ),
                     const Spacer(),
-
-                    // ================= ROLE SELECTION AREA =================
+                    
+                    // =========================================================================
+                    // 2. PANEL PEMILIHAN PERAN (ROLE SELECTION)
+                    // =========================================================================
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -84,14 +109,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: AppColors.gold,
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            letterSpacing:
-                                2.0, // Meregangkan jarak huruf untuk gaya UPPERCASE
+                            letterSpacing: 2.0,
                           ),
                         ),
                         const SizedBox(height: 20),
+                        // =========================================================================
+                        // DUA BUAH KARTU PEMILIHAN PERAN BERDAMPINGAN.
+                        // =========================================================================
                         Row(
                           children: [
-                            // Expanded memastikan kedua kartu role membagi ruang horizontal secara adil (50:50)
                             Expanded(
                               child: _buildRoleCard(
                                 roleName: 'client',
@@ -114,13 +140,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                     ),
                     const Spacer(),
-
-                    // ================= ACTION BUTTONS AREA =================
+                    
+                    // =========================================================================
+                    // 3. TOMBOL AKSI DI BAGIAN BAWAH HALAMAN
+                    // =========================================================================
                     Column(
                       children: [
-                        // Validasi: Jika status selectedRole tidak valid (bukan client/expert), tampilkan tombol dinonaktifkan
-                        if (selectedRole != 'client' &&
-                            selectedRole != 'expert')
+                        // =========================================================================
+                        // MENAMPILKAN TOMBOL NONAKTIF ABU-ABU JIKA BELUM ADA PERAN YANG DIPILIH.
+                        // =========================================================================
+                        if (widget.selectedRole != 'client' && widget.selectedRole != 'expert')
                           Container(
                             height: 60,
                             decoration: BoxDecoration(
@@ -142,18 +171,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                           )
+                        // =========================================================================
+                        // MENAMPILKAN TOMBOL EMAS AKTIF JIKA PERAN SUDAH BERHASIL DIPILIH.
+                        // =========================================================================
                         else
-                          // Tombol aktif jika role valid
                           MaestronesiaButton(
-                            onPressed: () {
-                              HapticFeedback.lightImpact(); // Memberikan efek getar ringan saat ditekan
-                              Navigator.pushNamed(
-                                context,
-                                '/signup',
-                                arguments:
-                                    selectedRole, // Mengirim data role yang dipilih ke halaman signup
-                              );
-                            },
+                            onPressed: widget.onBegin,
                             isSelected: !isDark,
                             child: const Text(
                               'BEGIN JOURNEY',
@@ -165,8 +188,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                           ),
                         const SizedBox(height: 24),
-
-                        // Teks & Tombol Sign In bawah
+                        // =========================================================================
+                        // MENGARAHKAN KE LAYAR MASUK JIKA SUDAH TERDAFTAR SEBAGAI ANGGOTA.
+                        // =========================================================================
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -178,16 +202,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                             GestureDetector(
-                              onTap: () {
-                                HapticFeedback.lightImpact();
-                                Navigator.pushNamed(
-                                  context,
-                                  '/login',
-                                  arguments: selectedRole,
-                                );
-                              },
+                              onTap: widget.onSignIn,
                               child: Container(
-                                // Membuat efek border bawah manual sebagai pengganti underline teks biasa
                                 decoration: const BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
@@ -223,62 +239,54 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // ================= KUSTOM WIDGET: KARTU PILIHAN ROLE =================
+  // =========================================================================
+  // FUNGSI PEMBANTU UNTUK MEMBANGUN WIDGET KARTU PEMILIHAN PERAN (CLIENT / EXPERT).
+  // =========================================================================
   Widget _buildRoleCard({
     required String roleName,
     required String label,
     required IconData icon,
     required bool isDark,
   }) {
-    // Mengecek apakah kartu ini adalah role yang sedang aktif/dipilih
-    final isSelected = selectedRole == roleName;
-
+    final isSelected = widget.selectedRole == roleName;
     return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        // Memperbarui status role yang dipilih dan memicu rebuild UI pada bagian ini
-        setState(() {
-          selectedRole = roleName;
-        });
-      },
-      // AnimatedContainer membuat transisi warna/border halus saat kartu dipilih (durasi 250ms)
+      onTap: () => widget.onRoleChanged(roleName), // MEMICU CALLBACK PERUBAHAN PERAN KETIKA KARTU DIKLIK.
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
+        duration: const Duration(milliseconds: 250), // DURASI TRANSISI VISUAL YANG HALUS SAAT BERUBAH STATE.
         padding: const EdgeInsets.symmetric(vertical: 32),
         decoration: BoxDecoration(
-          // Warna background berubah smooth tergantung status 'isSelected' dan mode tema
+          // =========================================================================
+          // MEWARNAI KARTU SECARA DINAMIS BERDASARKAN STATUS PILIHAN DAN TEMA AKTIF.
+          // =========================================================================
           color: isDark
-              ? (isSelected
-                    ? AppColors.gold.withOpacity(0.05)
-                    : AppColors.surface)
+              ? (isSelected ? AppColors.gold.withOpacity(0.05) : AppColors.surface)
               : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
             color: isDark
                 ? (isSelected ? AppColors.gold : Colors.white.withOpacity(0.05))
                 : Colors.white.withOpacity(0.05),
-            width: isDark
-                ? 2.0
-                : 1.0, // Border lebih tebal jika dipilih pada mode gelap
+            width: isDark ? 2.0 : 1.0,
           ),
         ),
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Konten Utama: Ikon dan Teks Label Role
             Column(
-              mainAxisSize: MainAxisSize
-                  .min, // Sesuai ukuran konten, tidak memakan ruang vertikal penuh
+              mainAxisSize: MainAxisSize.min,
               children: [
+                // =========================================================================
+                // IKON REPRESENTATIF PERAN (WARNA EMAS JIKA TERPILIH).
+                // =========================================================================
                 Icon(
                   icon,
                   size: 32,
-                  color: isSelected
-                      ? AppColors.gold
-                      : AppColors
-                            .textSecondary, // Warna ikon berubah jika dipilih
+                  color: isSelected ? AppColors.gold : AppColors.textSecondary,
                 ),
                 const SizedBox(height: 12),
+                // =========================================================================
+                // NAMA PERAN.
+                // =========================================================================
                 Text(
                   label,
                   style: TextStyle(
@@ -289,8 +297,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ],
             ),
-
-            // Komponen Radio Button Kustom (Lingkaran kecil di pojok kanan atas kartu)
+            // =========================================================================
+            // TOMBOL STATUS SELEKSI MELINGKAR DI POJOK KANAN ATAS KARTU (RADIO BUTTON MOCK).
+            // =========================================================================
             Positioned(
               top: 0,
               right: 12,
@@ -301,12 +310,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   shape: BoxShape.circle,
                   border: isSelected
                       ? Border.all(color: AppColors.gold, width: 2)
-                      : Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1.5,
-                        ),
+                      : Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
                 ),
-                // Jika terpilih, tampilkan titik bulat emas di dalam lingkaran
                 child: isSelected
                     ? Container(
                         margin: const EdgeInsets.all(3),
@@ -315,7 +320,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           shape: BoxShape.circle,
                         ),
                       )
-                    : null, // Kosong jika tidak terpilih
+                    : null,
               ),
             ),
           ],
