@@ -50,29 +50,36 @@ class MaestronesiaApp extends StatelessWidget {
           // MENGUBAH SKEMA WARNA GLOBAL KE MODE GELAP (DARK MODE).
           // =========================================================================
           AppColors.setToDark();
-          SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.light,
-            systemNavigationBarColor: Colors.transparent,
-            systemNavigationBarIconBrightness: Brightness.light,
-          ));
+          SystemChrome.setSystemUIOverlayStyle(
+            const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.light,
+              systemNavigationBarColor: Colors.transparent,
+              systemNavigationBarIconBrightness: Brightness.light,
+            ),
+          );
         } else {
           // =========================================================================
           // MENGUBAH SKEMA WARNA GLOBAL KE MODE TERANG (LIGHT MODE).
           // =========================================================================
           AppColors.setToLight();
-          SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.light,
-            systemNavigationBarColor: Colors.transparent,
-            systemNavigationBarIconBrightness: Brightness.light,
-          ));
+          SystemChrome.setSystemUIOverlayStyle(
+            const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.light,
+              systemNavigationBarColor: Colors.transparent,
+              systemNavigationBarIconBrightness: Brightness.light,
+            ),
+          );
         }
         return MaterialApp(
           title: 'MAESTRONESIA',
-          theme: buildAppTheme(), // MENGAMBIL KONFIGURASI TEMA BERDASARKAN WARNA YANG AKTIF.
-          debugShowCheckedModeBanner: false, // MENGHILANGKAN BANNER DEBUG DI POJOK KANAN ATAS SCREEN.
-          home: const MainAppController(), // MENGARAHKAN KE CONTROLLER UTAMA APLIKASI UNTUK NAVIGASI SCREEN.
+          theme:
+              buildAppTheme(), // MENGAMBIL KONFIGURASI TEMA BERDASARKAN WARNA YANG AKTIF.
+          debugShowCheckedModeBanner:
+              false, // MENGHILANGKAN BANNER DEBUG DI POJOK KANAN ATAS SCREEN.
+          home:
+              const MainAppController(), // MENGARAHKAN KE CONTROLLER UTAMA APLIKASI UNTUK NAVIGASI SCREEN.
         );
       },
     );
@@ -99,9 +106,11 @@ class _MainAppControllerState extends State<MainAppController> {
   int _selectedExpertId = 1; // ID EXPERT YANG DIPILIH UNTUK BOOKING/CHAT.
   int _selectedDay = 13; // HARI TERPILIH UNTUK BOOKING.
   String _selectedTime = '09:00 AM'; // WAKTU TERPILIH UNTUK BOOKING.
-  String _currentUserEmail = 'client@gmail.com'; // EMAIL USER YANG SEDANG LOGIN.
+  String _currentUserEmail =
+      'client@gmail.com'; // EMAIL USER YANG SEDANG LOGIN.
   String _currentUserName = 'Fajar Ramadhan'; // NAMA USER YANG SEDANG LOGIN.
-  final List<String> _history = []; // STACK HISTORI UNTUK INTERSEPSI NAVIGASI TOMBOL KEMBALI (BACK BUTTON).
+  final List<String> _history =
+      []; // STACK HISTORI UNTUK INTERSEPSI NAVIGASI TOMBOL KEMBALI (BACK BUTTON).
 
   @override
   void initState() {
@@ -154,7 +163,8 @@ class _MainAppControllerState extends State<MainAppController> {
     setState(() {
       _currentUserEmail = 'client@gmail.com';
       _currentUserName = 'Fajar Ramadhan';
-      _screen = 'onboarding'; // ARAHKAN KEMBALI KE HALAMAN ONBOARDING SETELAH LOGOUT.
+      _screen =
+          'onboarding'; // ARAHKAN KEMBALI KE HALAMAN ONBOARDING SETELAH LOGOUT.
     });
   }
 
@@ -255,7 +265,9 @@ class _MainAppControllerState extends State<MainAppController> {
     // FALLBACK AMAN: KEMBALI KE HOME YANG SESUAI.
     // =========================================================================
     setState(() {
-      if (_screen == 'login' || _screen == 'signup' || _screen == 'expert_registration') {
+      if (_screen == 'login' ||
+          _screen == 'signup' ||
+          _screen == 'expert_registration') {
         _screen = 'onboarding';
       } else {
         _screen = _role == 'expert' ? 'expert_dashboard' : 'dashboard';
