@@ -157,7 +157,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                               });
                             },
                             style: TextButton.styleFrom(
-                              backgroundColor: Colors.white.withOpacity(0.05),
+                              backgroundColor: Colors.white.withValues(alpha: 0.05),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -194,13 +194,16 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.12),
-                            foregroundColor: AppColors.gold,
-                            side: const BorderSide(color: AppColors.gold, width: 1.5),
+                            backgroundColor: isDarkModeNotifier.value ? AppColors.gold : AppColors.gold.withValues(alpha: 0.15),
+                            foregroundColor: isDarkModeNotifier.value ? Colors.black : AppColors.gold,
+                            side: BorderSide(color: AppColors.gold, width: isDarkModeNotifier.value ? 0 : 1.5),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            elevation: 0,
+                            elevation: isDarkModeNotifier.value ? 0 : 8.0,
+                            shadowColor: isDarkModeNotifier.value
+                                ? Colors.transparent
+                                : AppColors.gold.withValues(alpha: 0.35),
                           ),
                           child: _isLoading
                               ? const SizedBox(
@@ -222,8 +225,6 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                                         letterSpacing: 1.5,
                                       ),
                                     ),
-                                    SizedBox(width: 8),
-                                    Icon(Icons.chevron_right, size: 16),
                                   ],
                                 ),
                         ),
@@ -249,7 +250,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
       width: 32,
       height: 4,
       decoration: BoxDecoration(
-        color: active ? AppColors.gold : Colors.white.withOpacity(0.1),
+        color: active ? AppColors.gold : Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(2),
       ),
     );
@@ -315,7 +316,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
                 ? 'e.g. Informatics, Thermodynamics'
                 : 'e.g. Graphic Design, Mechanics',
             hintStyle: TextStyle(
-              color: AppColors.textSecondary.withOpacity(0.3),
+              color: AppColors.textSecondary.withValues(alpha: 0.3),
             ),
             filled: true,
             fillColor: AppColors.surface,
@@ -344,7 +345,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
           decoration: InputDecoration(
             hintText: 'e.g. 5',
             hintStyle: TextStyle(
-              color: AppColors.textSecondary.withOpacity(0.3),
+              color: AppColors.textSecondary.withValues(alpha: 0.3),
             ),
             filled: true,
             fillColor: AppColors.surface,
@@ -376,7 +377,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
           decoration: InputDecoration(
             hintText: 'e.g. https://linkedin.com/in/username',
             hintStyle: TextStyle(
-              color: AppColors.textSecondary.withOpacity(0.3),
+              color: AppColors.textSecondary.withValues(alpha: 0.3),
             ),
             filled: true,
             fillColor: AppColors.surface,
@@ -408,7 +409,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
             decoration: InputDecoration(
               hintText: 'e.g. Analysis of Thermal Efficiency',
               hintStyle: TextStyle(
-                color: AppColors.textSecondary.withOpacity(0.3),
+                color: AppColors.textSecondary.withValues(alpha: 0.3),
               ),
               filled: true,
               fillColor: AppColors.surface,
@@ -441,7 +442,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
           color: active ? AppColors.secondary : AppColors.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: active ? AppColors.gold : Colors.white.withOpacity(0.05),
+            color: active ? AppColors.gold : Colors.white.withValues(alpha: 0.05),
             width: 2,
           ),
         ),
@@ -534,8 +535,8 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: uploaded
-                ? AppColors.gold.withOpacity(0.3)
-                : Colors.white.withOpacity(0.05),
+                ? AppColors.gold.withValues(alpha: 0.3)
+                : Colors.white.withValues(alpha: 0.05),
           ),
         ),
         child: Row(
@@ -543,7 +544,7 @@ class _ExpertRegistrationScreenState extends State<ExpertRegistrationScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.05),
+                color: AppColors.gold.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: AppColors.gold, size: 24),

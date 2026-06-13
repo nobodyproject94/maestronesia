@@ -93,8 +93,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     // MENJALANKAN TIMER UNTUK MENSIMULASIKAN BALASAN OTOMATIS DARI PAKAR SETELAH DELAY 1.5 DETIK.
     // =========================================================================
     Timer(const Duration(milliseconds: 1500), () {
-      if (!mounted)
+      if (!mounted) {
         return; // MENCEGAH PEMBARUAN STATE JIKA WIDGET SUDAH DI-DISPOSE.
+      }
 
       String replyText = '';
       // =========================================================================
@@ -185,7 +186,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
             appBar: AppBar(
               backgroundColor: isDark
                   ? const Color(0xFF172128)
-                  : Colors.white.withOpacity(0.05),
+                  : Colors.white.withValues(alpha: 0.05),
               elevation: 0,
               scrolledUnderElevation: 0,
               leading: IconButton(
@@ -235,8 +236,8 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                       children: [
                         Text(
                           widget.expert.name,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           ),
@@ -245,7 +246,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                         Text(
                           'Online',
                           style: TextStyle(
-                            color: AppColors.gold.withOpacity(0.8),
+                            color: AppColors.gold.withValues(alpha: 0.8),
                             fontSize: 11,
                           ),
                         ),
@@ -257,7 +258,9 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
               actions: [
                 // =========================================================================
                 // TOMBOL UNTUK MEMULAI SESI PANGGILAN VIDEO (KONSULTASI TATAP MUKA VIRTUAL).
+                // Halaman Live Session VC dinonaktifkan sementara (Premium Feature).
                 // =========================================================================
+                /*
                 IconButton(
                   icon: const Icon(
                     Icons.videocam_rounded,
@@ -267,6 +270,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                   onPressed: widget.onStartVideoCall,
                   tooltip: 'Start Video Consultation',
                 ),
+                */
                 const SizedBox(width: 8),
               ],
             ),
@@ -311,11 +315,11 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                             // =========================================================================
                             color: isClient
                                 ? (isDark
-                                      ? AppColors.gold.withOpacity(0.1)
-                                      : Colors.white.withOpacity(0.15))
+                                      ? AppColors.gold.withValues(alpha: 0.1)
+                                      : Colors.white.withValues(alpha: 0.15))
                                 : (isDark
                                       ? const Color(0xFF172128)
-                                      : Colors.white.withOpacity(0.05)),
+                                      : Colors.white.withValues(alpha: 0.05)),
                             borderRadius: BorderRadius.only(
                               topLeft: const Radius.circular(20),
                               topRight: const Radius.circular(20),
@@ -328,8 +332,8 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                             ),
                             border: Border.all(
                               color: isClient
-                                  ? AppColors.gold.withOpacity(0.3)
-                                  : Colors.white.withOpacity(0.05),
+                                  ? AppColors.gold.withValues(alpha: 0.3)
+                                  : Colors.white.withValues(alpha: 0.05),
                             ),
                           ),
                           child: Column(
@@ -340,8 +344,8 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                               // =========================================================================
                               Text(
                                 msg['text'],
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: AppColors.textPrimary,
                                   fontSize: 14,
                                   height: 1.4,
                                 ),
@@ -358,7 +362,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                                     msg['time'],
                                     style: TextStyle(
                                       color: AppColors.textSecondary
-                                          .withOpacity(0.5),
+                                          .withValues(alpha: 0.5),
                                       fontSize: 10,
                                     ),
                                   ),
@@ -382,7 +386,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                       child: Text(
                         '${widget.expert.name.split(' ')[0]} is typing...',
                         style: TextStyle(
-                          color: AppColors.gold.withOpacity(0.8),
+                          color: AppColors.gold.withValues(alpha: 0.8),
                           fontSize: 12,
                           fontStyle: FontStyle.italic,
                         ),
@@ -401,10 +405,10 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                   ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? const Color(0xFF172128).withOpacity(0.4)
+                        ? const Color(0xFF172128).withValues(alpha: 0.4)
                         : Colors.transparent,
                     border: Border(
-                      top: BorderSide(color: Colors.white.withOpacity(0.05)),
+                      top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                   ),
                   child: Row(
@@ -417,23 +421,23 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                           decoration: BoxDecoration(
                             color: isDark
                                 ? const Color(0xFF172128)
-                                : Colors.white.withOpacity(0.05),
+                                : Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.05),
+                              color: AppColors.dividerColor,
                             ),
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: TextField(
                             controller: _messageController,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: AppColors.inputText,
                               fontSize: 14,
                             ),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: 'Type a message...',
                               hintStyle: TextStyle(
-                                color: Colors.white30,
+                                color: AppColors.hintText,
                                 fontSize: 14,
                               ),
                               border: InputBorder.none,
@@ -452,7 +456,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE6BC6A).withOpacity(0.15),
+                            color: const Color(0xFFE6BC6A).withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(

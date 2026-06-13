@@ -112,46 +112,52 @@ class _MainAppControllerState extends State<MainAppController> {
   final List<String> _history =
       []; // STACK HISTORI UNTUK INTERSEPSI NAVIGASI TOMBOL KEMBALI (BACK BUTTON).
 
+  // =========================================================================
+  // MENYIMPAN DATA SESSION YANG DIBACA SAAT SPLASH, DIGUNAKAN SETELAH SPLASH SELESAI.
+  // =========================================================================
+  String? _savedEmail;
+  String? _savedName;
+  String? _savedRole;
+
   @override
   void initState() {
     super.initState();
-    _loadSessionAndTheme(); // MEMUAT PREFERENSI TEMA DAN SESI LOGIN PENGGUNA DARI MEMORI LOKAL.
+    _loadThemeAndPrefetchSession(); // MUAT TEMA & BACA SESSION DI BACKGROUND SAAT SPLASH TAMPIL.
   }
 
   // =========================================================================
-  // FUNGSI ASINKRONUS UNTUK MEMUAT DATA SESSION DARI SHAREDPREFERENCES.
+  // FASE 1: MUAT TEMA SEGERA DAN BACA SESSION DI BACKGROUND.
+  // TIDAK MENGUBAH _screen — SPLASH TETAP TAMPIL PENUH.
   // =========================================================================
-  Future<void> _loadSessionAndTheme() async {
-    // =========================================================================
-    // MEMBACA STATUS TEMA GELAP (DEFAULT FALSE JIKA BELUM ADA).
-    // =========================================================================
+  Future<void> _loadThemeAndPrefetchSession() async {
     final isDark = await PreferenceHandler.getThemeIsDark();
     isDarkModeNotifier.value = isDark;
 
-    // =========================================================================
-    // MENAMBAHKAN LISTENER UNTUK MENDETEKSI PERUBAHAN TEMA SECARA DINAMIS LALU MENYIMPANNYA KE SHAREDPREFERENCES.
-    // =========================================================================
     isDarkModeNotifier.addListener(() async {
       await PreferenceHandler.setThemeIsDark(isDarkModeNotifier.value);
     });
 
-    // =========================================================================
-    // MEMBACA DATA LOGIN USER (SESSION).
-    // =========================================================================
-    final email = await PreferenceHandler.getSessionEmail();
-    final name = await PreferenceHandler.getSessionName();
-    final role = await PreferenceHandler.getSessionRole();
+    // Baca session di background — simpan ke variabel sementara,
+    // BUKAN langsung ubah _screen agar splash tidak di-skip.
+    _savedEmail = await PreferenceHandler.getSessionEmail();
+    _savedName  = await PreferenceHandler.getSessionName();
+    _savedRole  = await PreferenceHandler.getSessionRole();
+  }
 
-    // =========================================================================
-    // JIKA DATA SESSION ADA, LANGSUNG ARAHKAN USER KE DASHBOARD YANG SESUAI (MELEWATI SPLASH/ONBOARDING).
-    // =========================================================================
-    if (email != null && role != null) {
+  // =========================================================================
+  // FASE 2: DIPANGGIL OLEH SPLASHSCREEN SETELAH DURASI 2 DETIK SELESAI.
+  // BARU DI SINI KITA TENTUKAN SCREEN BERIKUTNYA BERDASARKAN SESSION.
+  // =========================================================================
+  void _handleSplashFinish() {
+    if (_savedEmail != null && _savedRole != null) {
       setState(() {
-        _currentUserEmail = email;
-        _currentUserName = name ?? 'User';
-        _role = role;
-        _screen = role == 'expert' ? 'expert_dashboard' : 'dashboard';
+        _currentUserEmail = _savedEmail!;
+        _currentUserName  = _savedName ?? 'User';
+        _role             = _savedRole!;
+        _screen = _savedRole == 'expert' ? 'expert_dashboard' : 'dashboard';
       });
+    } else {
+      _navigateTo('onboarding');
     }
   }
 
@@ -312,7 +318,7 @@ class _MainAppControllerState extends State<MainAppController> {
     Widget activeWidget;
     switch (_screen) {
       case 'splash':
-        activeWidget = SplashScreen(onFinish: () => _navigateTo('onboarding'));
+        activeWidget = SplashScreen(onFinish: _handleSplashFinish);
         break;
       case 'onboarding':
         activeWidget = OnboardingScreen(

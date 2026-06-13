@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
 import '../widgets/main_layout.dart';
+import '../widgets/custom_button.dart';
 import '../databases/preference_handler.dart';
 
 // =========================================================================
@@ -118,17 +119,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: AlertDialog(
             // Warna latar dialog berubah secara dinamis menyesuaikan tema gelap atau terang.
-            backgroundColor: isDark
-                ? const Color(0xFF131D24)
-                : Colors.white.withOpacity(0.05),
+            backgroundColor: AppColors.dialogBg,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
-              side: BorderSide(color: Colors.white.withOpacity(0.05)),
+              side: BorderSide(color: AppColors.dividerColor),
             ),
-            title: const Text(
+            title: Text(
               'Update Profile (U)',
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -175,8 +174,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.pop(context); // Tutup dialog.
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gold,
-                  foregroundColor: Colors.black,
+                  backgroundColor: isDark ? AppColors.gold : AppColors.gold.withValues(alpha: 0.15),
+                  foregroundColor: isDark ? Colors.black : AppColors.gold,
+                  side: BorderSide(color: AppColors.gold, width: isDark ? 0 : 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: isDark ? 0 : 8.0,
+                  shadowColor: isDark ? Colors.transparent : AppColors.gold.withValues(alpha: 0.35),
                 ),
                 child: const Text('Save'),
               ),
@@ -204,17 +209,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: AlertDialog(
-            backgroundColor: isDark
-                ? const Color(0xFF131D24)
-                : Colors.white.withOpacity(0.05),
+            backgroundColor: AppColors.dialogBg,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
-              side: BorderSide(color: Colors.white.withOpacity(0.05)),
+              side: BorderSide(color: AppColors.dividerColor),
             ),
-            title: const Text(
+            title: Text(
               'Create Profile (C)',
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -257,8 +260,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gold,
-                  foregroundColor: Colors.black,
+                  backgroundColor: isDark ? AppColors.gold : AppColors.gold.withValues(alpha: 0.15),
+                  foregroundColor: isDark ? Colors.black : AppColors.gold,
+                  side: BorderSide(color: AppColors.gold, width: isDark ? 0 : 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: isDark ? 0 : 8.0,
+                  shadowColor: isDark ? Colors.transparent : AppColors.gold.withValues(alpha: 0.35),
                 ),
                 child: const Text('Create'),
               ),
@@ -280,23 +289,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: AlertDialog(
-            backgroundColor: isDark
-                ? const Color(0xFF131D24)
-                : Colors.white.withOpacity(0.05),
+            backgroundColor: AppColors.dialogBg,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
-              side: BorderSide(color: Colors.white.withOpacity(0.05)),
+              side: BorderSide(color: AppColors.dividerColor),
             ),
-            title: const Text(
+            title: Text(
               'Delete Profile Data (D)',
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            content: const Text(
+            content: Text(
               'Are you sure you want to clear/delete your profile details?',
-              style: TextStyle(color: Colors.white70),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
             actions: [
               TextButton(
@@ -324,8 +331,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.white,
+                  backgroundColor: isDark ? Colors.redAccent : Colors.redAccent.withValues(alpha: 0.15),
+                  foregroundColor: isDark ? Colors.white : Colors.redAccent,
+                  side: BorderSide(color: Colors.redAccent, width: isDark ? 0 : 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: isDark ? 0 : 8.0,
+                  shadowColor: isDark ? Colors.transparent : Colors.redAccent.withValues(alpha: 0.35),
                 ),
                 child: const Text('Delete'),
               ),
@@ -348,13 +361,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return TextField(
       controller: controller,
       maxLines: maxLines,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: AppColors.inputText),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.white70),
+        labelStyle: TextStyle(color: AppColors.textSecondary),
         // Gaya garis bawah ketika TextField tidak aktif/sedang tidak difokuskan.
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white30),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.hintText),
         ),
         // Gaya garis bawah ketika TextField aktif/sedang difokuskan pengguna.
         focusedBorder: const UnderlineInputBorder(
@@ -404,7 +417,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(32),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 ),
                 child: Column(
                   children: [
@@ -451,8 +464,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // =========================================================================
                     Text(
                       _hasProfile ? _profileName : 'No Profile',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                       ),
@@ -578,10 +591,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       width: double.infinity,
                       height: 54,
-                      child: _hasProfile
-                          ? OutlinedButton(
-                              onPressed: () {
-                                final isDark = isDarkModeNotifier.value;
+                      child: MaestronesiaButton(
+                        onPressed: _hasProfile
+                            ? () {
                                 // showModalBottomSheet adalah fungsi Flutter untuk memunculkan lembar opsi dari bawah layar.
                                 showModalBottomSheet(
                                   context: context,
@@ -597,9 +609,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       child: Container(
                                         decoration: BoxDecoration(
                                           // Warna latar dinamis disesuaikan tema aktif.
-                                          color: isDark
-                                              ? const Color(0xFF131D24)
-                                              : Colors.white.withOpacity(0.05),
+                                          color: AppColors.dialogBg,
                                           // Hanya sudut atas kiri dan kanan yang dibulatkan (desain laci BottomSheet).
                                           borderRadius:
                                               const BorderRadius.vertical(
@@ -607,9 +617,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               ),
                                           border: Border(
                                             top: BorderSide(
-                                              color: Colors.white.withOpacity(
-                                                0.05,
-                                              ),
+                                              color: AppColors.dividerColor,
                                             ),
                                           ),
                                         ),
@@ -624,10 +632,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   Icons.edit,
                                                   color: AppColors.gold,
                                                 ),
-                                                title: const Text(
+                                                title: Text(
                                                   'Edit Details',
                                                   style: TextStyle(
-                                                    color: Colors.white,
+                                                    color: AppColors.textPrimary,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -636,8 +644,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   _showEditProfileDialog(); // Lalu buka dialog edit profil.
                                                 },
                                               ),
-                                              const Divider(
-                                                color: Colors.white10,
+                                              Divider(
+                                                color: AppColors.dividerColor,
                                                 height: 1,
                                               ),
                                               // Opsi 2: Delete Profile (D - Delete)
@@ -665,39 +673,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     );
                                   },
                                 );
-                              },
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: AppColors.gold),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              child: const Text(
-                                'Edit Profile',
-                                style: TextStyle(
-                                  color: AppColors.gold,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            )
-                          : ElevatedButton(
-                              onPressed: _showCreateProfileDialog, // Langsung buka dialog pembuatan profil baru (C - Create).
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.gold,
-                                foregroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              child: const Text(
-                                'Create Profile',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                              }
+                            : _showCreateProfileDialog, // Langsung buka dialog pembuatan profil baru (C - Create).
+                        borderRadius: 16,
+                        child: Text(_hasProfile ? 'EDIT PROFILE' : 'CREATE PROFILE'),
+                      ),
                     ),
                   ],
                 ),
@@ -725,8 +705,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
                       color: _isOnline
-                          ? AppColors.gold.withOpacity(0.3)
-                          : Colors.white.withOpacity(0.05),
+                          ? AppColors.gold.withValues(alpha: 0.3)
+                          : AppColors.dividerColor,
                     ),
                   ),
                   child: Row(
@@ -753,8 +733,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               _isOnline
                                   ? 'Accepting Requests'
                                   : 'Currently Offline',
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -807,7 +787,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: AppColors.dividerColor),
                 ),
                 child: Column(
                   children: [
@@ -815,12 +795,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: Icons.person_outline,
                       title: 'Settings',
                       subtitle: 'Personal info, login, security',
+                      onTap: _showEditProfileDialog,
                     ),
-                    const Divider(color: Colors.white10, height: 1),
+                    Divider(color: AppColors.dividerColor, height: 1),
                     _buildAccountItem(
                       icon: Icons.credit_card,
                       title: 'Payments',
                       subtitle: 'Cards, billing history',
+                      onTap: () => widget.onTabChanged('billing'),
                     ),
                   ],
                 ),
@@ -871,9 +853,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required IconData icon,
     required String title,
     required String subtitle,
+    VoidCallback? onTap,
   }) {
     return InkWell(
-      onTap: () {}, // AKSI MOCK MENU ITEM.
+      onTap: onTap, // AKSI MENU ITEM.
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Row(
@@ -881,7 +864,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: AppColors.cardBg,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(icon, color: AppColors.gold, size: 20),
@@ -893,8 +876,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),

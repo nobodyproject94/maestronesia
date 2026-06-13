@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
-import '../widgets/custom_button.dart';
 
 // =========================================================================
 // BOOKINGSCREEN MENANGANI PROSES PEMILIHAN JADWAL KONSULTASI (HARI DAN JAM) DENGAN EXPERT TERTENTU.
@@ -45,7 +44,7 @@ class _BookingScreenState extends State<BookingScreen> {
     final isDark = isDarkModeNotifier.value;
     final dialogBgColor = isDark
         ? const Color(0xFF131D24)
-        : Colors.white.withOpacity(0.05);
+        : Colors.white.withValues(alpha: 0.05);
 
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -63,13 +62,12 @@ class _BookingScreenState extends State<BookingScreen> {
                 surface: dialogBgColor,
                 onSurface: Colors.white,
               ),
-              dialogBackgroundColor: dialogBgColor,
               dialogTheme: DialogThemeData(
                 backgroundColor: dialogBgColor,
                 surfaceTintColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28),
-                  side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                  side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                 ),
               ),
               datePickerTheme: DatePickerThemeData(
@@ -97,7 +95,7 @@ class _BookingScreenState extends State<BookingScreen> {
     final isDark = isDarkModeNotifier.value;
     final dialogBgColor = isDark
         ? const Color(0xFF131D24)
-        : Colors.white.withOpacity(0.05);
+        : Colors.white.withValues(alpha: 0.05);
 
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -113,13 +111,12 @@ class _BookingScreenState extends State<BookingScreen> {
                 surface: dialogBgColor,
                 onSurface: Colors.white,
               ),
-              dialogBackgroundColor: dialogBgColor,
               dialogTheme: DialogThemeData(
                 backgroundColor: dialogBgColor,
                 surfaceTintColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28),
-                  side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                  side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                 ),
               ),
               timePickerTheme: TimePickerThemeData(
@@ -181,12 +178,12 @@ class _BookingScreenState extends State<BookingScreen> {
                         style: IconButton.styleFrom(
                           backgroundColor: isDark
                               ? AppColors.surface
-                              : Colors.white.withOpacity(0.05),
+                              : Colors.white.withValues(alpha: 0.05),
                           padding: const EdgeInsets.all(16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
-                              color: Colors.white.withOpacity(0.05),
+                              color: Colors.white.withValues(alpha: 0.05),
                             ),
                           ),
                         ),
@@ -244,10 +241,10 @@ class _BookingScreenState extends State<BookingScreen> {
                       decoration: BoxDecoration(
                         color: isDark
                             ? AppColors.surface
-                            : Colors.white.withOpacity(0.05),
+                            : Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: AppColors.gold.withOpacity(0.3),
+                          color: AppColors.gold.withValues(alpha: 0.3),
                           width: 1.5,
                         ),
                       ),
@@ -274,8 +271,8 @@ class _BookingScreenState extends State<BookingScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 "${_selectedDate.day} Juni ${_selectedDate.year}",
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: AppColors.textPrimary,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -303,10 +300,10 @@ class _BookingScreenState extends State<BookingScreen> {
                       decoration: BoxDecoration(
                         color: isDark
                             ? AppColors.surface
-                            : Colors.white.withOpacity(0.05),
+                            : Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: AppColors.gold.withOpacity(0.3),
+                          color: AppColors.gold.withValues(alpha: 0.3),
                           width: 1.5,
                         ),
                       ),
@@ -333,8 +330,8 @@ class _BookingScreenState extends State<BookingScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 _selectedTime.format(context),
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: AppColors.textPrimary,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -359,10 +356,10 @@ class _BookingScreenState extends State<BookingScreen> {
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? AppColors.surface.withOpacity(0.4)
-                          : Colors.white.withOpacity(0.05),
+                          ? AppColors.surface.withValues(alpha: 0.4)
+                          : Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(28),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                     child: Column(
                       children: [
@@ -410,7 +407,7 @@ class _BookingScreenState extends State<BookingScreen> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        const Divider(color: Colors.white10, height: 1),
+                        Divider(color: AppColors.dividerColor, height: 1),
                         const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -439,18 +436,32 @@ class _BookingScreenState extends State<BookingScreen> {
                   const SizedBox(height: 32),
 
                   // =========================================================================
-                  // TOMBOL LANJUT KE CHECKOUT
-                  // =========================================================================
-                  MaestronesiaButton(
-                    onPressed: () => widget.onProceed(
-                      _selectedDate.day,
-                      _selectedTime.format(context),
-                    ),
-                    child: const Text(
-                      'Proceed to Checkout',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                  SizedBox(
+                    width: double.infinity,
+                    height: 60,
+                    child: ElevatedButton(
+                      onPressed: () => widget.onProceed(
+                        _selectedDate.day,
+                        _selectedTime.format(context),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDark ? AppColors.gold : AppColors.gold.withValues(alpha: 0.15),
+                        foregroundColor: isDark ? Colors.black : AppColors.gold,
+                        side: BorderSide(color: AppColors.gold, width: isDark ? 0 : 1.5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        elevation: isDark ? 0 : 8.0,
+                        shadowColor: isDark
+                            ? Colors.transparent
+                            : AppColors.gold.withValues(alpha: 0.35),
+                      ),
+                      child: const Text(
+                        'Proceed to Checkout',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

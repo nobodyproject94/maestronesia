@@ -4,6 +4,7 @@ import '../theme.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/interesting_logos.dart';
 import '../databases/database_helper.dart';
+import '../widgets/custom_snackbar.dart';
 
 // =========================================================================
 // SIGNUPSCREEN ADALAH STATEFULWIDGET YANG MEMPROSES PENDAFTARAN (REGISTRASI) AKUN PENGGUNA BARU
@@ -95,19 +96,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           // =========================================================================
           // MEMBERIKAN PERINGATAN SNACKBAR JIKA ALAMAT EMAIL SUDAH TERDAFTAR SEBELUMNYA.
           // =========================================================================
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: AppColors.error,
-              content: Text(
-                'Email already registered. Try logging in.',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          );
+          showCustomSnackBar(context, 'Email already registered. Try logging in.', isError: true);
         }
       }
     }
@@ -151,7 +140,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       padding: const EdgeInsets.all(12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                       ),
                     ),
                   ),
@@ -235,7 +224,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                                 hintText: 'FULL NAME',
                                 hintStyle: TextStyle(
-                                  color: AppColors.textSecondary.withOpacity(0.3),
+                                  color: AppColors.textSecondary.withValues(alpha: 0.3),
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.5,
@@ -283,7 +272,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                                 hintText: 'EMAIL ADDRESS',
                                 hintStyle: TextStyle(
-                                  color: AppColors.textSecondary.withOpacity(0.3),
+                                  color: AppColors.textSecondary.withValues(alpha: 0.3),
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.5,
@@ -329,7 +318,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                                 hintText: 'PASSWORD',
                                 hintStyle: TextStyle(
-                                  color: AppColors.textSecondary.withOpacity(0.3),
+                                  color: AppColors.textSecondary.withValues(alpha: 0.3),
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.5,
@@ -372,8 +361,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        SizedBox(width: 8),
-                                        Icon(Icons.chevron_right, size: 20),
                                       ],
                                     ),
                             ),
@@ -386,7 +373,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               children: [
                                 Expanded(
                                   child: Divider(
-                                    color: Colors.white.withOpacity(0.05),
+                                    color: Colors.white.withValues(alpha: 0.05),
                                   ),
                                 ),
                                 Padding(
@@ -396,7 +383,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   child: Text(
                                     'FAST TRACK REGISTRATION',
                                     style: TextStyle(
-                                      color: AppColors.textSecondary.withOpacity(0.6),
+                                      color: AppColors.textSecondary.withValues(alpha: 0.6),
                                       fontSize: 8,
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 2.0,
@@ -405,7 +392,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                                 Expanded(
                                   child: Divider(
-                                    color: Colors.white.withOpacity(0.05),
+                                    color: Colors.white.withValues(alpha: 0.05),
                                   ),
                                 ),
                               ],

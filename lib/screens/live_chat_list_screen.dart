@@ -178,9 +178,9 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
 
                           return Container(
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                              color: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: Colors.white.withOpacity(0.05)),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                             ),
                             child: InkWell(
                               // =========================================================================
@@ -234,8 +234,8 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
                                         children: [
                                           Text(
                                             expert.name,
-                                            style: const TextStyle(
-                                              color: Colors.white,
+                                            style: TextStyle(
+                                              color: AppColors.textPrimary,
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -259,7 +259,7 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
                                     Container(
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color: AppColors.gold.withOpacity(0.1),
+                                        color: AppColors.gold.withValues(alpha: 0.1),
                                         shape: BoxShape.circle,
                                       ),
                                       child: const Icon(
@@ -302,7 +302,7 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.gold.withOpacity(0.05),
+              color: AppColors.gold.withValues(alpha: 0.05),
               shape: BoxShape.circle,
             ),
             child: const Icon(

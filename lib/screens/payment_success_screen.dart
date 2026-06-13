@@ -49,20 +49,28 @@ class PaymentSuccessScreen extends StatelessWidget {
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    color: AppColors.gold,
+                    color: isDarkModeNotifier.value ? AppColors.gold : Colors.transparent,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.gold.withOpacity(0.2),
-                        blurRadius: 40,
+                        color: AppColors.gold.withValues(alpha: isDarkModeNotifier.value ? 0.2 : 0.25),
+                        blurRadius: isDarkModeNotifier.value ? 40 : 45,
                         spreadRadius: 5,
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.check_circle,
-                    color: Colors.black,
-                    size: 64,
+                  child: Icon(
+                    Icons.check,
+                    color: isDarkModeNotifier.value ? Colors.black : AppColors.gold,
+                    size: 80,
+                    shadows: isDarkModeNotifier.value
+                        ? null
+                        : const [
+                            Shadow(
+                              color: AppColors.gold,
+                              blurRadius: 20,
+                            ),
+                          ],
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -114,7 +122,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(28),
-                    border: Border.all(color: Colors.white.withOpacity(0.05)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                   ),
                   child: Column(
                     children: [
@@ -144,7 +152,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      const Divider(color: Colors.white10, height: 1),
+                      Divider(color: AppColors.dividerColor, height: 1),
                       const SizedBox(height: 16),
                       // =========================================================================
                       // BARIS WAKTU SESI KONSULTASI.
@@ -172,7 +180,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      const Divider(color: Colors.white10, height: 1),
+                      Divider(color: AppColors.dividerColor, height: 1),
                       const SizedBox(height: 16),
                       // =========================================================================
                       // BARIS NAMA PAKAR YANG DIPESAN.

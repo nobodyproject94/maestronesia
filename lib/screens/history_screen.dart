@@ -68,38 +68,36 @@ class _HistoryScreenState extends State<HistoryScreen> {
           child: AlertDialog(
             backgroundColor: isDark
                 ? const Color(0xFF131D24)
-                : Colors.white.withOpacity(0.05),
+                : Colors.white.withValues(alpha: 0.05),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
-              side: BorderSide(color: Colors.white.withOpacity(0.05)),
+              side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
             ),
             title: Text(
               item['notes'] == null || item['notes'].toString().isEmpty
                   ? 'Add Note'
                   : 'Edit Note',
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
             content: Container(
               width: 320,
               decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF172128)
-                    : Colors.white.withOpacity(0.05),
+                color: AppColors.cardBg,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: AppColors.dividerColor),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               child: TextField(
                 controller: noteController,
                 maxLines: 4,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
-                decoration: const InputDecoration(
+                style: TextStyle(color: AppColors.inputText, fontSize: 14),
+                decoration: InputDecoration(
                   hintText:
                       'Enter session notes or topic preparation details...',
-                  hintStyle: TextStyle(color: Colors.white30, fontSize: 13),
+                  hintStyle: TextStyle(color: AppColors.hintText, fontSize: 13),
                   border: InputBorder.none,
                 ),
               ),
@@ -126,13 +124,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   _refreshBookings(); // MEMPERBARUI UI DENGAN MEMUAT ULANG DATA.
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.12),
+                  backgroundColor: isDark ? Colors.white.withValues(alpha: 0.12) : Colors.white,
                   foregroundColor: AppColors.gold,
                   side: const BorderSide(color: AppColors.gold, width: 1.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  elevation: 0,
+                  elevation: isDark ? 0 : 8.0,
+                  shadowColor: isDark ? Colors.transparent : AppColors.gold.withValues(alpha: 0.35),
                 ),
                 child: const Text(
                   'Save Note',
@@ -156,7 +155,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final isDark = isDarkModeNotifier.value;
     final dialogBgColor = isDark
         ? const Color(0xFF131D24)
-        : Colors.white.withOpacity(0.05);
+        : Colors.white.withValues(alpha: 0.05);
 
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -174,13 +173,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 surface: dialogBgColor,
                 onSurface: Colors.white,
               ),
-              dialogBackgroundColor: dialogBgColor,
               dialogTheme: DialogThemeData(
                 backgroundColor: dialogBgColor,
                 surfaceTintColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28),
-                  side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                  side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                 ),
               ),
               datePickerTheme: DatePickerThemeData(
@@ -212,13 +210,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 surface: dialogBgColor,
                 onSurface: Colors.white,
               ),
-              dialogBackgroundColor: dialogBgColor,
               dialogTheme: DialogThemeData(
                 backgroundColor: dialogBgColor,
                 surfaceTintColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28),
-                  side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                  side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                 ),
               ),
               timePickerTheme: TimePickerThemeData(
@@ -233,6 +230,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
 
     if (pickedTime == null) return;
+    if (!mounted) return;
 
     final months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -242,24 +240,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
         "${months[pickedDate.month - 1]} ${pickedDate.day}, ${pickedDate.year}";
     final timeStr = pickedTime.format(context);
 
-    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) {
         return BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: AlertDialog(
-            backgroundColor: isDark
-                ? const Color(0xFF131D24)
-                : Colors.white.withOpacity(0.05),
+            backgroundColor: AppColors.dialogBg,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
-              side: BorderSide(color: Colors.white.withOpacity(0.05)),
+              side: BorderSide(color: AppColors.dividerColor),
             ),
-            title: const Text(
+            title: Text(
               'Reschedule Session',
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -290,13 +285,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   _refreshBookings(); // MEMUAT ULANG DATA BOOKING UNTUK MEREFRESH UI LIST.
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.12),
+                  backgroundColor: isDark ? Colors.white.withValues(alpha: 0.12) : Colors.white,
                   foregroundColor: AppColors.gold,
                   side: const BorderSide(color: AppColors.gold, width: 1.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  elevation: 0,
+                  elevation: isDark ? 0 : 8.0,
+                  shadowColor: isDark ? Colors.transparent : AppColors.gold.withValues(alpha: 0.35),
                 ),
                 child: const Text(
                   'Confirm',
@@ -325,17 +321,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
         return BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: AlertDialog(
-            backgroundColor: isDark
-                ? const Color(0xFF131D24)
-                : Colors.white.withOpacity(0.05),
+            backgroundColor: AppColors.dialogBg,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(28),
-              side: BorderSide(color: Colors.white.withOpacity(0.05)),
+              side: BorderSide(color: AppColors.dividerColor),
             ),
-            title: const Text(
+            title: Text(
               'Cancel Session',
               style: TextStyle(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -365,13 +359,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   _refreshBookings();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.05),
+                  backgroundColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
                   foregroundColor: Colors.redAccent,
                   side: const BorderSide(color: Colors.redAccent, width: 1.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  elevation: 0,
+                  elevation: isDark ? 0 : 8.0,
+                  shadowColor: isDark ? Colors.transparent : Colors.redAccent.withValues(alpha: 0.35),
                 ),
                 child: const Text(
                   'Cancel Session',
@@ -425,11 +420,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         onPressed: _refreshBookings,
                         icon: Icon(Icons.refresh, color: AppColors.textSecondary),
                         style: IconButton.styleFrom(
-                          backgroundColor: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                          backgroundColor: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
                           padding: const EdgeInsets.all(12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                            side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                           ),
                         ),
                       ),
@@ -463,13 +458,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             border = Border.all(color: AppColors.gold);
                             textColor = Colors.black;
                           } else {
-                            bgColor = Colors.white.withOpacity(0.12);
+                            bgColor = Colors.white.withValues(alpha: 0.12);
                             border = Border.all(color: AppColors.gold, width: 1.5);
                             textColor = AppColors.gold;
                           }
                         } else {
-                          bgColor = isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05);
-                          border = Border.all(color: Colors.white.withOpacity(0.05));
+                          bgColor = isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05);
+                          border = Border.all(color: Colors.white.withValues(alpha: 0.05));
                           textColor = AppColors.textSecondary;
                         }
 
@@ -602,10 +597,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           return Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                              color: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(28),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.05),
+                                color: Colors.white.withValues(alpha: 0.05),
                               ),
                             ),
                             child: Column(
@@ -618,7 +613,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       width: 48,
                                       height: 48,
                                       decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.05),
+                                        color: Colors.white.withValues(alpha: 0.05),
                                         borderRadius: BorderRadius.circular(16),
                                       ),
                                       child: const Icon(
@@ -633,8 +628,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         children: [
                                           Text(
                                             item['expert_name'] ?? 'Expert Name',
-                                            style: const TextStyle(
-                                              color: Colors.white,
+                                            style: TextStyle(
+                                              color: AppColors.textPrimary,
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -660,10 +655,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: isCompleted
-                                            ? AppColors.gold.withOpacity(0.1)
+                                            ? AppColors.gold.withValues(alpha: 0.1)
                                             : isCancelled
-                                            ? Colors.redAccent.withOpacity(0.1)
-                                            : Colors.blueAccent.withOpacity(0.1),
+                                            ? Colors.redAccent.withValues(alpha: 0.1)
+                                            : Colors.blueAccent.withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
@@ -693,10 +688,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     width: double.infinity,
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: isDark ? Colors.white.withOpacity(0.02) : Colors.white.withOpacity(0.05),
+                                      color: isDark ? Colors.white.withValues(alpha: 0.02) : Colors.white.withValues(alpha: 0.05),
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
-                                        color: Colors.white.withOpacity(0.05),
+                                        color: Colors.white.withValues(alpha: 0.05),
                                       ),
                                     ),
                                     child: Text(
@@ -711,7 +706,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 ],
 
                                 const SizedBox(height: 16),
-                                const Divider(color: Colors.white10, height: 1),
+                                Divider(color: AppColors.dividerColor, height: 1),
                                 const SizedBox(height: 16),
                                 Wrap(
                                   alignment: WrapAlignment.spaceBetween,
@@ -738,8 +733,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           Container(
                                             width: 4,
                                             height: 4,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white24,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.dividerColor,
                                               shape: BoxShape.circle,
                                             ),
                                           ),
@@ -793,7 +788,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(
-                                                    'Chat & Video',
+                                                    'Chat',
                                                     style: TextStyle(
                                                       color: AppColors.gold,
                                                       fontSize: 12,

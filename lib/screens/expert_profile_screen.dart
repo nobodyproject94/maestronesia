@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../models/expert.dart';
 import '../widgets/main_layout.dart';
+import '../widgets/custom_snackbar.dart';
 
 // =========================================================================
 // EXPERTPROFILESCREEN MENAMPILKAN PROFIL DETAIL LENGKAP DARI SEORANG AHLI (EXPERT) YANG DILIHAT OLEH CLIENT.
@@ -68,23 +69,25 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                         onPressed: widget.onBack,
                         icon: Icon(Icons.chevron_left, color: AppColors.textSecondary),
                         style: IconButton.styleFrom(
-                          backgroundColor: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                          backgroundColor: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
                           padding: const EdgeInsets.all(16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                            side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                           ),
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showCustomSnackBar(context, 'Notifications are up to date!');
+                        },
                         icon: Icon(Icons.notifications_outlined, color: AppColors.textSecondary),
                         style: IconButton.styleFrom(
-                          backgroundColor: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                          backgroundColor: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
                           padding: const EdgeInsets.all(16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                            side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                           ),
                         ),
                       ),
@@ -112,7 +115,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.gold.withOpacity(0.1),
+                                    color: AppColors.gold.withValues(alpha: 0.1),
                                     blurRadius: 24,
                                     spreadRadius: 2,
                                   ),
@@ -131,7 +134,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                                 decoration: BoxDecoration(
                                   color: widget.expert.status == 'Available' ? AppColors.gold : AppColors.textSecondary,
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: isDark ? const Color(0xFF131D24) : Colors.white.withOpacity(0.05), width: 4),
+                                  border: Border.all(color: isDark ? const Color(0xFF131D24) : Colors.white.withValues(alpha: 0.05), width: 4),
                                 ),
                               ),
                             ),
@@ -173,7 +176,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                                 children: List.generate(5, (index) {
                                   return Icon(
                                     Icons.star,
-                                    color: index < widget.expert.rating.floor() ? Colors.amber : Colors.white10,
+                                    color: index < widget.expert.rating.floor() ? Colors.amber : AppColors.dividerColor,
                                     size: 16,
                                   );
                                 }),
@@ -200,9 +203,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF172128).withOpacity(0.4) : Colors.white.withOpacity(0.05),
+                        color: isDark ? const Color(0xFF172128).withValues(alpha: 0.4) : Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withOpacity(0.05)),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                       ),
                       child: Row(
                         children: [
@@ -246,19 +249,24 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                     // =========================================================================
                     // TOMBOL BOOKING KONSULTASI (CALL TO ACTION)
                     // =========================================================================
-                    SizedBox(
+                  // TOMBOL BOOKING KONSULTASI (CALL TO ACTION)
+                  // =========================================================================
+                  SizedBox(
                       width: double.infinity,
                       height: 60,
                       child: ElevatedButton(
                         onPressed: widget.onBook,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.12),
-                          foregroundColor: AppColors.gold,
-                          side: const BorderSide(color: AppColors.gold, width: 1.5),
+                         style: ElevatedButton.styleFrom(
+                          backgroundColor: isDarkModeNotifier.value ? AppColors.gold : AppColors.gold.withValues(alpha: 0.15),
+                          foregroundColor: isDarkModeNotifier.value ? Colors.black : AppColors.gold,
+                          side: BorderSide(color: AppColors.gold, width: isDarkModeNotifier.value ? 0 : 1.5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          elevation: 0,
+                          elevation: isDarkModeNotifier.value ? 0 : 8.0,
+                          shadowColor: isDarkModeNotifier.value
+                              ? Colors.transparent
+                              : AppColors.gold.withValues(alpha: 0.35),
                         ),
                         child: const Text(
                           'Book Consultation',
@@ -289,7 +297,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
         tabBorder = null;
         tabTextColor = Colors.black;
       } else {
-        tabBg = Colors.white.withOpacity(0.12);
+        tabBg = Colors.white.withValues(alpha: 0.12);
         tabBorder = Border.all(color: AppColors.gold, width: 1.5);
         tabTextColor = AppColors.gold;
       }
@@ -383,9 +391,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                color: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Text(
                 s.toUpperCase(),
@@ -423,9 +431,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
             return Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF172128).withOpacity(0.4) : Colors.white.withOpacity(0.05),
+                color: isDark ? const Color(0xFF172128).withValues(alpha: 0.4) : Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -438,9 +446,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
                           Container(
                             width: 32,
                             height: 32,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.white10,
+                              color: AppColors.dividerColor,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -487,9 +495,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF172128).withOpacity(0.6) : Colors.white.withOpacity(0.05),
+        color: isDark ? const Color(0xFF172128).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
@@ -528,9 +536,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: isDark ? AppColors.gold.withOpacity(0.05) : Colors.white.withOpacity(0.05),
+            color: isDark ? AppColors.gold.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.gold.withOpacity(0.15)),
+            border: Border.all(color: AppColors.gold.withValues(alpha: 0.15)),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -577,7 +585,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.gold.withOpacity(0.1),
+                color: AppColors.gold.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Text(
@@ -603,9 +611,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF172128).withOpacity(0.4) : Colors.white.withOpacity(0.05),
+                color: isDark ? const Color(0xFF172128).withValues(alpha: 0.4) : Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Row(
                 children: [
@@ -681,9 +689,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
               return Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF172128).withOpacity(0.4) : Colors.white.withOpacity(0.05),
+                  color: isDark ? const Color(0xFF172128).withValues(alpha: 0.4) : Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -742,9 +750,9 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen> {
             return Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF172128).withOpacity(0.4) : Colors.white.withOpacity(0.05),
+                color: isDark ? const Color(0xFF172128).withValues(alpha: 0.4) : Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Row(
                 children: [

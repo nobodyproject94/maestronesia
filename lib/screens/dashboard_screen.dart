@@ -64,9 +64,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   // =========================================================================
                   Container(
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                      color: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextField(
@@ -108,13 +108,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             chipBorder = Border.all(color: AppColors.gold);
                             chipTextColor = Colors.black;
                           } else {
-                            chipBg = Colors.white.withOpacity(0.12);
+                            chipBg = Colors.white.withValues(alpha: 0.12);
                             chipBorder = Border.all(color: AppColors.gold, width: 1.5);
                             chipTextColor = AppColors.gold;
                           }
                         } else {
-                          chipBg = isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05);
-                          chipBorder = Border.all(color: Colors.white.withOpacity(0.05));
+                          chipBg = isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05);
+                          chipBorder = Border.all(color: Colors.white.withValues(alpha: 0.05));
                           chipTextColor = AppColors.textSecondary;
                         }
 
@@ -193,8 +193,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             colors: [
                               Colors.transparent,
                               isDark 
-                                  ? const Color(0xFF131D24).withOpacity(0.9)
-                                  : const Color(0xFF0B1528).withOpacity(0.8),
+                                  ? const Color(0xFF131D24).withValues(alpha: 0.9)
+                                  : const Color(0xFF0B1528).withValues(alpha: 0.8),
                             ],
                           ),
                         ),
@@ -288,9 +288,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                            color: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(28),
-                            border: Border.all(color: Colors.white.withOpacity(0.05)),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                           ),
                           child: Column(
                             children: [
@@ -315,7 +315,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             color: expert.status == 'Available' ? AppColors.gold : AppColors.textSecondary,
                                             shape: BoxShape.circle,
                                             border: Border.all(
-                                              color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                                              color: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
                                               width: 2,
                                             ),
                                           ),
@@ -367,7 +367,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               ),
                                             ),
                                             const SizedBox(width: 8),
-                                            Container(width: 3, height: 3, decoration: const BoxDecoration(color: Colors.white24, shape: BoxShape.circle)),
+                                            Container(width: 3, height: 3, decoration: BoxDecoration(color: AppColors.dividerColor, shape: BoxShape.circle)),
                                             const SizedBox(width: 8),
                                             Text(
                                               '${expert.experience} exp',
@@ -385,7 +385,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               const SizedBox(height: 16),
                               Divider(
-                                color: isDark ? Colors.white10 : Colors.white.withOpacity(0.05),
+                                color: AppColors.dividerColor,
                                 height: 1,
                               ),
                               const SizedBox(height: 16),
@@ -401,7 +401,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         margin: const EdgeInsets.only(right: 8),
                                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.05),
+                                          color: Colors.white.withValues(alpha: 0.05),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: Text(

@@ -53,7 +53,7 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                   Container(
                     color: isDark
                         ? AppColors.gold
-                        : Colors.white.withOpacity(0.05),
+                        : Colors.white.withValues(alpha: 0.05),
                     padding: const EdgeInsets.only(
                       top: 24,
                       bottom: 24,
@@ -126,8 +126,8 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                                   ? Colors.black
                                   : AppColors.gold,
                               activeTrackColor: isDark
-                                  ? Colors.black.withOpacity(0.2)
-                                  : Colors.white24,
+                                  ? Colors.black.withValues(alpha: 0.2)
+                                  : AppColors.dividerColor,
                             ),
                           ],
                         ),
@@ -169,7 +169,7 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(32),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.05),
+                              color: Colors.white.withValues(alpha: 0.05),
                             ),
                           ),
                           child: Column(
@@ -188,7 +188,7 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: const [
+                                children: [
                                   Text(
                                     'Rp 2.5T',
                                     style: TextStyle(
@@ -200,7 +200,7 @@ class _ExpertDashboardScreenState extends State<ExpertDashboardScreen> {
                                   ),
                                   Icon(
                                     Icons.book_outlined,
-                                    color: Colors.white10,
+                                    color: AppColors.dividerColor,
                                     size: 48,
                                   ),
                                 ],

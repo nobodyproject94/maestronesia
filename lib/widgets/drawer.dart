@@ -58,7 +58,7 @@ class MaestronesiaDrawer extends StatelessWidget {
                           backgroundImage: const NetworkImage(
                             'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop',
                           ),
-                          backgroundColor: AppColors.gold.withOpacity(0.1),
+                          backgroundColor: AppColors.gold.withValues(alpha: 0.1),
                         ),
                         const SizedBox(height: 16),
                         Text(

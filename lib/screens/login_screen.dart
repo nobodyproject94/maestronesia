@@ -4,6 +4,7 @@ import '../theme.dart';
 import '../databases/database_helper.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/interesting_logos.dart';
+import '../widgets/custom_snackbar.dart';
 
 // =========================================================================
 // LOGINSCREEN ADALAH STATEFULWIDGET YANG MENGELOLA ANTARMUKA DAN LOGIKA AUTENTIKASI (LOGIN)
@@ -89,37 +90,13 @@ class _LoginScreenState extends State<LoginScreen> {
             // =========================================================================
             // MEMBERIKAN PESAN KESALAHAN JIKA AKUN TERDAFTAR DENGAN PERAN YANG BERBEDA.
             // =========================================================================
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: Colors.redAccent,
-                content: Text(
-                  'This account is registered as a ${user['role']}.',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            );
+            showCustomSnackBar(context, 'This account is registered as a ${user['role']}.', isError: true);
           }
         } else {
           // =========================================================================
           // MEMBERIKAN PESAN KESALAHAN JIKA KOMBINASI EMAIL ATAU PASSWORD SALAH.
           // =========================================================================
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.redAccent,
-              content: Text(
-                'Invalid email or password.',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          );
+          showCustomSnackBar(context, 'Invalid email or password.', isError: true);
         }
       }
     }
@@ -165,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.all(12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
                       ),
                     ),
                   ),
@@ -236,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 hintText: 'EMAIL ADDRESS',
                                 hintStyle: TextStyle(
-                                  color: AppColors.textSecondary.withOpacity(0.3),
+                                  color: AppColors.textSecondary.withValues(alpha: 0.3),
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.5,
@@ -279,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 hintText: 'PASSWORD',
                                 hintStyle: TextStyle(
-                                  color: AppColors.textSecondary.withOpacity(0.3),
+                                  color: AppColors.textSecondary.withValues(alpha: 0.3),
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.5,
@@ -322,8 +299,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        SizedBox(width: 8),
-                                        Icon(Icons.chevron_right, size: 20),
                                       ],
                                     ),
                             ),
@@ -336,7 +311,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 Expanded(
                                   child: Divider(
-                                    color: Colors.white.withOpacity(0.05),
+                                    color: Colors.white.withValues(alpha: 0.05),
                                   ),
                                 ),
                                 Padding(
@@ -346,7 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Text(
                                     'OR CONTINUE WITH',
                                     style: TextStyle(
-                                      color: AppColors.textSecondary.withOpacity(0.6),
+                                      color: AppColors.textSecondary.withValues(alpha: 0.6),
                                       fontSize: 8,
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 2.0,
@@ -355,7 +330,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 Expanded(
                                   child: Divider(
-                                    color: Colors.white.withOpacity(0.05),
+                                    color: Colors.white.withValues(alpha: 0.05),
                                   ),
                                 ),
                               ],

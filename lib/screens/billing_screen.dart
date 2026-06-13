@@ -1,12 +1,15 @@
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme.dart';
 import '../widgets/main_layout.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/custom_snackbar.dart';
 
 // =========================================================================
 // BILLINGSCREEN MERENDER HALAMAN TAGIHAN DAN E-WALLET/DOMPET DIGITAL USER.
 // =========================================================================
-class BillingScreen extends StatelessWidget {
+class BillingScreen extends StatefulWidget {
   final ValueChanged<String> onTabChanged;
   final VoidCallback onSignOut;
 
@@ -17,330 +20,700 @@ class BillingScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    // =========================================================================
-    // MEMBUNGKUS HALAMAN DENGAN LAYOUT UTAMA (MAINLAYOUT) AGAR SERAGAM DENGAN NAVIGASI UTAMA.
-    // =========================================================================
-    return MainLayout(
-      activeTab: 'billing',
-      onTabChanged: onTabChanged,
-      onSignOut: onSignOut,
-      child: Scaffold(
-        backgroundColor: Colors
-            .transparent, // MENGGUNAKAN BACKGROUND GRADIEN DARI MAINLAYOUT.
-        body: SingleChildScrollView(
-          // =========================================================================
-          // MENAMBAHKAN SCROLL PHYSICS BOUNCING AGAR NYAMAN DIGULIR (KHUSUSNYA UNTUK IOS).
-          // =========================================================================
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
-          ),
-          padding: const EdgeInsets.only(
-            left: 24.0,
-            right: 24.0,
-            top: 24.0,
-            bottom: 120.0,
-          ), // PADDING BAWAH DISESUAIKAN AGAR TIDAK TERTUTUP BOTTOM BAR MOBILE.
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Billing & Wallet',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 24),
+  State<BillingScreen> createState() => _BillingScreenState();
+}
 
-              // =========================================================================
-              // KARTU SALDO E-WALLET
-              // =========================================================================
-              Container(
-                padding: EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(32),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 24,
-                    ),
-                  ],
+class _BillingScreenState extends State<BillingScreen> {
+  double _balance = 1240500.0;
+  final List<Map<String, String>> _cards = [
+    {
+      'type': 'VISA',
+      'brand': 'Mastercard',
+      'number': '4242',
+      'expiry': '12/25',
+      'isPrimary': 'true'
+    }
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _balance = prefs.getDouble('wallet_balance') ?? 1240500.0;
+    });
+  }
+
+  Future<void> _saveBalance(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('wallet_balance', value);
+  }
+
+  String _formatCurrency(double amount) {
+    final int value = amount.toInt();
+    final s = value.toString();
+    final buffer = StringBuffer();
+    for (int i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 == 0) {
+        buffer.write('.');
+      }
+      buffer.write(s[i]);
+    }
+    return buffer.toString();
+  }
+
+  void _showTopUpDialog(BuildContext context) {
+    final amountController = TextEditingController();
+    final isDark = isDarkModeNotifier.value;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: AlertDialog(
+            backgroundColor: AppColors.dialogBg,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
+              side: BorderSide(color: AppColors.dividerColor),
+            ),
+            title: Text(
+              'Top Up Wallet',
+              style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Enter amount to top up:',
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'AVAILABLE BALANCE',
-                      style: TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2.0,
+                const SizedBox(height: 12),
+                TextField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(color: AppColors.inputText),
+                  decoration: InputDecoration(
+                    prefixText: 'Rp ',
+                    prefixStyle: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.hintText),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.gold),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 8,
+                  children: [50000, 100000, 200000, 500000].map((amt) {
+                    return ChoiceChip(
+                      label: Text('Rp ${_formatCurrency(amt.toDouble())}'),
+                      selected: false,
+                      labelStyle: TextStyle(color: AppColors.textPrimary, fontSize: 11),
+                      backgroundColor: AppColors.cardBg,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      onSelected: (_) {
+                        amountController.text = amt.toString();
+                      },
+                    );
+                  }).toList(),
+                )
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final amt = double.tryParse(amountController.text) ?? 0.0;
+                  if (amt > 0) {
+                    setState(() {
+                      _balance += amt;
+                    });
+                    _saveBalance(_balance);
+                    Navigator.pop(context);
+                    showCustomSnackBar(context, 'Rp ${_formatCurrency(amt)} successfully topped up!');
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? AppColors.gold : AppColors.gold.withValues(alpha: 0.15),
+                  foregroundColor: isDark ? Colors.black : AppColors.gold,
+                  side: BorderSide(color: AppColors.gold, width: isDark ? 0 : 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: isDark ? 0 : 8.0,
+                  shadowColor: isDark ? Colors.transparent : AppColors.gold.withValues(alpha: 0.35),
+                ),
+                child: const Text('Top Up'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showWithdrawDialog(BuildContext context) {
+    final amountController = TextEditingController();
+    final isDark = isDarkModeNotifier.value;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: AlertDialog(
+            backgroundColor: AppColors.dialogBg,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
+              side: BorderSide(color: AppColors.dividerColor),
+            ),
+            title: Text(
+              'Withdraw Funds',
+              style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Enter amount to withdraw:',
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(color: AppColors.inputText),
+                  decoration: InputDecoration(
+                    prefixText: 'Rp ',
+                    prefixStyle: const TextStyle(color: AppColors.gold, fontWeight: FontWeight.bold),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.hintText),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.gold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final amt = double.tryParse(amountController.text) ?? 0.0;
+                  if (amt > 0) {
+                    if (amt <= _balance) {
+                      setState(() {
+                        _balance -= amt;
+                      });
+                      _saveBalance(_balance);
+                      Navigator.pop(context);
+                      showCustomSnackBar(context, 'Rp ${_formatCurrency(amt)} successfully withdrawn!');
+                    } else {
+                      showCustomSnackBar(context, 'Insufficient balance!', isError: true);
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? AppColors.gold : AppColors.gold.withValues(alpha: 0.15),
+                  foregroundColor: isDark ? Colors.black : AppColors.gold,
+                  side: BorderSide(color: AppColors.gold, width: isDark ? 0 : 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: isDark ? 0 : 8.0,
+                  shadowColor: isDark ? Colors.transparent : AppColors.gold.withValues(alpha: 0.35),
+                ),
+                child: const Text('Withdraw'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showAddCardDialog(BuildContext context) {
+    final numberController = TextEditingController();
+    final expiryController = TextEditingController();
+    final cvvController = TextEditingController();
+    final isDark = isDarkModeNotifier.value;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: AlertDialog(
+            backgroundColor: AppColors.dialogBg,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
+              side: BorderSide(color: AppColors.dividerColor),
+            ),
+            title: Text(
+              'Add Payment Method',
+              style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: numberController,
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(color: AppColors.inputText),
+                    decoration: InputDecoration(
+                      labelText: 'Card Number',
+                      labelStyle: TextStyle(color: AppColors.textSecondary),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.hintText),
+                      ),
+                      focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.gold),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    // =========================================================================
-                    // JUMLAH SALDO
-                    // =========================================================================
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(
-                          'Rp',
-                          style: TextStyle(
-                            color: AppColors.gold,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          '99.200.500.300.100',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.shield_outlined,
-                          color: AppColors.gold,
-                          size: 16,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Securely Encrypted',
-                          style: TextStyle(
-                            color: AppColors.gold,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-
-                    // =========================================================================
-                    // TOMBOL AKSI E-WALLET (TOP UP DAN WITHDRAW)
-                    // =========================================================================
-                    Row(
-                      children: [
-                        Expanded(
-                          child: MaestronesiaButton(
-                            onPressed:
-                                () {}, // CALLBACK AKSI TOP UP SALDO (SIMULASI).
-                            height: 52,
-                            borderRadius: 16,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.credit_card, size: 18),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Top Up',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: expiryController,
+                          style: TextStyle(color: AppColors.inputText),
+                          decoration: InputDecoration(
+                            labelText: 'Expiry Date',
+                            hintText: 'MM/YY',
+                            hintStyle: TextStyle(color: AppColors.hintText),
+                            labelStyle: TextStyle(color: AppColors.textSecondary),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: AppColors.hintText),
+                            ),
+                            focusedBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: AppColors.gold),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: MaestronesiaButton(
-                            onPressed:
-                                () {}, // CALLBACK AKSI TARIK TUNAI SALDO (SIMULASI).
-                            height: 52,
-                            borderRadius: 16,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.logout,
-                                  size: 18,
-                                  color: AppColors.gold,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Withdraw',
-                                  style: TextStyle(
-                                    color: AppColors.gold,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: TextField(
+                          controller: cvvController,
+                          keyboardType: TextInputType.number,
+                          obscureText: true,
+                          style: TextStyle(color: AppColors.inputText),
+                          decoration: InputDecoration(
+                            labelText: 'CVV',
+                            labelStyle: TextStyle(color: AppColors.textSecondary),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: AppColors.hintText),
+                            ),
+                            focusedBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: AppColors.gold),
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  )
+                ],
               ),
-              const SizedBox(height: 32),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final numText = numberController.text.trim();
+                  final expText = expiryController.text.trim();
+                  if (numText.isNotEmpty && expText.isNotEmpty) {
+                    final last4 = numText.length >= 4 ? numText.substring(numText.length - 4) : numText;
+                    setState(() {
+                      _cards.add({
+                        'type': numText.startsWith('4') ? 'VISA' : 'Mastercard',
+                        'brand': numText.startsWith('4') ? 'VISA' : 'Mastercard',
+                        'number': last4,
+                        'expiry': expText,
+                        'isPrimary': 'false'
+                      });
+                    });
+                    Navigator.pop(context);
+                    showCustomSnackBar(context, 'Card ending in $last4 added successfully!');
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? AppColors.gold : AppColors.gold.withValues(alpha: 0.15),
+                  foregroundColor: isDark ? Colors.black : AppColors.gold,
+                  side: BorderSide(color: AppColors.gold, width: isDark ? 0 : 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: isDark ? 0 : 8.0,
+                  shadowColor: isDark ? Colors.transparent : AppColors.gold.withValues(alpha: 0.35),
+                ),
+                child: const Text('Add Card'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
-              // =========================================================================
-              // HEADER METODE PEMBAYARAN TERDAFTAR
-              // =========================================================================
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: isDarkModeNotifier,
+      builder: (context, isDark, _) {
+        return MainLayout(
+          activeTab: 'billing',
+          onTabChanged: widget.onTabChanged,
+          onSignOut: widget.onSignOut,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              padding: const EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 24.0,
+                bottom: 120.0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Payment Methods',
+                    'Billing & Wallet',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
+                      color: AppColors.textPrimary,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Edit',
-                      style: TextStyle(
-                        color: AppColors.gold,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  const SizedBox(height: 24),
+
+                  // =========================================================================
+                  // KARTU SALDO E-WALLET
+                  // =========================================================================
+                  Container(
+                    padding: const EdgeInsets.all(32),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(32),
+                      border: Border.all(color: AppColors.dividerColor),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 24,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'AVAILABLE BALANCE',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2.0,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            const Text(
+                              'Rp',
+                              style: TextStyle(
+                                color: AppColors.gold,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Text(
+                                  _formatCurrency(_balance),
+                                  style: TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        const Row(
+                          children: [
+                            Icon(
+                              Icons.shield_outlined,
+                              color: AppColors.gold,
+                              size: 16,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Securely Encrypted',
+                              style: TextStyle(
+                                color: AppColors.gold,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+
+                        // =========================================================================
+                        // TOMBOL AKSI E-WALLET (TOP UP DAN WITHDRAW)
+                        // =========================================================================
+                        Row(
+                          children: [
+                            Expanded(
+                              child: MaestronesiaButton(
+                                onPressed: () => _showTopUpDialog(context),
+                                height: 52,
+                                borderRadius: 16,
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.credit_card, size: 18),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Top Up',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: MaestronesiaButton(
+                                onPressed: () => _showWithdrawDialog(context),
+                                height: 52,
+                                borderRadius: 16,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.logout,
+                                      size: 18,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Withdraw',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
+                  const SizedBox(height: 32),
 
-              // =========================================================================
-              // KARTU METODE PEMBAYARAN MASTERCARD UTAMA
-              // =========================================================================
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 56,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF374151), Color(0xFF4B5563)],
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        'VISA',
+                  // =========================================================================
+                  // HEADER METODE PEMBAYARAN TERDAFTAR
+                  // =========================================================================
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Payment Methods',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: AppColors.textPrimary,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
                         ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          showCustomSnackBar(context, 'Delete non-primary cards by tapping the trash icon next to them.');
+                        },
+                        child: const Text(
+                          'Edit',
+                          style: TextStyle(
+                            color: AppColors.gold,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // =========================================================================
+                  // KARTU METODE PEMBAYARAN DINAMIS
+                  // =========================================================================
+                  Column(
+                    children: _cards.map((card) {
+                      final isPrimary = card['isPrimary'] == 'true';
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(28),
+                          border: Border.all(color: AppColors.dividerColor),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 56,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF374151), Color(0xFF4B5563)],
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                card['type'] ?? 'VISA',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${card['brand']} •••• ${card['number']}',
+                                    style: TextStyle(
+                                      color: AppColors.textPrimary,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Expires ${card['expiry']}',
+                                    style: TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isPrimary)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.gold.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Text(
+                                  'PRIMARY',
+                                  style: TextStyle(
+                                    color: AppColors.gold,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
+                              )
+                            else
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+                                onPressed: () {
+                                  setState(() {
+                                    _cards.remove(card);
+                                  });
+                                },
+                              ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // =========================================================================
+                  // TOMBOL UNTUK MENAMBAHKAN METODE PEMBAYARAN BARU
+                  // =========================================================================
+                  Container(
+                    width: double.infinity,
+                    height: 68,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(
+                        color: AppColors.dividerColor,
+                        width: 2,
+                        style: BorderStyle.solid,
                       ),
                     ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    child: InkWell(
+                      onTap: () => _showAddCardDialog(context),
+                      borderRadius: BorderRadius.circular(28),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Icon(Icons.credit_card, color: AppColors.textSecondary),
+                          const SizedBox(width: 10),
                           Text(
-                            'Mastercard •••• 4242',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            'Expires 12/25',
+                            'Add New Payment Method',
                             style: TextStyle(
                               color: AppColors.textSecondary,
-                              fontSize: 12,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    // =========================================================================
-                    // PENANDA KARTU UTAMA (PRIMARY)
-                    // =========================================================================
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.gold.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'PRIMARY',
-                        style: TextStyle(
-                          color: AppColors.gold,
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16),
-
-              // =========================================================================
-              // TOMBOL PUTUS-PUTUS UNTUK MENAMBAHKAN METODE PEMBAYARAN BARU
-              // =========================================================================
-              Container(
-                width: double.infinity,
-                height: 68,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(
-                    color: Colors.white10,
-                    width: 2,
-                    style: BorderStyle.solid,
                   ),
-                ),
-                child: InkWell(
-                  onTap: () {}, // CALLBACK TAMBAH KARTU BARU (SIMULASI).
-                  borderRadius: BorderRadius.circular(28),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.credit_card, color: AppColors.textSecondary),
-                      SizedBox(width: 10),
-                      Text(
-                        'Add New Payment Method',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

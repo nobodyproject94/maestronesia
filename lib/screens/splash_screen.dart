@@ -63,15 +63,16 @@ class _SplashScreenState extends State<SplashScreen>
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     // =========================================================================
-    // MEMULAI PEMUTARAN ANIMASI MAJU.
+    // MEMULAI PEMUTARAN ANIMASI DAN TIMER SETELAH FRAME PERTAMA DIRENDER.
+    // INI MENCEGAH SPLASH SCREEN FLUTTER TERSEMBUNYI DI BALIK NATIVE SPLASH ANDROID.
     // =========================================================================
-    _controller.forward();
-
-    // =========================================================================
-    // MEMICU CALLBACK NAVIGASI PINDAH LAYAR OTOMATIS SETELAH DURASI DIAM TOTAL SELAMA 2 DETIK (2000 MILIDETIK).
-    // =========================================================================
-    _progressTimer = Timer(const Duration(milliseconds: 2000), () {
-      widget.onFinish();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _controller.forward();
+        _progressTimer = Timer(const Duration(milliseconds: 2500), () {
+          widget.onFinish();
+        });
+      }
     });
   }
 
@@ -124,7 +125,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 height: 300,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: AppColors.gold.withOpacity(0.04),
+                                  color: AppColors.gold.withValues(alpha: 0.04),
                                 ),
                               ),
                               Image.asset(

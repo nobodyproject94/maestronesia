@@ -112,9 +112,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.4),
+                  color: Colors.black.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 ),
                 child: Row(
                   children: [
@@ -142,7 +142,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Container(width: 1, height: 12, color: Colors.white10),
+                    Container(width: 1, height: 12, color: AppColors.dividerColor),
                     const SizedBox(width: 8),
                     Text(
                       'CALL IN PROGRESS',
@@ -172,7 +172,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                   border: Border.all(color: AppColors.gold, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       blurRadius: 20,
                     ),
                   ],
@@ -196,7 +196,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.6),
+                          color: Colors.black.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -244,12 +244,12 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                   constraints: const BoxConstraints(maxWidth: 320),
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.surface.withOpacity(0.9),
+                    color: AppColors.surface.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.white10),
+                    border: Border.all(color: AppColors.dividerColor),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 30,
                       ),
                     ],
@@ -305,7 +305,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                     topLeft: Radius.circular(40),
                     topRight: Radius.circular(40),
                   ),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: AppColors.dividerColor),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -315,7 +315,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                     // =========================================================================
                     _buildToolbarButton(
                       Icons.mic,
-                      Colors.white10,
+                      AppColors.cardBg,
                       AppColors.textSecondary,
                     ),
                     // =========================================================================
@@ -323,7 +323,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                     // =========================================================================
                     _buildToolbarButton(
                       Icons.flashlight_on,
-                      Colors.white10,
+                      AppColors.cardBg,
                       Colors.amber,
                     ),
                     // =========================================================================
@@ -347,7 +347,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                     // =========================================================================
                     _buildToolbarButton(
                       Icons.text_fields,
-                      Colors.white10,
+                      AppColors.cardBg,
                       AppColors.textSecondary,
                     ),
                     // =========================================================================
@@ -355,7 +355,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
                     // =========================================================================
                     _buildToolbarButton(
                       Icons.logout,
-                      Colors.red.withOpacity(0.1),
+                      Colors.red.withValues(alpha: 0.1),
                       Colors.red,
                       onTap: widget.onHangUp,
                     ),
@@ -387,7 +387,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen>
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: AppColors.dividerColor),
         ),
         child: Icon(icon, color: iconColor, size: 20),
       ),
@@ -410,7 +410,7 @@ class ARPainter extends CustomPainter {
     // KONFIGURASI KUAS GAMBAR (PAINT) UNTUK LINGKARAN TARGET.
     // =========================================================================
     final paint = Paint()
-      ..color = AppColors.gold.withOpacity(0.2)
+      ..color = AppColors.gold.withValues(alpha: 0.2)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 

@@ -18,24 +18,24 @@ class InterestingGoogleLogo extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.15),
-            Colors.white.withOpacity(0.02),
+            Colors.white.withValues(alpha: 0.15),
+            Colors.white.withValues(alpha: 0.02),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         border: Border.all(
-          color: AppColors.gold.withOpacity(0.3),
+          color: AppColors.gold.withValues(alpha: 0.3),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(-2, -2),
           ),
           BoxShadow(
-            color: Colors.blue.withOpacity(0.1),
+            color: Colors.blue.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(2, 2),
           ),
@@ -76,12 +76,12 @@ class InterestingLinkedInLogo extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         border: Border.all(
-          color: AppColors.gold.withOpacity(0.4),
+          color: AppColors.gold.withValues(alpha: 0.4),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0077B5).withOpacity(0.3),
+            color: const Color(0xFF0077B5).withValues(alpha: 0.3),
             blurRadius: 10,
             spreadRadius: 1,
           )

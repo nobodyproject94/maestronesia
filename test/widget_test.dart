@@ -8,6 +8,6 @@ void main() {
 
     // Verify that the splash screen shows MAESTRONESIA
     expect(find.text('MAESTRONESIA'), findsOneWidget);
-    expect(find.text('EMPOWERING EXPERTISE'), findsOneWidget);
+    expect(find.text('SOLUSI, AKURASI, AHLI'), findsOneWidget);
   });
 }

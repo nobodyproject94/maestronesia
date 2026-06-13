@@ -25,13 +25,13 @@ class AppColors {
   // WARNA PERMUKAAN (SEPERTI LATAR BELAKANG KARTU ATAU KONTAINER).
   // =========================================================================
   static Color get surface =>
-      _isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05);
+      _isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05);
 
   // =========================================================================
   // WARNA SEKUNDER UNTUK LATAR BELAKANG TOMBOL NON-UTAMA ATAU AREA INPUT.
   // =========================================================================
   static Color get secondary =>
-      _isDark ? const Color(0xFF2C363E) : Colors.white.withOpacity(0.1);
+      _isDark ? const Color(0xFF2C363E) : Colors.white.withValues(alpha: 0.1);
 
   // =========================================================================
   // WARNA TEKS UTAMA YANG KONTRAS DENGAN LATAR BELAKANG.
@@ -43,7 +43,7 @@ class AppColors {
   // WARNA TEKS SEKUNDER UNTUK INFORMASI TAMBAHAN/DESKRIPSI (BERWARNA ABU-ABU/REDUP).
   // =========================================================================
   static Color get textSecondary =>
-      _isDark ? const Color(0xFFBBCAC1) : Colors.white.withOpacity(0.7);
+      _isDark ? const Color(0xFFBBCAC1) : Colors.white.withValues(alpha: 0.7);
 
   // =========================================================================
   // WARNA AKSEN EMAS UTAMA APLIKASI.
@@ -64,6 +64,36 @@ class AppColors {
   // WARNA PENANDA ERROR/KESALAHAN.
   // =========================================================================
   static const Color error = Color(0xFFEF4444);
+
+  // =========================================================================
+  // WARNA ADAPTIF UNTUK GARIS PEMBATAS (DIVIDER) YANG MENYESUAIKAN TEMA.
+  // =========================================================================
+  static Color get dividerColor =>
+      _isDark ? Colors.white10 : Colors.white.withValues(alpha: 0.08);
+
+  // =========================================================================
+  // WARNA TEKS INPUT ADAPTIF UNTUK FORM/TEXTFIELD.
+  // =========================================================================
+  static Color get inputText =>
+      _isDark ? const Color(0xFFDAE4EF) : Colors.white;
+
+  // =========================================================================
+  // WARNA HINT/PLACEHOLDER TEKS ADAPTIF.
+  // =========================================================================
+  static Color get hintText =>
+      _isDark ? const Color(0xFF6B7B8D) : Colors.white30;
+
+  // =========================================================================
+  // WARNA LATAR BELAKANG DIALOG ADAPTIF.
+  // =========================================================================
+  static Color get dialogBg =>
+      _isDark ? const Color(0xFF131D24) : Colors.white.withValues(alpha: 0.05);
+
+  // =========================================================================
+  // WARNA LATAR BELAKANG KARTU KONTAINER ADAPTIF.
+  // =========================================================================
+  static Color get cardBg =>
+      _isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05);
 
   static void setToDark() {}
   static void setToLight() {}
@@ -151,20 +181,37 @@ ThemeData buildAppTheme() {
     // =========================================================================
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white.withOpacity(0.12),
-        foregroundColor: AppColors.gold,
-        shadowColor: Colors.transparent,
+        backgroundColor: isDarkModeNotifier.value
+            ? AppColors.gold
+            : AppColors.gold.withValues(alpha: 0.15),
+        foregroundColor: isDarkModeNotifier.value
+            ? Colors.black
+            : AppColors.gold,
+        shadowColor: isDarkModeNotifier.value
+            ? Colors.transparent
+            : AppColors.gold.withValues(alpha: 0.35),
         surfaceTintColor: Colors.transparent,
         side: const BorderSide(color: AppColors.gold, width: 1.5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        elevation: 0,
+        elevation: isDarkModeNotifier.value ? 0 : 8.0,
         textStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
           fontFamily: 'Inter',
         ),
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      contentTextStyle: const TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
       ),
     ),
   );

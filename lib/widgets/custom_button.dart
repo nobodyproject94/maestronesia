@@ -61,6 +61,9 @@ class _MaestronesiaButtonState extends State<MaestronesiaButton> with SingleTick
     // =========================================================================
     final bool active = widget.isSelected || _isPressed || _isHovered;
 
+    final bool isDark = isDarkModeNotifier.value;
+    final bool showGlowAndBorder = active || !isDark;
+
     return MouseRegion(
       // =========================================================================
       // MENDETEKSI PERGERAKAN MOUSE MASUK DAN KELUAR UNTUK MERENDER ULANG STATE HOVER.
@@ -82,22 +85,22 @@ class _MaestronesiaButtonState extends State<MaestronesiaButton> with SingleTick
               duration: const Duration(milliseconds: 200), // TRANSISI PERUBAHAN WARNA DAN BAYANGAN SELAMA 200MS.
               height: widget.height,
               decoration: BoxDecoration(
-                color: Colors.transparent, // WARNA LATAR BELAKANG TOMBOL DIATUR TRANSPARAN SESUAI KONSEP UI.
+                color: isDark ? AppColors.gold : Colors.transparent, // WARNA SOLID EMAS PADA DARK MODE, TRANSPARAN PADA LIGHT MODE.
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 border: Border.all(
                   // =========================================================================
                   // MENGUBAH WARNA DAN KETEBALAN GARIS TEPI JIKA TOMBOL SEDANG AKTIF (WARNA EMAS).
                   // =========================================================================
-                  color: active ? AppColors.gold : Colors.white.withOpacity(0.08),
-                  width: active ? 2.0 : 1.5,
+                  color: isDark ? AppColors.gold : (showGlowAndBorder ? AppColors.gold : Colors.white.withValues(alpha: 0.08)),
+                  width: isDark ? 0 : (showGlowAndBorder ? 2.0 : 1.5),
                 ),
-                boxShadow: active
+                boxShadow: (showGlowAndBorder && !isDark)
                     ? [
                         // =========================================================================
-                        // MENAMBAHKAN BAYANGAN PENDARAN EMAS JIKA TOMBOL AKTIF.
+                        // MENAMBAHKAN BAYANGAN PENDARAN EMAS JIKA TOMBOL AKTIF DI LIGHT MODE.
                         // =========================================================================
                         BoxShadow(
-                          color: AppColors.gold.withOpacity(0.25),
+                          color: AppColors.gold.withValues(alpha: 0.25),
                           blurRadius: _glowAnimation.value,
                           spreadRadius: 1.0,
                         )
@@ -110,10 +113,10 @@ class _MaestronesiaButtonState extends State<MaestronesiaButton> with SingleTick
           },
           child: DefaultTextStyle(
             // =========================================================================
-            // GAYA TEKS DI DALAM TOMBOL AKAN BERUBAH WARNA MENJADI EMAS JIKA AKTIF.
+            // GAYA TEKS DI DALAM TOMBOL AKAN BERUBAH WARNA MENJADI HITAM DI DARK MODE, EMAS DI LIGHT MODE.
             // =========================================================================
             style: TextStyle(
-              color: active ? AppColors.gold : AppColors.textPrimary,
+              color: isDark ? Colors.black : (showGlowAndBorder ? AppColors.gold : AppColors.textPrimary),
               fontWeight: FontWeight.bold,
               fontSize: 14,
               letterSpacing: 1.2,

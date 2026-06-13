@@ -164,10 +164,10 @@ class _ChatScreenState extends State<ChatScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (isDesktop) ...[
-                const Text(
+                Text(
                   'Inbox Messages',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 26,
                     fontWeight: FontWeight.w900,
                   ),
@@ -177,19 +177,19 @@ class _ChatScreenState extends State<ChatScreen> {
               // Search Bar
               Container(
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                  color: AppColors.cardBg,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: AppColors.dividerColor),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: const TextField(
-                  style: TextStyle(color: Colors.white),
+                child: TextField(
+                  style: TextStyle(color: AppColors.inputText),
                   decoration: InputDecoration(
-                    icon: Icon(Icons.search, color: Color(0xFFBBCAC1)),
+                    icon: const Icon(Icons.search, color: Color(0xFFBBCAC1)),
                     hintText: 'Search chats...',
-                    hintStyle: TextStyle(color: Colors.white30, fontSize: 14),
+                    hintStyle: TextStyle(color: AppColors.hintText, fontSize: 14),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 18),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 18),
                   ),
                 ),
               ),
@@ -211,12 +211,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                    color: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
                       color: hasUnread
-                          ? AppColors.gold.withOpacity(0.3)
-                          : Colors.white.withOpacity(0.05),
+                          ? AppColors.gold.withValues(alpha: 0.3)
+                          : Colors.white.withValues(alpha: 0.05),
                     ),
                   ),
                   child: Row(
@@ -226,7 +226,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         backgroundImage: thread['avatar'].isNotEmpty
                             ? NetworkImage(thread['avatar'])
                             : null,
-                        backgroundColor: AppColors.gold.withOpacity(0.1),
+                        backgroundColor: AppColors.gold.withValues(alpha: 0.1),
                         child: thread['avatar'].isEmpty
                             ? const Icon(Icons.person, color: AppColors.gold)
                             : null,
@@ -241,8 +241,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               children: [
                                 Text(
                                   thread['name'],
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: AppColors.textPrimary,
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -300,9 +300,9 @@ class _ChatScreenState extends State<ChatScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+            color: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
             border: Border(
-              bottom: BorderSide(color: Colors.white.withOpacity(0.05)),
+              bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
             ),
           ),
           child: Row(
@@ -320,7 +320,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 backgroundImage: _selectedThread!['avatar'].isNotEmpty
                     ? NetworkImage(_selectedThread!['avatar'])
                     : null,
-                backgroundColor: AppColors.gold.withOpacity(0.1),
+                backgroundColor: AppColors.gold.withValues(alpha: 0.1),
                 child: _selectedThread!['avatar'].isEmpty
                     ? const Icon(Icons.person, color: AppColors.gold, size: 18)
                     : null,
@@ -332,8 +332,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: [
                     Text(
                       _selectedThread!['name'],
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
@@ -373,7 +373,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   decoration: BoxDecoration(
                     color: isMe
                         ? AppColors.gold
-                        : (isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05)),
+                        : (isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05)),
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(20),
                       topRight: const Radius.circular(20),
@@ -405,19 +405,19 @@ class _ChatScreenState extends State<ChatScreen> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.05),
+                    color: AppColors.cardBg,
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.white.withOpacity(0.05)),
+                    border: Border.all(color: AppColors.dividerColor),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: TextField(
                     controller: _messageCtrl,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                    decoration: const InputDecoration(
+                    style: TextStyle(color: AppColors.inputText, fontSize: 14),
+                    decoration: InputDecoration(
                       hintText: 'Type your message...',
-                      hintStyle: TextStyle(color: Colors.white24, fontSize: 13),
+                      hintStyle: TextStyle(color: AppColors.hintText, fontSize: 13),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 14),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     onSubmitted: (_) => _sendMessage(),
                   ),

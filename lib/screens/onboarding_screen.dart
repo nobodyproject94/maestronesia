@@ -153,10 +153,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           Container(
                             height: 60,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
+                              color: Colors.white.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.1),
+                                color: Colors.white.withValues(alpha: 0.1),
                                 width: 1.5,
                               ),
                             ),
@@ -164,7 +164,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             child: Text(
                               'BEGIN JOURNEY',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.3),
+                                color: Colors.white.withValues(alpha: 0.3),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 2.0,
@@ -259,13 +259,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           // MEWARNAI KARTU SECARA DINAMIS BERDASARKAN STATUS PILIHAN DAN TEMA AKTIF.
           // =========================================================================
           color: isDark
-              ? (isSelected ? AppColors.gold.withOpacity(0.05) : AppColors.surface)
-              : Colors.white.withOpacity(0.05),
+              ? (isSelected ? AppColors.gold.withValues(alpha: 0.05) : AppColors.surface)
+              : Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
             color: isDark
-                ? (isSelected ? AppColors.gold : Colors.white.withOpacity(0.05))
-                : Colors.white.withOpacity(0.05),
+                ? (isSelected ? AppColors.gold : Colors.white.withValues(alpha: 0.05))
+                : Colors.white.withValues(alpha: 0.05),
             width: isDark ? 2.0 : 1.0,
           ),
         ),
@@ -310,7 +310,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   shape: BoxShape.circle,
                   border: isSelected
                       ? Border.all(color: AppColors.gold, width: 2)
-                      : Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
+                      : Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1.5),
                 ),
                 child: isSelected
                     ? Container(

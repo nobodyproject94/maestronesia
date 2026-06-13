@@ -88,10 +88,10 @@ class MainLayout extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: isDark
                               ? AppColors.surface
-                              : Colors.white.withOpacity(0.05),
+                              : Colors.white.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: AppColors.gold.withOpacity(0.2),
+                            color: AppColors.gold.withValues(alpha: 0.2),
                           ),
                         ),
                         child: Icon(
@@ -171,7 +171,7 @@ class MainLayout extends StatelessWidget {
                         backgroundImage: const NetworkImage(
                           'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
                         ),
-                        backgroundColor: AppColors.gold.withOpacity(0.1),
+                        backgroundColor: AppColors.gold.withValues(alpha: 0.1),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -356,9 +356,9 @@ class MainLayout extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isDark
                       ? AppColors.surface
-                      : Colors.white.withOpacity(0.05),
+                      : Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.gold.withOpacity(0.2)),
+                  border: Border.all(color: AppColors.gold.withValues(alpha: 0.2)),
                 ),
                 child: Icon(Icons.menu_book, color: AppColors.gold, size: 16),
               ),
@@ -397,15 +397,15 @@ class MainLayout extends StatelessWidget {
             ? BottomBar(
                 theme: BottomBarThemeData(
                   barDecoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF172128) : Colors.white.withOpacity(0.15),
+                    color: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(32),
                     border: Border.all(
-                      color: isDark ? AppColors.cardBorder : Colors.white.withOpacity(0.08),
+                      color: isDark ? AppColors.cardBorder : Colors.white.withValues(alpha: 0.08),
                       width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -497,7 +497,7 @@ class MainLayout extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? (isDark ? AppColors.gold.withOpacity(0.15) : AppColors.gold.withOpacity(0.2))
+              ? (isDark ? AppColors.gold.withValues(alpha: 0.15) : AppColors.gold.withValues(alpha: 0.2))
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
