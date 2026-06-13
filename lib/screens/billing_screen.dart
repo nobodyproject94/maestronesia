@@ -12,11 +12,15 @@ import '../widgets/custom_snackbar.dart';
 class BillingScreen extends StatefulWidget {
   final ValueChanged<String> onTabChanged;
   final VoidCallback onSignOut;
+  final String name;
+  final String role;
 
   const BillingScreen({
     super.key,
     required this.onTabChanged,
     required this.onSignOut,
+    required this.name,
+    required this.role,
   });
 
   @override
@@ -25,14 +29,47 @@ class BillingScreen extends StatefulWidget {
 
 class _BillingScreenState extends State<BillingScreen> {
   double _balance = 1240500.0;
-  final List<Map<String, String>> _cards = [
+  String _selectedPaymentMethod = 'wallet';
+
+  final List<Map<String, String>> _cards = []; // Re-added so _showAddCardDialog compiles
+
+  final List<Map<String, dynamic>> _paymentMethods = [
     {
-      'type': 'VISA',
-      'brand': 'Mastercard',
-      'number': '4242',
-      'expiry': '12/25',
-      'isPrimary': 'true'
-    }
+      'id': 'wallet',
+      'name': 'Maestro Wallet',
+      'isLinked': true,
+      'color': const Color(0xFFE6BC6A),
+    },
+    {
+      'id': 'gopay',
+      'name': 'gopay',
+      'isLinked': false,
+      'color': const Color(0xFF00AED6),
+    },
+    {
+      'id': 'shopeepay',
+      'name': 'ShopeePay',
+      'isLinked': false,
+      'color': const Color(0xFFEE4D2D),
+    },
+    {
+      'id': 'ovo',
+      'name': 'OVO',
+      'isLinked': false,
+      'color': const Color(0xFF4C3494),
+    },
+    {
+      'id': 'dana',
+      'name': 'DANA',
+      'isLinked': false,
+      'color': const Color(0xFF118EEA),
+    },
+    {
+      'id': 'linkaja',
+      'name': 'LinkAja',
+      'isLinked': false,
+      'color': const Color(0xFFE30A16),
+    },
   ];
 
   @override
@@ -383,11 +420,7 @@ class _BillingScreenState extends State<BillingScreen> {
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
-        return MainLayout(
-          activeTab: 'billing',
-          onTabChanged: widget.onTabChanged,
-          onSignOut: widget.onSignOut,
-          child: Scaffold(
+        return Scaffold(
             backgroundColor: Colors.transparent,
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(
@@ -501,10 +534,10 @@ class _BillingScreenState extends State<BillingScreen> {
                                 onPressed: () => _showTopUpDialog(context),
                                 height: 52,
                                 borderRadius: 16,
-                                child: const Row(
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.credit_card, size: 18),
+                                    Icon(Icons.credit_card, size: 18, color: isDark ? Colors.black : Colors.white),
                                     SizedBox(width: 8),
                                     Text(
                                       'Top Up',
@@ -529,6 +562,7 @@ class _BillingScreenState extends State<BillingScreen> {
                                     Icon(
                                       Icons.logout,
                                       size: 18,
+                                      color: isDark ? Colors.black : Colors.white,
                                     ),
                                     SizedBox(width: 8),
                                     Text(
@@ -580,97 +614,124 @@ class _BillingScreenState extends State<BillingScreen> {
                   const SizedBox(height: 12),
 
                   // =========================================================================
-                  // KARTU METODE PEMBAYARAN DINAMIS
+                  // DAFTAR METODE PEMBAYARAN LOKAL E-WALLETS
                   // =========================================================================
-                  Column(
-                    children: _cards.map((card) {
-                      final isPrimary = card['isPrimary'] == 'true';
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(28),
-                          border: Border.all(color: AppColors.dividerColor),
-                        ),
-                        child: Row(
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.surface : Colors.white.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Column(
+                      children: _paymentMethods.asMap().entries.map((entry) {
+                        final int index = entry.key;
+                        final method = entry.value;
+                        final bool isSelected = _selectedPaymentMethod == method['id'];
+                        final bool isWallet = method['id'] == 'wallet';
+
+                        return Column(
                           children: [
-                            Container(
-                              width: 56,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF374151), Color(0xFF4B5563)],
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                card['type'] ?? 'VISA',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${card['brand']} •••• ${card['number']}',
-                                    style: TextStyle(
-                                      color: AppColors.textPrimary,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'Expires ${card['expiry']}',
-                                    style: TextStyle(
-                                      color: AppColors.textSecondary,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (isPrimary)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.gold.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Text(
-                                  'PRIMARY',
-                                  style: TextStyle(
-                                    color: AppColors.gold,
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.0,
-                                  ),
-                                ),
-                              )
-                            else
-                              IconButton(
-                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
-                                onPressed: () {
+                            InkWell(
+                              onTap: () {
+                                if (method['isLinked'] || isWallet) {
                                   setState(() {
-                                    _cards.remove(card);
+                                    _selectedPaymentMethod = method['id'];
                                   });
-                                },
+                                } else {
+                                  showCustomSnackBar(context, 'Silakan sambungkan ${method['name']} terlebih dahulu.');
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(24),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                                child: Row(
+                                  children: [
+                                    // Logo Placeholder
+                                    SizedBox(
+                                      width: 40,
+                                      child: Text(
+                                        isWallet ? 'MW' : method['name'],
+                                        style: TextStyle(
+                                          color: method['color'],
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: isWallet ? 16 : 12,
+                                          fontStyle: isWallet ? FontStyle.normal : FontStyle.italic,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            isWallet ? 'Maestro Wallet' : method['name'],
+                                            style: TextStyle(
+                                              color: isDark ? Colors.white : AppColors.textPrimary,
+                                              fontSize: 14,
+                                              fontWeight: isWallet ? FontWeight.bold : FontWeight.w500,
+                                            ),
+                                          ),
+                                          if (isWallet) ...[
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              'Saldo : Rp ${_formatCurrency(_balance)}',
+                                              style: TextStyle(
+                                                color: AppColors.textSecondary,
+                                                fontSize: 11,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                    if (method['isLinked'] || isWallet) ...[
+                                      // Radio Button untuk yang sudah linked
+                                      Container(
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: isSelected ? AppColors.gold : AppColors.textSecondary.withValues(alpha: 0.5),
+                                            width: isSelected ? 6 : 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ] else ...[
+                                      // Tombol Sambungkan
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: const Color(0xFFE30A16)), // Red border like screenshot
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: const Text(
+                                          'Sambungkan',
+                                          style: TextStyle(
+                                            color: Color(0xFFE30A16),
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ]
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (index < _paymentMethods.length - 1)
+                              Divider(
+                                color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.1),
+                                height: 1,
                               ),
                           ],
-                        ),
-                      );
-                    }).toList(),
+                        );
+                      }).toList(),
+                    ),
                   ),
                   const SizedBox(height: 16),
 
@@ -711,7 +772,6 @@ class _BillingScreenState extends State<BillingScreen> {
                 ],
               ),
             ),
-          ),
         );
       },
     );

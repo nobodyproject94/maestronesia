@@ -329,12 +329,22 @@ class DatabaseHelper {
   }
 
   // =========================================================================
-  // MENGAMBIL DAFTAR SEMUA BOOKING BERDASARKAN EMAIL USER (DIURUTKAN DARI PEMESANAN TERBARU).
+  // MENGAMBIL DAFTAR SEMUA BOOKING BERDASARKAN EMAIL USER (ATAU BERDASARKAN NAMA EXPERT JIKA ROLE EXPERT).
   // =========================================================================
-  Future<List<Map<String, dynamic>>> getBookings(String userEmail) async {
+  Future<List<Map<String, dynamic>>> getBookings(String userEmail, {String? role, String? name}) async {
     if (kIsWeb) {
       await _initWebDB();
-      final list = _webBookings!.where((b) => b['user_email'] == userEmail).toList();
+      final list = _webBookings!.where((b) {
+        if (role == 'expert') {
+          // =========================================================================
+          // UNTUK SIMULASI EXPERT: MENGEMBALIKAN SEMUA TRANSAKSI SEBAGAI DUMMY KLIEN, 
+          // ATAU BISA FILTER BERDASARKAN NAMA EXPERT JIKA ADA.
+          // KARENA KITA MENGGUNAKAN AKUN DEFAULT 'Fajar Ramadhan', KITA TAMPILKAN SEMUA SAJA UNTUK DEMO.
+          // =========================================================================
+          return true; // Tampilkan semua untuk dummy demo expert.
+        }
+        return b['user_email'] == userEmail;
+      }).toList();
       // =========================================================================
       // URUTKAN TERBALIK BERDASARKAN ID (TERBARU DI ATAS).
       // =========================================================================
@@ -343,6 +353,22 @@ class DatabaseHelper {
     }
 
     final db = await instance.database;
+    if (role == 'expert') {
+      // =========================================================================
+      // MENGAMBIL DAFTAR BOOKING DIMANA PENGGUNA TERSEBUT ADALAH EXPERTNYA.
+      // KARENA INI PROTOTYPE, JIKA NAMA EXPERT TIDAK COCOK (MISAL NAMA 'Fajar'), TAMPILKAN SEMUA.
+      // =========================================================================
+      final result = await db.query(
+        'bookings',
+        where: 'expert_name = ?',
+        whereArgs: [name],
+        orderBy: 'id DESC',
+      );
+      if (result.isNotEmpty) return result;
+      // FALLBACK UNTUK PROTOTYPE DEMO:
+      return await db.query('bookings', orderBy: 'id DESC');
+    }
+    
     return await db.query(
       'bookings',
       where: 'user_email = ?',

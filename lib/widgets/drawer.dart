@@ -11,11 +11,16 @@ class MaestronesiaDrawer extends StatelessWidget {
   final ValueChanged<String> onTabChanged; // FUNGSI CALLBACK UNTUK PINDAH HALAMAN SAAT ITEM DIKLIK.
   final VoidCallback onSignOut; // FUNGSI CALLBACK UNTUK LOGOUT PENGGUNA.
 
+  final String name;
+  final String role;
+
   const MaestronesiaDrawer({
     super.key,
     required this.activeTab,
     required this.onTabChanged,
     required this.onSignOut,
+    required this.name,
+    required this.role,
   });
 
   @override
@@ -62,7 +67,7 @@ class MaestronesiaDrawer extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Fajar Ramadhan',
+                          name.isNotEmpty ? name : 'User',
                           style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 18,
@@ -70,7 +75,7 @@ class MaestronesiaDrawer extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Client · Engineering',
+                          role == 'expert' ? 'Expert · Consultations' : 'Client · Engineering',
                           style: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 12,

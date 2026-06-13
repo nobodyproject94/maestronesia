@@ -7,15 +7,11 @@ import '../widgets/custom_button.dart';
 // DI MANA PENGGUNA DAPAT MEMAHAMI TUJUAN APLIKASI DAN MEMILIH PERAN (ROLE) SEBAGAI CLIENT ATAU EXPERT.
 // =========================================================================
 class OnboardingScreen extends StatefulWidget {
-  final String selectedRole; // PERAN AKTIF YANG DIPILIH OLEH PENGGUNA SAAT INI ('CLIENT' ATAU 'EXPERT').
-  final ValueChanged<String> onRoleChanged; // CALLBACK UNTUK MEMPERBARUI PILIHAN PERAN DI WIDGET INDUK.
-  final VoidCallback onBegin; // CALLBACK UNTUK MELANJUTKAN PERJALANAN (MENUJU REGISTRASI/DASHBOARD).
-  final VoidCallback onSignIn; // CALLBACK UNTUK MENGARAHKAN PENGGUNA YANG SUDAH MEMILIKI AKUN KE LAYAR LOGIN.
+  final void Function(String role) onBegin;
+  final void Function(String role) onSignIn;
 
   const OnboardingScreen({
     super.key,
-    required this.selectedRole,
-    required this.onRoleChanged,
     required this.onBegin,
     required this.onSignIn,
   });
@@ -25,6 +21,8 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  String _selectedRole = '';
+
   @override
   Widget build(BuildContext context) {
     // =========================================================================
@@ -149,7 +147,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         // =========================================================================
                         // MENAMPILKAN TOMBOL NONAKTIF ABU-ABU JIKA BELUM ADA PERAN YANG DIPILIH.
                         // =========================================================================
-                        if (widget.selectedRole != 'client' && widget.selectedRole != 'expert')
+                        if (_selectedRole != 'client' && _selectedRole != 'expert')
                           Container(
                             height: 60,
                             decoration: BoxDecoration(
@@ -176,7 +174,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         // =========================================================================
                         else
                           MaestronesiaButton(
-                            onPressed: widget.onBegin,
+                            onPressed: () => widget.onBegin(_selectedRole),
                             isSelected: !isDark,
                             child: const Text(
                               'BEGIN JOURNEY',
@@ -202,7 +200,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                             GestureDetector(
-                              onTap: widget.onSignIn,
+                              onTap: () {
+                                final role = _selectedRole.isEmpty ? 'client' : _selectedRole;
+                                widget.onSignIn(role);
+                              },
                               child: Container(
                                 decoration: const BoxDecoration(
                                   border: Border(
@@ -248,9 +249,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     required IconData icon,
     required bool isDark,
   }) {
-    final isSelected = widget.selectedRole == roleName;
+    final isSelected = _selectedRole == roleName;
     return GestureDetector(
-      onTap: () => widget.onRoleChanged(roleName), // MEMICU CALLBACK PERUBAHAN PERAN KETIKA KARTU DIKLIK.
+      onTap: () => setState(() => _selectedRole = roleName), // MEMICU PERUBAHAN PERAN KETIKA KARTU DIKLIK.
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250), // DURASI TRANSISI VISUAL YANG HALUS SAAT BERUBAH STATE.
         padding: const EdgeInsets.symmetric(vertical: 32),

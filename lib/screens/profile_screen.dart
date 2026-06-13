@@ -379,14 +379,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // =========================================================================
-    // DIBUNGKUS MAINLAYOUT AGAR BOTTOM NAVIGATION BAR TERPADU TETAP AKTIF TERLIHAT.
-    // =========================================================================
-    return MainLayout(
-      activeTab: 'profile',
-      onTabChanged: widget.onTabChanged,
-      onSignOut: widget.onSignOut,
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors
             .transparent, // TRANSPARAN AGAR GRADIEN BACKGROUND DI BAWAHNYA TERLIHAT.
         body: SingleChildScrollView(
@@ -842,8 +835,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   // =========================================================================

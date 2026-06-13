@@ -226,11 +226,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         Divider(color: AppColors.dividerColor, height: 1),
                         const SizedBox(height: 24),
 
-                        // =========================================================================
-                        // BAGIAN METODE PEMBAYARAN AKTIF YANG DIPILIH.
-                        // =========================================================================
                         const Text(
-                          'PAYMENT METHOD',
+                          'METODE PEMBAYARAN',
                           style: TextStyle(
                             color: AppColors.gold,
                             fontSize: 10,
@@ -241,12 +238,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         const SizedBox(height: 16),
 
                         // =========================================================================
-                        // METODE: MAESTRONESIA WALLET (PILIHAN AKTIF DEFAULT)
+                        // METODE PEMBAYARAN TERPILIH (MAESTRONESIA WALLET)
                         // =========================================================================
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: isDark ? AppColors.gold.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.1),
+                            color: isDark ? AppColors.gold.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(color: AppColors.gold, width: 2),
                           ),
@@ -290,9 +287,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   ],
                                 ),
                               ),
-                              // =========================================================================
-                              // BULATAN RADIO BUTTON AKTIF WARNA EMAS.
-                              // =========================================================================
+                              // Radio Button
                               Container(
                                 width: 24,
                                 height: 24,
@@ -306,58 +301,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-
-                        // =========================================================================
-                        // METODE: TAMBAH BARU (MOCK DINONAKTIFKAN / DISAMARKAN TRANSPARANSINYA)
-                        // =========================================================================
-                        Opacity(
-                          opacity: 0.4,
-                          child: Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF172128).withValues(alpha: 0.5) : Colors.transparent,
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.05),
+                        // Tautan ke Settings
+                        Center(
+                          child: TextButton(
+                            onPressed: () {
+                                widget.onTabChanged('billing');
+                            },
+                            child: const Text(
+                              'Kelola di menu Billing & Wallet',
+                              style: TextStyle(
+                                color: AppColors.gold,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.secondary,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Icon(
-                                    Icons.credit_card,
-                                    color: AppColors.textSecondary,
-                                    size: 24,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Text(
-                                    'Add New Method',
-                                    style: TextStyle(
-                                      color: AppColors.textSecondary,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  width: 24,
-                                  height: 24,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: AppColors.dividerColor,
-                                      width: 2,
-                                    ),
-                                  ),
-                                ),
-                              ],
                             ),
                           ),
                         ),

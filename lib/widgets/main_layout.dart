@@ -15,6 +15,8 @@ class MainLayout extends StatelessWidget {
   final VoidCallback onSignOut; // CALLBACK KETIKA USER MENEKAN TOMBOL LOGOUT.
   final bool showBottomBar; // MENENTUKAN APAKAH MOBILE FLOATING BOTTOM BAR PERLU DITAMPILKAN.
   final bool showAppBar; // MENENTUKAN APAKAH MOBILE APP BAR UTAMA PERLU DITAMPILKAN.
+  final String? name; // NAMA PENGGUNA
+  final String? role; // ROLE PENGGUNA
 
   const MainLayout({
     super.key,
@@ -24,6 +26,8 @@ class MainLayout extends StatelessWidget {
     required this.onSignOut,
     this.showBottomBar = true,
     this.showAppBar = true,
+    this.name,
+    this.role,
   });
 
   @override
@@ -179,7 +183,7 @@ class MainLayout extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Fajar Ramadhan',
+                              (name != null && name!.isNotEmpty) ? name! : 'User',
                               style: TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 14,
@@ -188,7 +192,7 @@ class MainLayout extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              'Client · Engineering',
+                              role == 'expert' ? 'Expert · Consultations' : 'Client · Engineering',
                               style: TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 11,
@@ -323,6 +327,8 @@ class MainLayout extends StatelessWidget {
           activeTab: activeTab,
           onTabChanged: onTabChanged,
           onSignOut: onSignOut,
+          name: name ?? '',
+          role: role ?? 'client',
         ),
         appBar: showAppBar
             ? AppBar(

@@ -38,6 +38,23 @@ class _BookingScreenState extends State<BookingScreen> {
   ); // DEFAULT WAKTU DIATUR PADA 09:00 AM.
 
   // =========================================================================
+  // STATE LOKAL UNTUK PRE-CONSULTATION FORM (DYNAMIC)
+  // =========================================================================
+  final TextEditingController _kampusController = TextEditingController();
+  final TextEditingController _jurusanController = TextEditingController();
+  final TextEditingController _topikController = TextEditingController();
+  final TextEditingController _keluhanController = TextEditingController();
+
+  @override
+  void dispose() {
+    _kampusController.dispose();
+    _jurusanController.dispose();
+    _topikController.dispose();
+    _keluhanController.dispose();
+    super.dispose();
+  }
+
+  // =========================================================================
   // FUNGSI ASINKRONUS UNTUK MEMUNCULKAN PEMILIH TANGGAL (DATE PICKER) BAWAAN FLUTTER DENGAN TEMA GELAP KUSTOM.
   // =========================================================================
   Future<void> _selectDate(BuildContext context) async {
@@ -136,6 +153,32 @@ class _BookingScreenState extends State<BookingScreen> {
     }
   }
 
+  // =========================================================================
+  // FUNGSI PEMBANTU UNTUK MEMBANGUN TEXTFIELD DYNAMIC FORM.
+  // =========================================================================
+  Widget _buildTextField(bool isDark, String label, TextEditingController controller, {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
+      decoration: InputDecoration(
+        labelText: label,
+        alignLabelWithHint: maxLines > 1,
+        labelStyle: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+        filled: true,
+        fillColor: isDark ? AppColors.surface : Colors.white.withValues(alpha: 0.05),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: AppColors.gold.withValues(alpha: 0.3), width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.gold, width: 1.5),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
@@ -215,6 +258,32 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 32),
+
+                  // =========================================================================
+                  // PRE-CONSULTATION FORM DYNAMIC (ACADEMIC VS NON-ACADEMIC)
+                  // =========================================================================
+                  const Text(
+                    'PRE-CONSULTATION FORM',
+                    style: TextStyle(
+                      color: AppColors.gold,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2.0,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (widget.expert.category == 'Academic') ...[
+                    _buildTextField(isDark, 'Nama Kampus / Sekolah', _kampusController),
+                    const SizedBox(height: 12),
+                    _buildTextField(isDark, 'Jurusan / Fakultas', _jurusanController),
+                    const SizedBox(height: 12),
+                    _buildTextField(isDark, 'Topik Skripsi / Penelitian', _topikController, maxLines: 2),
+                  ] else ...[
+                    _buildTextField(isDark, 'Topik Konsultasi (Misal: Otomotif, Medis)', _topikController),
+                    const SizedBox(height: 12),
+                    _buildTextField(isDark, 'Detail Keluhan / Kondisi Saat Ini', _keluhanController, maxLines: 3),
+                  ],
                   const SizedBox(height: 32),
 
                   // =========================================================================

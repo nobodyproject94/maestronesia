@@ -9,6 +9,22 @@ class PortfolioItem {
   final String type;
 
   PortfolioItem({required this.title, required this.year, required this.type});
+
+  factory PortfolioItem.fromJson(Map<String, dynamic> json) {
+    return PortfolioItem(
+      title: json['title'] as String,
+      year: json['year'] as String,
+      type: json['type'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'year': year,
+      'type': type,
+    };
+  }
 }
 
 // =========================================================================
@@ -22,6 +38,22 @@ class JournalItem {
   final String journal;
 
   JournalItem({required this.title, required this.year, required this.journal});
+
+  factory JournalItem.fromJson(Map<String, dynamic> json) {
+    return JournalItem(
+      title: json['title'] as String,
+      year: json['year'] as String,
+      journal: json['journal'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'year': year,
+      'journal': journal,
+    };
+  }
 }
 
 // =========================================================================
@@ -34,6 +66,20 @@ class CredentialItem {
   final String institute;
 
   CredentialItem({required this.title, required this.institute});
+
+  factory CredentialItem.fromJson(Map<String, dynamic> json) {
+    return CredentialItem(
+      title: json['title'] as String,
+      institute: json['institute'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'institute': institute,
+    };
+  }
 }
 
 // =========================================================================
@@ -50,6 +96,31 @@ class Evidence {
     required this.journals,
     required this.credentials,
   });
+
+  factory Evidence.fromJson(Map<String, dynamic> json) {
+    return Evidence(
+      portfolio: (json['portfolio'] as List<dynamic>?)
+              ?.map((e) => PortfolioItem.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      journals: (json['journals'] as List<dynamic>?)
+              ?.map((e) => JournalItem.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      credentials: (json['credentials'] as List<dynamic>?)
+              ?.map((e) => CredentialItem.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'portfolio': portfolio.map((e) => e.toJson()).toList(),
+      'journals': journals.map((e) => e.toJson()).toList(),
+      'credentials': credentials.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 // =========================================================================
@@ -59,6 +130,7 @@ class Evidence {
 class Expert {
   final int id; // ID UNIK EXPERT.
   final String name; // NAMA LENGKAP EXPERT BESERTA GELAR.
+  final String category; // KATEGORI: 'Academic' atau 'Non-Academic'
   final String expertise; // BIDANG KEAHLIAN UTAMA EXPERT.
   final String experience; // LAMA WAKTU PENGALAMAN (CONTOH: "15 YRS").
   final double rating; // RATING RATA-RATA DARI ULASAN CLIENT.
@@ -72,6 +144,7 @@ class Expert {
   Expert({
     required this.id,
     required this.name,
+    required this.category,
     required this.expertise,
     required this.experience,
     required this.rating,
@@ -82,6 +155,40 @@ class Expert {
     required this.avatar,
     required this.evidence,
   });
+
+  factory Expert.fromJson(Map<String, dynamic> json) {
+    return Expert(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      category: json['category'] as String,
+      expertise: json['expertise'] as String,
+      experience: json['experience'] as String,
+      rating: (json['rating'] as num).toDouble(),
+      reviews: json['reviews'] as int,
+      price: json['price'] as String,
+      status: json['status'] as String,
+      tags: List<String>.from(json['tags'] as List<dynamic>),
+      avatar: json['avatar'] as String,
+      evidence: Evidence.fromJson(json['evidence'] as Map<String, dynamic>),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'category': category,
+      'expertise': expertise,
+      'experience': experience,
+      'rating': rating,
+      'reviews': reviews,
+      'price': price,
+      'status': status,
+      'tags': tags,
+      'avatar': avatar,
+      'evidence': evidence.toJson(),
+    };
+  }
 }
 
 // =========================================================================
@@ -92,6 +199,7 @@ final List<Expert> mockExperts = [
   Expert(
     id: 1,
     name: 'Prof. Dr. Hermanto',
+    category: 'Non-Academic',
     expertise: 'Teknik Mesin & Termodinamika',
     experience: '15 yrs',
     rating: 4.9,
@@ -117,6 +225,7 @@ final List<Expert> mockExperts = [
   Expert(
     id: 2,
     name: 'Dr. Sarah Amelia',
+    category: 'Academic',
     expertise: 'Informatika & AI',
     experience: '8 yrs',
     rating: 4.8,
@@ -141,6 +250,7 @@ final List<Expert> mockExperts = [
   Expert(
     id: 3,
     name: 'Ir. Ahmad Fauzi',
+    category: 'Non-Academic',
     expertise: 'Teknik Sipil & Struktur',
     experience: '12 yrs',
     rating: 4.9,

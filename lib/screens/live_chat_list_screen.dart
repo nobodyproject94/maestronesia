@@ -12,12 +12,16 @@ class LiveChatListScreen extends StatefulWidget {
   final String email; // EMAIL PENGGUNA AKTIF UNTUK MEMFILTER DATA PEMESANAN.
   final ValueChanged<String> onTabChanged; // CALLBACK UNTUK MENANGANI NAVIGASI ANTAR-TAB/LAYAR.
   final VoidCallback onSignOut; // CALLBACK KETIKA PENGGUNA KELUAR DARI APLIKASI.
+  final String name;
+  final String role;
 
   const LiveChatListScreen({
     super.key,
     required this.email,
     required this.onTabChanged,
     required this.onSignOut,
+    required this.name,
+    required this.role,
   });
 
   @override
@@ -36,7 +40,7 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
     // =========================================================================
     // MEMUAT DATA PEMESANAN BERDASARKAN EMAIL PENGGUNA SECARA ASINKRON SAAT INISIALISASI STATE PERTAMA KALI.
     // =========================================================================
-    _futureBookings = DatabaseHelper.instance.getBookings(widget.email);
+    _futureBookings = DatabaseHelper.instance.getBookings(widget.email, role: widget.role, name: widget.name);
   }
 
   @override
@@ -50,11 +54,7 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
         // =========================================================================
         // MAINLAYOUT MEMBUNGKUS HALAMAN INI UNTUK MENYEDIAKAN BOTTOM NAVIGATION BAR TERPADU.
         // =========================================================================
-        return MainLayout(
-          activeTab: 'live_chat_list',
-          onTabChanged: widget.onTabChanged,
-          onSignOut: widget.onSignOut,
-          child: Scaffold(
+        return Scaffold(
             // =========================================================================
             // MENENTUKAN LATAR BELAKANG SCAFFOLD SESUAI STATUS TEMA YANG AKTIF.
             // =========================================================================
@@ -136,15 +136,15 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
                       final bookings = snapshot.data ?? [];
                       
                       // =========================================================================
-                      // MENGELOMPOKKAN PEMESANAN AGAR SATU PAKAR HANYA MUNCUL SEKALI DI DAFTAR OBROLAN.
+                      // MENGELOMPOKKAN PEMESANAN AGAR SATU CHAT ROOM HANYA MUNCUL SEKALI DI DAFTAR OBROLAN.
                       // =========================================================================
-                      final uniqueExpertIds = <int>{};
+                      final uniqueChatIds = <String>{};
                       final uniqueBookings = <Map<String, dynamic>>[];
 
                       for (var b in bookings) {
-                        final expertId = b['expert_id'] as int?;
-                        if (expertId != null && !uniqueExpertIds.contains(expertId)) {
-                          uniqueExpertIds.add(expertId);
+                        final chatId = widget.role == 'expert' ? (b['user_email'] ?? '') as String : (b['expert_id']?.toString() ?? '');
+                        if (chatId.isNotEmpty && !uniqueChatIds.contains(chatId)) {
+                          uniqueChatIds.add(chatId);
                           uniqueBookings.add(b);
                         }
                       }
@@ -166,15 +166,37 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
                         separatorBuilder: (context, index) => const SizedBox(height: 16),
                         itemBuilder: (context, index) {
                           final item = uniqueBookings[index];
-                          final expertId = item['expert_id'] as int;
 
-                          // =========================================================================
-                          // MENCARI DATA DETAIL PAKAR DARI DAFTAR TIRUAN (MOCKEXPERTS) BERDASARKAN ID.
-                          // =========================================================================
-                          final expert = mockExperts.firstWhere(
-                            (e) => e.id == expertId,
-                            orElse: () => mockExperts.first,
-                          );
+                          String displayName = '';
+                          String displayRole = '';
+                          String avatarUrl = '';
+                          String tabId = '';
+                          bool isOnline = true; // Default online for prototype
+
+                          if (widget.role == 'expert') {
+                            // =========================================================================
+                            // JIKA PENGGUNA ADALAH PAKAR, TAMPILKAN DAFTAR KLIEN.
+                            // =========================================================================
+                            final clientEmail = item['user_email'] as String? ?? 'Client';
+                            displayName = clientEmail.split('@')[0].toUpperCase();
+                            displayRole = 'Client';
+                            avatarUrl = 'https://ui-avatars.com/api/?name=$displayName&background=0F2038&color=D4AF37';
+                            tabId = 'live_chat_client_$clientEmail';
+                          } else {
+                            // =========================================================================
+                            // JIKA PENGGUNA ADALAH KLIEN, TAMPILKAN DAFTAR PAKAR.
+                            // =========================================================================
+                            final expertId = item['expert_id'] as int;
+                            final expert = mockExperts.firstWhere(
+                              (e) => e.id == expertId,
+                              orElse: () => mockExperts.first,
+                            );
+                            displayName = expert.name;
+                            displayRole = expert.expertise;
+                            avatarUrl = expert.avatar;
+                            isOnline = expert.status == 'Available';
+                            tabId = 'live_chat_expert_$expertId';
+                          }
 
                           return Container(
                             decoration: BoxDecoration(
@@ -184,10 +206,10 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
                             ),
                             child: InkWell(
                               // =========================================================================
-                              // AKSI KETIKA ITEM CHAT DIKLIK, BERPINDAH TAB KE PERCAKAPAN LANGSUNG DENGAN PAKAR TERTENTU.
+                              // AKSI KETIKA ITEM CHAT DIKLIK, BERPINDAH TAB KE PERCAKAPAN LANGSUNG DENGAN PARTNER TERTENTU.
                               // =========================================================================
                               onTap: () {
-                                widget.onTabChanged('live_chat_expert_$expertId');
+                                widget.onTabChanged(tabId);
                               },
                               borderRadius: BorderRadius.circular(24),
                               child: Padding(
@@ -195,13 +217,13 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
                                 child: Row(
                                   children: [
                                     // =========================================================================
-                                    // STACK DIGUNAKAN UNTUK MELETAKKAN INDIKATOR STATUS DI ATAS AVATAR PAKAR.
+                                    // STACK DIGUNAKAN UNTUK MELETAKKAN INDIKATOR STATUS DI ATAS AVATAR.
                                     // =========================================================================
                                     Stack(
                                       children: [
                                         CircleAvatar(
                                           radius: 28,
-                                          backgroundImage: NetworkImage(expert.avatar),
+                                          backgroundImage: NetworkImage(avatarUrl),
                                         ),
                                         // =========================================================================
                                         // INDIKATOR STATUS ONLINE/TERSEDIA DI POJOK KANAN BAWAH AVATAR.
@@ -213,7 +235,7 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
                                             width: 12,
                                             height: 12,
                                             decoration: BoxDecoration(
-                                              color: expert.status == 'Available' ? AppColors.gold : AppColors.textSecondary,
+                                              color: isOnline ? AppColors.gold : AppColors.textSecondary,
                                               shape: BoxShape.circle,
                                               border: Border.all(
                                                 color: isDark ? const Color(0xFF172128) : const Color(0xFF0F2038),
@@ -226,14 +248,14 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
                                     ),
                                     const SizedBox(width: 16),
                                     // =========================================================================
-                                    // BAGIAN INFORMASI NAMA DAN KEAHLIAN PAKAR.
+                                    // BAGIAN INFORMASI NAMA DAN PERAN PARTNER.
                                     // =========================================================================
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            expert.name,
+                                            displayName,
                                             style: TextStyle(
                                               color: AppColors.textPrimary,
                                               fontSize: 16,
@@ -242,7 +264,7 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            expert.expertise,
+                                            displayRole,
                                             style: TextStyle(
                                               color: AppColors.textSecondary,
                                               fontSize: 12,
@@ -280,8 +302,7 @@ class _LiveChatListScreenState extends State<LiveChatListScreen> {
                 ],
               ),
             ),
-          ),
-        );
+          );
       },
     );
   }

@@ -11,12 +11,16 @@ class DashboardScreen extends StatefulWidget {
   final ValueChanged<int> onSelectExpert;
   final ValueChanged<String> onTabChanged;
   final VoidCallback onSignOut;
+  final String name;
+  final String role;
 
   const DashboardScreen({
     super.key,
     required this.onSelectExpert,
     required this.onTabChanged,
     required this.onSignOut,
+    required this.name,
+    required this.role,
   });
 
   @override
@@ -42,11 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
-        return MainLayout(
-          activeTab: 'dashboard',
-          onTabChanged: widget.onTabChanged,
-          onSignOut: widget.onSignOut,
-          child: Scaffold(
+        return Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
               // =========================================================================
@@ -443,8 +443,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: 24),
                 ],
               ),
-            ),
-          ),
+              ),
         );
       }
     );

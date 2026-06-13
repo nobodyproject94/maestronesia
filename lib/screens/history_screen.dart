@@ -1,7 +1,7 @@
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import '../theme.dart';
-import '../widgets/main_layout.dart';
+
 import '../databases/database_helper.dart';
 
 // =========================================================================
@@ -11,12 +11,16 @@ import '../databases/database_helper.dart';
 // =========================================================================
 class HistoryScreen extends StatefulWidget {
   final String email;
+  final String role;
+  final String name;
   final ValueChanged<String> onTabChanged;
   final VoidCallback onSignOut;
 
   const HistoryScreen({
     super.key,
     required this.email,
+    required this.role,
+    required this.name,
     required this.onTabChanged,
     required this.onSignOut,
   });
@@ -49,7 +53,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
   // =========================================================================
   void _refreshBookings() {
     setState(() {
-      _futureBookings = DatabaseHelper.instance.getBookings(widget.email);
+      _futureBookings = DatabaseHelper.instance.getBookings(
+        widget.email,
+        role: widget.role,
+        name: widget.name,
+      );
     });
   }
 
@@ -334,7 +342,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ),
             content: Text(
-              'Are you sure you want to cancel the session with ${item['expert_name']}?',
+              'Are you sure you want to cancel the session with ${widget.role == 'expert' ? item['user_email'] : item['expert_name']}?',
               style: TextStyle(color: AppColors.textPrimary, height: 1.4),
             ),
             actions: [
@@ -388,11 +396,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkModeNotifier,
       builder: (context, isDark, _) {
-        return MainLayout(
-          activeTab: 'history',
-          onTabChanged: widget.onTabChanged,
-          onSignOut: widget.onSignOut,
-          child: Scaffold(
+        return Scaffold(
             backgroundColor: isDark ? const Color(0xFF131D24) : Colors.transparent,
             body: SingleChildScrollView(
               physics: const BouncingScrollPhysics(
@@ -553,6 +557,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       final filtered = allBookings.where((b) {
                         if (_activeFilterIndex == 0) return true;
                         final filterStatus = _filters[_activeFilterIndex];
+                        if (filterStatus == 'Upcoming' && b['status'] == 'Pending') {
+                          return true;
+                        }
                         return b['status'] == filterStatus;
                       }).toList();
 
@@ -581,6 +588,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           final status = item['status'] ?? 'Upcoming';
                           final isCompleted = status == 'Completed';
                           final isCancelled = status == 'Cancelled';
+                          final isPending = status == 'Pending';
 
                           // =========================================================================
                           // MENGATUR NILAI RATING SIMULASI JIKA SESI TELAH SELESAI DILAKUKAN.
@@ -594,13 +602,34 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             }
                           }
 
+                          // =========================================================================
+                          // KONFIGURASI VISUAL KARTU SESI TRANSAKSI BERDASARKAN STATUS
+                          // =========================================================================
+                          Color cardColor = isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05);
+                          Color borderColor = Colors.white.withValues(alpha: 0.05);
+
+                          if (isCompleted) {
+                            cardColor = isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05);
+                          } else if (isCancelled) {
+                            cardColor = isDark
+                                ? const Color(0xFF172128)
+                                : Colors.white.withValues(alpha: 0.02);
+                          } else if (isPending) {
+                            borderColor = const Color(0xFFE30A16).withValues(alpha: 0.5);
+                          } else {
+                            borderColor = AppColors.gold.withValues(alpha: 0.3);
+                          }
+
                           return Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF172128) : Colors.white.withValues(alpha: 0.05),
+                              color: cardColor,
                               borderRadius: BorderRadius.circular(28),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.05),
+                                color: isDark && borderColor == Colors.white.withValues(alpha: 0.05) 
+                                    ? Colors.white.withValues(alpha: 0.15) 
+                                    : borderColor,
+                                width: isDark ? 1.5 : 1.0,
                               ),
                             ),
                             child: Column(
@@ -627,7 +656,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            item['expert_name'] ?? 'Expert Name',
+                                            widget.role == 'expert'
+                                                ? (item['user_email'] ?? 'Client').toString().split('@')[0].toUpperCase()
+                                                : (item['expert_name'] ?? 'Expert Name'),
                                             style: TextStyle(
                                               color: AppColors.textPrimary,
                                               fontSize: 16,
@@ -801,9 +832,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           ),
                                         ],
                                         // =========================================================================
-                                        // OPSI AKSI 2: RESCHEDULE/BATAL (HANYA JIKA SESI UPCOMING).
+                                        // OPSI AKSI 2: RESCHEDULE/BATAL (HANYA JIKA SESI UPCOMING ATAU PENDING).
                                         // =========================================================================
-                                        if (status == 'Upcoming') ...[
+                                        if (status == 'Upcoming' || isPending) ...[
                                           InkWell(
                                             onTap: () => _showRescheduleDialog(item),
                                             borderRadius: BorderRadius.circular(8),
@@ -914,7 +945,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ],
               ),
             ),
-          ),
         );
       }
     );

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../theme.dart';
-import '../models/expert.dart';
 import '../widgets/main_layout.dart';
 
 // =========================================================================
@@ -9,18 +8,19 @@ import '../widgets/main_layout.dart';
 // SECARA LANGSUNG DENGAN PAKAR TERTENTU YANG TELAH DIPESAN OLEH PENGGUNA.
 // =========================================================================
 class LiveChatScreen extends StatefulWidget {
-  final Expert expert; // DATA OBJEK PAKAR YANG SEDANG DIAJAK BERKOMUNIKASI.
-  final VoidCallback
-  onBack; // CALLBACK SAAT PENGGUNA MENEKAN TOMBOL KEMBALI KE DAFTAR CHAT.
-  final VoidCallback
-  onStartVideoCall; // CALLBACK SAAT PENGGUNA MENEKAN TOMBOL PANGGIL VIDEO.
-  final ValueChanged<String>
-  onTabChanged; // CALLBACK UNTUK BERPINDAH NAVIGASI KE TAB LAIN.
+  final String otherUserName; // NAMA LAWAN BICARA.
+  final String otherUserAvatar; // AVATAR LAWAN BICARA.
+  final String role; // PERAN PENGGUNA SAAT INI ('client' ATAU 'expert').
+  final VoidCallback onBack; // CALLBACK SAAT PENGGUNA MENEKAN TOMBOL KEMBALI KE DAFTAR CHAT.
+  final VoidCallback onStartVideoCall; // CALLBACK SAAT PENGGUNA MENEKAN TOMBOL PANGGIL VIDEO.
+  final ValueChanged<String> onTabChanged; // CALLBACK UNTUK BERPINDAH NAVIGASI KE TAB LAIN.
   final VoidCallback onSignOut; // CALLBACK KETIKA PENGGUNA KELUAR APLIKASI.
 
   const LiveChatScreen({
     super.key,
-    required this.expert,
+    required this.otherUserName,
+    required this.otherUserAvatar,
+    required this.role,
     required this.onBack,
     required this.onStartVideoCall,
     required this.onTabChanged,
@@ -56,9 +56,10 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
     // MEMASUKKAN PESAN PEMBUKA DEFAULT DARI PAKAR SAAT PERTAMA KALI LAYAR DIBUKA.
     // =========================================================================
     _messages.add({
-      'sender': 'expert',
-      'text':
-          'Hello! Thanks for booking a consultation session with me. How can I help you today?',
+      'sender': 'other',
+      'text': widget.role == 'expert'
+          ? 'Hi! I have booked this session. Let me know when you are ready.'
+          : 'Hello! Thanks for booking a consultation session with me. How can I help you today?',
       'time': '18:00',
     });
   }
@@ -75,7 +76,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
       // MENAMBAHKAN PESAN PENGGUNA KE DAFTAR LOKAL.
       // =========================================================================
       _messages.add({
-        'sender': 'client',
+        'sender': 'me',
         'text': text,
         'time': _getCurrentTime(),
       });
@@ -99,17 +100,21 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
 
       String replyText = '';
       // =========================================================================
-      // MEMBERIKAN TEKS BALASAN SPESIFIK BERDASARKAN NAMA PAKAR UNTUK MEMBERIKAN RASA DINAMIS.
+      // MEMBERIKAN TEKS BALASAN SPESIFIK BERDASARKAN PERAN DAN NAMA UNTUK MEMBERIKAN RASA DINAMIS.
       // =========================================================================
-      if (widget.expert.name.contains('Sarah')) {
-        replyText =
-            'Understood. For your AI and Informatics project, I suggest we review the neural network layers and model optimization techniques. Have you loaded the training dataset?';
-      } else if (widget.expert.name.contains('Hermanto')) {
-        replyText =
-            'Got it. For our engineering session, let\'s analyze the thermodynamic equations and heat transfer ratios. Shall we review the schematics first?';
+      if (widget.role == 'expert') {
+        replyText = 'Thanks for the explanation. I am sending you my project files now.';
       } else {
-        replyText =
-            'Great. I can guide you through these principles step-by-step. Feel free to tap the video icon in the top right to start our real-time video session!';
+        if (widget.otherUserName.contains('Sarah')) {
+          replyText =
+              'Understood. For your AI and Informatics project, I suggest we review the neural network layers and model optimization techniques. Have you loaded the training dataset?';
+        } else if (widget.otherUserName.contains('Hermanto')) {
+          replyText =
+              'Got it. For our engineering session, let\'s analyze the thermodynamic equations and heat transfer ratios. Shall we review the schematics first?';
+        } else {
+          replyText =
+              'Great. I can guide you through these principles step-by-step. Feel free to tap the video icon in the top right to start our real-time video session!';
+        }
       }
 
       setState(() {
@@ -117,7 +122,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
         // MENAMBAHKAN PESAN BALASAN PAKAR KE DALAM DAFTAR LOKAL.
         // =========================================================================
         _messages.add({
-          'sender': 'expert',
+          'sender': 'other',
           'text': replyText,
           'time': _getCurrentTime(),
         });
@@ -202,7 +207,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        backgroundImage: NetworkImage(widget.expert.avatar),
+                        backgroundImage: NetworkImage(widget.otherUserAvatar),
                       ),
                       Positioned(
                         bottom: 0,
@@ -211,9 +216,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: widget.expert.status == 'Available'
-                                ? AppColors.gold
-                                : AppColors.textSecondary,
+                            color: AppColors.gold,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: isDark
@@ -235,7 +238,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.expert.name,
+                          widget.otherUserName,
                           style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 15,
@@ -289,13 +292,13 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                     itemCount: _messages.length,
                     itemBuilder: (context, index) {
                       final msg = _messages[index];
-                      final isClient = msg['sender'] == 'client';
+                      final isMe = msg['sender'] == 'me';
 
                       // =========================================================================
-                      // MENYEJAJARKAN PESAN KE KANAN JIKA PENGIRIM ADALAH CLIENT, KE KIRI JIKA EXPERT.
+                      // MENYEJAJARKAN PESAN KE KANAN JIKA PENGIRIM ADALAH SAYA, KE KIRI JIKA LAWAN BICARA.
                       // =========================================================================
                       return Align(
-                        alignment: isClient
+                        alignment: isMe
                             ? Alignment.centerRight
                             : Alignment.centerLeft,
                         child: Container(
@@ -313,7 +316,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                             // =========================================================================
                             // WARNA GELEMBUNG DISESUAIKAN DENGAN PENGIRIM DAN TEMA.
                             // =========================================================================
-                            color: isClient
+                            color: isMe
                                 ? (isDark
                                       ? AppColors.gold.withValues(alpha: 0.1)
                                       : Colors.white.withValues(alpha: 0.15))
@@ -323,15 +326,15 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                             borderRadius: BorderRadius.only(
                               topLeft: const Radius.circular(20),
                               topRight: const Radius.circular(20),
-                              bottomLeft: isClient
+                              bottomLeft: isMe
                                   ? const Radius.circular(20)
                                   : Radius.zero,
-                              bottomRight: isClient
+                              bottomRight: isMe
                                   ? Radius.zero
                                   : const Radius.circular(20),
                             ),
                             border: Border.all(
-                              color: isClient
+                              color: isMe
                                   ? AppColors.gold.withValues(alpha: 0.3)
                                   : Colors.white.withValues(alpha: 0.05),
                             ),
@@ -384,7 +387,7 @@ class _LiveChatScreenState extends State<LiveChatScreen> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        '${widget.expert.name.split(' ')[0]} is typing...',
+                        '${widget.otherUserName.split(' ')[0]} is typing...',
                         style: TextStyle(
                           color: AppColors.gold.withValues(alpha: 0.8),
                           fontSize: 12,
